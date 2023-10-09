@@ -1,0 +1,42 @@
+[gd_scene load_steps=5 format=3 uid="uid://b02vrjremtd2y"]
+
+[ext_resource type="StyleBox" uid="uid://dgllga7b75psg" path="res://Styles/Widget_master_selected.tres" id="1_jl62k"]
+[ext_resource type="Script" path="res://Widget/Widget.gd" id="2_ia8xv"]
+[ext_resource type="PackedScene" uid="uid://b3n01htt38lsy" path="res://Widget/Buttons/Buttons.tscn" id="3_tyhir"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_61dgc"]
+bg_color = Color(0.6, 0.6, 0.6, 0)
+border_color = Color(0, 0, 0, 1)
+
+[node name="Widget" type="PanelContainer"]
+custom_minimum_size = Vector2(150, 150)
+offset_left = 1.0
+offset_top = -1.0
+offset_right = 557.0
+offset_bottom = 385.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_default_cursor_shape = 6
+theme_override_styles/panel = ExtResource("1_jl62k")
+script = ExtResource("2_ia8xv")
+
+[node name="TextEdit" type="TextEdit" parent="."]
+layout_mode = 2
+theme_override_colors/background_color = Color(0, 0, 0, 0)
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_colors/selection_color = Color(1, 1, 0, 1)
+theme_override_font_sizes/font_size = 50
+theme_override_styles/normal = SubResource("StyleBoxFlat_61dgc")
+placeholder_text = "Texte"
+wrap_mode = 1
+
+[node name="Buttons" parent="." instance=ExtResource("3_tyhir")]
+
+[connection signal="gui_input" from="." to="." method="_on_gui_input"]
+[connection signal="resized" from="." to="." method="_on_resized"]
+[connection signal="text_changed" from="TextEdit" to="." method="_on_text_edit_text_changed"]
+[connection signal="close_pressed" from="Buttons" to="." method="_on_buttons_close_pressed"]
+[connection signal="resize_pressed" from="Buttons" to="." method="_on_buttons_resize_pressed"]
+[connection signal="text_color_changed" from="Buttons" to="." method="_on_buttons_text_color_changed"]
+[connection signal="text_size_pressed" from="Buttons" to="." method="_on_buttons_text_size_pressed"]
+[connection signal="toggle_visible_pressed" from="Buttons" to="." method="_on_buttons_toggle_visible_pressed"]

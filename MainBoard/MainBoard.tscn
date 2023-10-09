@@ -1,0 +1,58 @@
+[gd_scene load_steps=3 format=3 uid="uid://hsjvadwsbdih"]
+
+[ext_resource type="Script" path="res://MainBoard/MainBoard.gd" id="1_ngbew"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_2ivir"]
+bg_color = Color(0.6, 0.6, 0.6, 0)
+border_width_left = 20
+border_width_top = 20
+border_width_right = 20
+border_width_bottom = 20
+border_color = Color(0.8, 0.8, 0.8, 0.513726)
+corner_radius_top_left = 20
+corner_radius_top_right = 20
+corner_radius_bottom_right = 20
+corner_radius_bottom_left = 20
+
+[node name="MainBoard" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_ngbew")
+
+[node name="VisibleBackground" type="ColorRect" parent="."]
+layout_mode = 2
+offset_bottom = 648.0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+custom_minimum_size = Vector2(250, 0)
+layout_mode = 1
+anchors_preset = 11
+anchor_left = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 0
+grow_vertical = 2
+
+[node name="Text" type="Button" parent="VBoxContainer"]
+layout_mode = 2
+text = "Text"
+
+[node name="Pen" type="Button" parent="VBoxContainer"]
+layout_mode = 2
+text = "Pen"
+
+[node name="RectPreview" type="Panel" parent="."]
+visible = false
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_2ivir")
+
+[connection signal="resized" from="." to="." method="_on_resized"]
+[connection signal="gui_input" from="VisibleBackground" to="." method="_on_visible_background_gui_input"]
+[connection signal="pressed" from="VBoxContainer/Text" to="." method="_on_text_pressed"]
+[connection signal="pressed" from="VBoxContainer/Pen" to="." method="_on_pen_pressed"]
