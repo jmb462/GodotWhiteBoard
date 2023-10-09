@@ -22,7 +22,7 @@ signal text_color_changed(color : Color)
 
 @onready var color_buttons : Array[TextureButton] = [$ColorPicker/Black, $ColorPicker/Red, $ColorPicker/Green, $ColorPicker/Blue]
 
-@onready var close : TextureButton= $Close
+@onready var close : TextureButton = $Close
 
 var border_width : int = 20
 var minimum_width_for_top_resize : int = 260

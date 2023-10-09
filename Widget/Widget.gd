@@ -1,4 +1,5 @@
 extends PanelContainer
+class_name Widget
 
 @export var border_width : int = 20
 @export var text_size_increment : int = 3
@@ -6,20 +7,20 @@ extends PanelContainer
 @onready var buttons : Node2D = $Buttons
 @onready var text_edit : TextEdit = $TextEdit
 
-@onready var unfocus_theme = load("res://Styles/Widget_unfocus.tres")
+@onready var unfocus_theme : StyleBoxFlat = load("res://Styles/Widget_unfocus.tres")
 
 var current_action : G.ACTION = G.ACTION.NONE
 var resize_type : G.RESIZE = G.RESIZE.NONE
 
 # Reference to the same widget on presentation screen
-var clone : Control = null
+var clone : Widget = null
 
 
 func _ready() -> void :
 	_on_resized()
 
 
-func _on_gui_input(event):
+func _on_gui_input(event : InputEvent) -> void:
 	if event is InputEventMouseMotion:
 		match current_action:
 			G.ACTION.MOVE:
@@ -58,7 +59,7 @@ func resize(p_relative : Vector2, p_type : G.RESIZE) -> void:
 	synchronize()
 
 
-func _on_resized():
+func _on_resized() -> void:
 	await get_tree().process_frame
 	buttons.resize(size)
 
@@ -74,23 +75,23 @@ func autozoom() -> void:
 		await get_tree().process_frame
 
 
-func _on_text_edit_text_changed():
+func _on_text_edit_text_changed() -> void:
 	if text_edit.get_v_scroll_bar().is_visible_in_tree():
 		autozoom()
 	synchronize()
 
 
-func set_clone(p_clone : Control):
+func set_clone(p_clone : Widget) -> void:
 	clone = p_clone
 	p_clone.add_theme_stylebox_override("panel", unfocus_theme)
 	p_clone.text_edit.placeholder_text = ""
 	p_clone.buttons.hide()
 
 
-func is_master():
+func is_master() -> bool:
 	return is_instance_valid(clone)
 
-func synchronize():
+func synchronize() -> void:
 	if not is_master():
 		return
 	clone.set_position(position)
@@ -124,17 +125,17 @@ func set_text_size(p_size : int) -> void:
 	text_edit.add_theme_font_size_override("font_size", p_size)
 
 
-func _on_buttons_resize_pressed(p_resize_type : G.RESIZE):
+func _on_buttons_resize_pressed(p_resize_type : G.RESIZE) -> void:
 	current_action = G.ACTION.RESIZE
 	resize_type = p_resize_type
 
 
-func _on_buttons_text_size_pressed(p_increment : int):
+func _on_buttons_text_size_pressed(p_increment : int) -> void:
 	current_action = G.ACTION.TEXT_SIZE
 	change_text_size(p_increment * text_size_increment)
 
 
-func _on_buttons_toggle_visible_pressed():
+func _on_buttons_toggle_visible_pressed() -> void:
 	current_action = G.ACTION.TOGGLE_VISIBLE
 	if is_master():
 		if clone.visible:
@@ -145,14 +146,14 @@ func _on_buttons_toggle_visible_pressed():
 			modulate.a = 1.0
 
 
-func _on_buttons_close_pressed():
+func _on_buttons_close_pressed() -> void:
 	current_action = G.ACTION.CLOSE
 	queue_free()
 	if is_master():
 		clone.queue_free()
 
 
-func _on_buttons_text_color_changed(p_color : Color):
+func _on_buttons_text_color_changed(p_color : Color) -> void:
 	current_action = G.ACTION.NONE
 	set_text_color(p_color)
 	synchronize()
