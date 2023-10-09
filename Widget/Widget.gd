@@ -1,13 +1,18 @@
 extends PanelContainer
 class_name Widget
 
+signal focus_requested(widget : Widget)
+
 @export var border_width : int = 20
 @export var text_size_increment : int = 3
 
 @onready var buttons : Node2D = $Buttons
 @onready var text_edit : TextEdit = $TextEdit
 
+@onready var focus_theme : StyleBoxFlat = load("res://Styles/Widget_master_selected.tres")
 @onready var unfocus_theme : StyleBoxFlat = load("res://Styles/Widget_unfocus.tres")
+
+var focus : bool = true
 
 var current_action : G.ACTION = G.ACTION.NONE
 var resize_type : G.RESIZE = G.RESIZE.NONE
@@ -31,11 +36,19 @@ func _on_gui_input(event : InputEvent) -> void:
 	if event is InputEventMouseButton:
 		if event.button_index == MOUSE_BUTTON_LEFT:
 			if event.is_pressed():
+				if not focus:
+					emit_signal("focus_requested", self)
 				if current_action == G.ACTION.NONE:
 					current_action = G.ACTION.MOVE
 			else:
 				current_action = G.ACTION.NONE
 
+func _on_text_edit_gui_input(event):
+	if event is InputEventMouseButton:
+		if event.button_index == MOUSE_BUTTON_LEFT:
+			if event.is_pressed():
+				if not focus:
+					emit_signal("focus_requested", self)
 
 func move(p_relative : Vector2) -> void:
 	position += p_relative
@@ -157,3 +170,12 @@ func _on_buttons_text_color_changed(p_color : Color) -> void:
 	current_action = G.ACTION.NONE
 	set_text_color(p_color)
 	synchronize()
+	
+func set_focus(p_active: bool) -> void:
+	focus = p_active
+	buttons.visible = p_active
+	add_theme_stylebox_override("panel", focus_theme if p_active else unfocus_theme)
+	mouse_filter = Control.MOUSE_FILTER_STOP if focus else Control.MOUSE_FILTER_IGNORE
+	
+
+

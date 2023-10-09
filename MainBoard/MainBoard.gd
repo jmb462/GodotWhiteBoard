@@ -11,6 +11,8 @@ var board_mode : BOARD_MODE = BOARD_MODE.NONE
 
 var new_widget_rect : Rect2 = Rect2()
 
+var focused_widget : Widget = null
+
 func _ready() -> void:
 	_on_resized()
 
@@ -42,6 +44,7 @@ func _on_pen_pressed() -> void:
 func _on_visible_background_gui_input(event) -> void:
 	if event is InputEventMouseButton:
 		if event.button_index == MOUSE_BUTTON_LEFT:
+			unfocus()
 			if board_mode == BOARD_MODE.TEXT_POSITION:
 				if event.is_pressed():
 					drag_size_preview(event.position)
@@ -83,7 +86,8 @@ func create_text_widget() -> void:
 	new_widget.position = new_widget_rect.position
 	new_widget.size = new_widget_rect.size
 	new_widget_rect = Rect2()
-	
+	set_focus(new_widget)
+	new_widget.connect("focus_requested", set_focus)
 	clone_widget(new_widget)
 
 
@@ -109,3 +113,20 @@ func drag_size_preview(p_position : Vector2) -> void:
 	rect_preview.position = new_widget_rect.position + visible_background.position
 	rect_preview.size = new_widget_rect.size
 	rect_preview.show()
+
+#
+# Set focus on widget (and unfocus previous focused widget)
+#
+func set_focus(p_widget : Widget) -> void:
+	unfocus()
+	focused_widget = p_widget
+	p_widget.set_focus(true)
+	
+	
+#
+# Unfocus widget
+#
+func unfocus(p_widget  : Widget = focused_widget) -> void:
+	if is_instance_valid(p_widget):
+		p_widget.set_focus(false)
+		focused_widget = null
