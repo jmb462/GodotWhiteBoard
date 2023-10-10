@@ -4,9 +4,9 @@ extends Control
 @onready var vbox : VBoxContainer = $VBoxContainer
 @onready var rect_preview : Panel = $RectPreview
 
-@onready var packed_widget : PackedScene = preload("res://Widget/Widget.tscn")
+@onready var packed_widget : PackedScene = preload("res://Widget/TextWidget/TextWidget.tscn")
 
-enum BOARD_MODE { NONE, TEXT_POSITION, TEXT_SIZE, PEN }
+enum BOARD_MODE { NONE, TEXT_POSITION, TEXT_SIZE, PEN, PASTE_IMAGE}
 var board_mode : BOARD_MODE = BOARD_MODE.NONE
 
 var new_widget_rect : Rect2 = Rect2()
@@ -34,6 +34,15 @@ func _on_text_pressed() -> void:
 	board_mode = BOARD_MODE.TEXT_POSITION
 	visible_background.set_default_cursor_shape(CURSOR_CROSS)
 
+
+#
+#	Image clipboard button pressed
+#
+func _on_paste_image_pressed():
+	pass
+#	if DisplayServer.clipboard_has_image():
+#		board_mode = BOARD_MODE.PASTE_IMAGE
+#		print("image !!")
 #
 #	Free draw button has been pressed
 #
@@ -130,3 +139,6 @@ func unfocus(p_widget  : Widget = focused_widget) -> void:
 	if is_instance_valid(p_widget):
 		p_widget.set_focus(false)
 		focused_widget = null
+
+
+
