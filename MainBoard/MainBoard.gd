@@ -4,9 +4,10 @@ extends Control
 @onready var vbox : VBoxContainer = $VBoxContainer
 @onready var rect_preview : Panel = $RectPreview
 
-@onready var packed_widget : PackedScene = preload("res://Widget/TextWidget/TextWidget.tscn")
+@onready var packed_text_widget : PackedScene = preload("res://Widget/TextWidget/TextWidget.tscn")
+@onready var packed_image_widget : PackedScene = preload("res://Widget/ImageWidget/ImageWidget.tscn")
 
-enum BOARD_MODE { NONE, TEXT_POSITION, TEXT_SIZE, PEN, PASTE_IMAGE}
+enum BOARD_MODE { NONE, TEXT_POSITION, TEXT_SIZE, PEN, IMAGE_POSITION, IMAGE_SIZE, PASTE_IMAGE}
 var board_mode : BOARD_MODE = BOARD_MODE.NONE
 
 var new_widget_rect : Rect2 = Rect2()
@@ -15,6 +16,7 @@ var focused_widget : Widget = null
 
 func _ready() -> void:
 	_on_resized()
+	get_tree().get_root().connect("files_dropped", _on_drop)
 
 
 func _on_resized() -> void:
@@ -34,15 +36,23 @@ func _on_text_pressed() -> void:
 	board_mode = BOARD_MODE.TEXT_POSITION
 	visible_background.set_default_cursor_shape(CURSOR_CROSS)
 
+func _on_image_pressed():
+	board_mode = BOARD_MODE.IMAGE_POSITION
+	visible_background.set_default_cursor_shape(CURSOR_CROSS)
+
+func _on_drop(data):
+	var image : Image = Image.new()
+	image.load(data[0])
+	create_image_widget(image)
 
 #
 #	Image clipboard button pressed
 #
 func _on_paste_image_pressed():
-	pass
-#	if DisplayServer.clipboard_has_image():
-#		board_mode = BOARD_MODE.PASTE_IMAGE
-#		print("image !!")
+	if DisplayServer.clipboard_has_image():
+		board_mode = BOARD_MODE.PASTE_IMAGE
+		create_image_widget(DisplayServer.clipboard_get_image())
+
 #
 #	Free draw button has been pressed
 #
@@ -57,6 +67,9 @@ func _on_visible_background_gui_input(event) -> void:
 			if board_mode == BOARD_MODE.TEXT_POSITION:
 				if event.is_pressed():
 					drag_size_preview(event.position)
+			if board_mode == BOARD_MODE.IMAGE_POSITION:
+				if event.is_pressed():
+					drag_size_preview(event.position)
 					
 			if board_mode == BOARD_MODE.TEXT_SIZE:
 				if not event.is_pressed():
@@ -66,7 +79,16 @@ func _on_visible_background_gui_input(event) -> void:
 					rect_preview.hide()
 					visible_background.set_default_cursor_shape(CURSOR_ARROW)
 					board_mode = BOARD_MODE.NONE
-	
+			
+			if board_mode == BOARD_MODE.IMAGE_SIZE:
+				if not event.is_pressed():
+					# Left button has been released
+					# Time to create the widget
+					create_image_widget()
+					rect_preview.hide()
+					visible_background.set_default_cursor_shape(CURSOR_ARROW)
+					board_mode = BOARD_MODE.NONE
+			
 	if event is InputEventMouseMotion:
 		if board_mode == BOARD_MODE.TEXT_SIZE:
 			# Setting size of future widget by dragging preview rectangle
@@ -89,8 +111,8 @@ func _on_visible_background_gui_input(event) -> void:
 #	New widget creation
 #
 func create_text_widget() -> void:
-	#Create master widget on control screen
-	var new_widget : Widget = packed_widget.instantiate()
+	#Create master text widget on control screen
+	var new_widget : TextWidget = packed_text_widget.instantiate()
 	visible_background.add_child(new_widget)
 	new_widget.position = new_widget_rect.position
 	new_widget.size = new_widget_rect.size
@@ -99,12 +121,30 @@ func create_text_widget() -> void:
 	new_widget.connect("focus_requested", set_focus)
 	clone_widget(new_widget)
 
-
+func create_image_widget(p_image : Image = null) -> void:
+	#Create master image widget on control screen
+	var new_widget : ImageWidget = packed_image_widget.instantiate()
+	visible_background.add_child(new_widget)
+	new_widget.position = new_widget_rect.position
+	new_widget.size = new_widget_rect.size
+	new_widget_rect = Rect2()
+	set_focus(new_widget)
+	new_widget.connect("focus_requested", set_focus)
+	if is_instance_valid(p_image):
+		new_widget.set_texture(p_image)
+	clone_widget(new_widget)
 
 #
 # Clone a widget from the control screen to the presentation screen
 #
 func clone_widget(p_widget : Widget) -> void:
+	var packed_widget : PackedScene = null
+	if p_widget is TextWidget:
+		packed_widget = packed_text_widget
+	elif p_widget is ImageWidget:
+		packed_widget = packed_image_widget
+	else:
+		return
 	var new_clone_widget : Widget = packed_widget.instantiate()
 	Display.add_child(new_clone_widget)
 	new_clone_widget.position = p_widget.position
@@ -118,7 +158,12 @@ func clone_widget(p_widget : Widget) -> void:
 #
 func drag_size_preview(p_position : Vector2) -> void:
 	new_widget_rect.position = p_position
-	board_mode = BOARD_MODE.TEXT_SIZE
+	match board_mode:
+		BOARD_MODE.TEXT_POSITION:
+			board_mode = BOARD_MODE.TEXT_SIZE
+		BOARD_MODE.IMAGE_POSITION:
+			board_mode = BOARD_MODE.IMAGE_SIZE
+			
 	rect_preview.position = new_widget_rect.position + visible_background.position
 	rect_preview.size = new_widget_rect.size
 	rect_preview.show()
@@ -139,6 +184,3 @@ func unfocus(p_widget  : Widget = focused_widget) -> void:
 	if is_instance_valid(p_widget):
 		p_widget.set_focus(false)
 		focused_widget = null
-
-
-

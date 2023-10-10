@@ -12,6 +12,7 @@ func _ready():
 func set_clone(p_clone : Widget) -> void:
 	super(p_clone)
 	p_clone.text_edit.placeholder_text = ""
+	p_clone.text_edit.editable = false
 
 func synchronize() -> void:
 	if not is_master():
@@ -84,3 +85,6 @@ func set_focus(p_active: bool) -> void:
 	super(p_active)
 	text_edit.editable = p_active
 	text_edit.grab_focus()
+
+func _on_buttons_resize_pressed(p_resize_type : G.RESIZE, _p_keep_ratio : bool = false) -> void:
+	super(p_resize_type)

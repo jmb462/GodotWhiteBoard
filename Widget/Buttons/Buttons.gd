@@ -94,3 +94,11 @@ func set_color(p_color : Color, p_button : TextureButton = null) -> void:
 	
 func get_color() -> Color:
 	return text_color.modulate
+
+func hide_button_size():
+	size_minus.hide()
+	size_plus.hide()
+
+func hide_button_color():
+	color_picker.hide()
+	text_color.hide()

@@ -21,5 +21,4 @@ script = ExtResource("2_c4on3")
 [connection signal="gui_input" from="." to="." method="_on_gui_input"]
 [connection signal="resized" from="." to="." method="_on_resized"]
 [connection signal="close_pressed" from="Buttons" to="." method="_on_buttons_close_pressed"]
-[connection signal="resize_pressed" from="Buttons" to="." method="_on_buttons_resize_pressed"]
 [connection signal="toggle_visible_pressed" from="Buttons" to="." method="_on_buttons_toggle_visible_pressed"]

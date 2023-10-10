@@ -23,5 +23,6 @@ wrap_mode = 1
 
 [connection signal="gui_input" from="TextEdit" to="." method="_on_text_edit_gui_input"]
 [connection signal="text_changed" from="TextEdit" to="." method="_on_text_edit_text_changed"]
+[connection signal="resize_pressed" from="Buttons" to="." method="_on_buttons_resize_pressed"]
 [connection signal="text_color_changed" from="Buttons" to="." method="_on_buttons_text_color_changed"]
 [connection signal="text_size_pressed" from="Buttons" to="." method="_on_buttons_text_size_pressed"]

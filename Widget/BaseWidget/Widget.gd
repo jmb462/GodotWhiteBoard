@@ -14,6 +14,7 @@ var focus : bool = true
 
 var current_action : G.ACTION = G.ACTION.NONE
 var resize_type : G.RESIZE = G.RESIZE.NONE
+var keep_ratio : bool = false
 
 # Reference to the same widget on presentation screen
 var clone : Widget = null
@@ -48,19 +49,44 @@ func move(p_relative : Vector2) -> void:
 
 
 func resize(p_relative : Vector2, p_type : G.RESIZE) -> void:
-	match p_type:
-		G.RESIZE.RIGHT:
-			size.x += p_relative.x
-		G.RESIZE.BOTTOM:
-			size.y += p_relative.y
-		G.RESIZE.BOTH:
-			size += p_relative
-		G.RESIZE.LEFT:
-			size.x -= p_relative.x
-			position.x += p_relative.x
-		G.RESIZE.TOP:
-			size.y -= p_relative.y
-			position.y += p_relative.y
+	if size.y == 0:
+		return
+	var aspect_ratio : float = size.x / size.y
+	if keep_ratio:
+		match p_type:
+			G.RESIZE.RIGHT:
+				size.x += p_relative.x
+				size.y = size.x / aspect_ratio
+			G.RESIZE.BOTTOM:
+				size.y += p_relative.y
+				size.x = size.y * aspect_ratio
+			G.RESIZE.BOTH:
+				size.x += p_relative.x
+				size.y = size.x / aspect_ratio
+			G.RESIZE.LEFT:
+				size.x -= p_relative.x
+				position.x += p_relative.x
+				size.y = size.x / aspect_ratio
+			G.RESIZE.TOP:
+				size.y -= p_relative.y
+				position.y += p_relative.y
+				size.x = size.y * aspect_ratio
+	else:
+		match p_type:
+			G.RESIZE.RIGHT:
+				size.x += p_relative.x
+				size.y = size.x / aspect_ratio
+			G.RESIZE.BOTTOM:
+				size.y += p_relative.y
+				size.x = size.y * aspect_ratio
+			G.RESIZE.BOTH:
+				size += p_relative
+			G.RESIZE.LEFT:
+				size.x -= p_relative.x
+				position.x += p_relative.x
+			G.RESIZE.TOP:
+				size.y -= p_relative.y
+				position.y += p_relative.y
 	synchronize()
 
 
@@ -86,9 +112,10 @@ func synchronize() -> void:
 	clone.set_size(size)
 
 
-func _on_buttons_resize_pressed(p_resize_type : G.RESIZE) -> void:
+func _on_buttons_resize_pressed(p_resize_type : G.RESIZE, p_keep_ratio : bool = false) -> void:
 	current_action = G.ACTION.RESIZE
 	resize_type = p_resize_type
+	keep_ratio = p_keep_ratio
 
 
 func _on_buttons_toggle_visible_pressed() -> void:

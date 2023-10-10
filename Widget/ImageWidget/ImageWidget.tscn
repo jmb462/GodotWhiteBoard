@@ -1,0 +1,16 @@
+[gd_scene load_steps=4 format=3 uid="uid://64wsemieq3qk"]
+
+[ext_resource type="PackedScene" uid="uid://b02vrjremtd2y" path="res://Widget/BaseWidget/Widget.tscn" id="1_mgu1k"]
+[ext_resource type="Script" path="res://Widget/ImageWidget/ImageWidget.gd" id="2_83fny"]
+[ext_resource type="Texture2D" uid="uid://bfnhhn378baet" path="res://icon.svg" id="3_01vwm"]
+
+[node name="ImageWidget" instance=ExtResource("1_mgu1k")]
+script = ExtResource("2_83fny")
+
+[node name="TextureRect" type="TextureRect" parent="." index="0"]
+layout_mode = 2
+texture = ExtResource("3_01vwm")
+stretch_mode = 4
+
+[connection signal="gui_input" from="TextureRect" to="." method="_on_texture_rect_gui_input"]
+[connection signal="resize_pressed" from="Buttons" to="." method="_on_buttons_resize_pressed"]

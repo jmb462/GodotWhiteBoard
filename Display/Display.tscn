@@ -1,4 +1,6 @@
-[gd_scene format=3 uid="uid://mbxna1px11tf"]
+[gd_scene load_steps=2 format=3 uid="uid://mbxna1px11tf"]
+
+[ext_resource type="Script" path="res://Display/Display.gd" id="1_pgmv1"]
 
 [node name="Display" type="Window"]
 disable_3d = true
@@ -7,6 +9,7 @@ title = "Second Screen"
 initial_position = 3
 size = Vector2i(800, 600)
 current_screen = 0
+script = ExtResource("1_pgmv1")
 
 [node name="ColorRect" type="ColorRect" parent="."]
 anchors_preset = 15
