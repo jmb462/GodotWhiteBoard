@@ -132,6 +132,7 @@ func create_image_widget(p_image : Image = null) -> void:
 	new_widget.connect("focus_requested", set_focus)
 	if is_instance_valid(p_image):
 		new_widget.set_texture(p_image)
+		new_widget.position = (visible_background.size - new_widget.size) / 2.0
 	clone_widget(new_widget)
 
 #
