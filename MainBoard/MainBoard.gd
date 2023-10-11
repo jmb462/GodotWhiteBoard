@@ -118,7 +118,7 @@ func create_text_widget() -> void:
 	new_widget.size = new_widget_rect.size
 	new_widget_rect = Rect2()
 	set_focus(new_widget)
-	new_widget.connect("focus_requested", set_focus)
+	connect_widget_signals(new_widget)
 	clone_widget(new_widget)
 
 func create_image_widget(p_image : Image = null) -> void:
@@ -129,12 +129,24 @@ func create_image_widget(p_image : Image = null) -> void:
 	new_widget.size = new_widget_rect.size
 	new_widget_rect = Rect2()
 	set_focus(new_widget)
-	new_widget.connect("focus_requested", set_focus)
+	connect_widget_signals(new_widget)
 	if is_instance_valid(p_image):
 		new_widget.set_texture(p_image)
 		new_widget.position = (visible_background.size - new_widget.size) / 2.0
 	clone_widget(new_widget)
 
+#
+# Duplicate a widget on control screen
+#
+func duplicate_widget(p_widget : Widget) -> void:
+	var new_widget : Widget = p_widget.duplicate()
+	visible_background.add_child(new_widget)
+	new_widget.position = p_widget.position + Vector2(30,30)
+	new_widget.size = p_widget.size
+	set_focus(new_widget)
+	connect_widget_signals(new_widget)
+	clone_widget(new_widget)
+	
 #
 # Clone a widget from the control screen to the presentation screen
 #
@@ -153,7 +165,12 @@ func clone_widget(p_widget : Widget) -> void:
 	# Store a reference to the cloned widget in the master widget
 	p_widget.set_clone(new_clone_widget)
 
-
+#
+#
+#
+func connect_widget_signals(p_widget : Widget) -> void:
+	p_widget.connect("focus_requested", set_focus)
+	p_widget.connect("duplicate_requested", duplicate_widget)
 #
 # Draw a size preview for widget creation by dragging
 #

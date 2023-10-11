@@ -1,18 +1,107 @@
-[gd_scene load_steps=11 format=3 uid="uid://b3n01htt38lsy"]
+[gd_scene load_steps=21 format=3 uid="uid://b3n01htt38lsy"]
 
 [ext_resource type="Script" path="res://Widget/Buttons/Buttons.gd" id="1_g3tp5"]
-[ext_resource type="Texture2D" uid="uid://ba883h54p544h" path="res://Assets/Grabbers/vertical_resize.png" id="2_dtpeg"]
-[ext_resource type="Texture2D" uid="uid://0x5d3mo3wd4a" path="res://Assets/Grabbers/horizontal_resize.png" id="3_06l8r"]
-[ext_resource type="Texture2D" uid="uid://do6mrto1k36ow" path="res://Assets/Grabbers/both_direction_resize.png" id="4_wt5lc"]
 [ext_resource type="Texture2D" uid="uid://5d3rxudx6s3q" path="res://Assets/Buttons/close.png" id="5_81nhu"]
+[ext_resource type="Texture2D" uid="uid://g7ubw4n8yn7y" path="res://Assets/Buttons/duplicate.png" id="5_ai0sp"]
 [ext_resource type="Texture2D" uid="uid://bflaqkl5hukjf" path="res://Assets/Buttons/eye.png" id="6_3dw0f"]
+[ext_resource type="Texture2D" uid="uid://dhqjtrnh0n2gv" path="res://Assets/Buttons/lock.png" id="6_3ko56"]
+[ext_resource type="Texture2D" uid="uid://bcef46jp0to58" path="res://Assets/Buttons/unlock.png" id="6_va2cr"]
 [ext_resource type="Texture2D" uid="uid://v7yrehnxt8fa" path="res://Assets/Buttons/eye_crossed.png" id="7_vnetg"]
 [ext_resource type="Texture2D" uid="uid://jbe2tl4ouobf" path="res://Assets/Buttons/size_minus.png" id="8_2x4g8"]
+[ext_resource type="Texture2D" uid="uid://cy8f88mi3joor" path="res://Assets/Buttons/layer_up.png" id="8_8svaf"]
 [ext_resource type="Texture2D" uid="uid://ci5sa7taxtojx" path="res://Assets/Buttons/size_plus.png" id="9_0pk1s"]
+[ext_resource type="Texture2D" uid="uid://cdt54ii5qmqk7" path="res://Assets/Buttons/layer_down.png" id="9_v3rig"]
 [ext_resource type="Texture2D" uid="uid://b7fn1abvn1koy" path="res://Assets/Buttons/color.png" id="10_dcbgi"]
+[ext_resource type="Texture2D" uid="uid://dt3yyfr1yghcf" path="res://Assets/Buttons/edit.png" id="10_j8fi6"]
+[ext_resource type="Texture2D" uid="uid://bkrt3fs0on4ov" path="res://Assets/Buttons/rotate.png" id="11_p2tdy"]
+[ext_resource type="Texture2D" uid="uid://bgmv4fg2rqir" path="res://Assets/Buttons/resize_top.png" id="12_dmvi0"]
+[ext_resource type="Texture2D" uid="uid://dw1t0o6pc01i" path="res://Assets/Buttons/resize_bottom.png" id="13_yg3rm"]
+[ext_resource type="Texture2D" uid="uid://d1vh5lf8nx2eb" path="res://Assets/Buttons/resize_left.png" id="14_f0bw3"]
+[ext_resource type="Texture2D" uid="uid://dhyl5vxqh35sw" path="res://Assets/Buttons/resize_right.png" id="15_8qfok"]
+[ext_resource type="Texture2D" uid="uid://dygnw5f2a4b86" path="res://Assets/Buttons/resize_both.png" id="16_i6s50"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_or506"]
+bg_color = Color(0.890196, 0.890196, 0.890196, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
 
 [node name="Buttons" type="Marker2D"]
 script = ExtResource("1_g3tp5")
+
+[node name="Panel" type="Panel" parent="."]
+offset_top = -30.0
+offset_right = 183.135
+theme_override_styles/panel = SubResource("StyleBoxFlat_or506")
+
+[node name="TopButtons" type="HBoxContainer" parent="Panel"]
+layout_mode = 0
+offset_left = 10.0
+offset_top = 5.0
+offset_right = 150.0
+offset_bottom = 25.0
+alignment = 1
+
+[node name="Close" type="TextureButton" parent="Panel/TopButtons"]
+modulate = Color(0.580392, 0.580392, 0.580392, 1)
+layout_mode = 2
+tooltip_text = "Delete element"
+mouse_filter = 1
+texture_normal = ExtResource("5_81nhu")
+
+[node name="ToggleVisible" type="TextureButton" parent="Panel/TopButtons"]
+modulate = Color(0.580392, 0.580392, 0.580392, 1)
+layout_mode = 2
+tooltip_text = "Hide element on presentation screen"
+mouse_filter = 1
+toggle_mode = true
+texture_normal = ExtResource("6_3dw0f")
+texture_pressed = ExtResource("7_vnetg")
+
+[node name="Duplicate" type="TextureButton" parent="Panel/TopButtons"]
+modulate = Color(0.580392, 0.580392, 0.580392, 1)
+layout_mode = 2
+tooltip_text = "Duplicate element"
+mouse_filter = 1
+texture_normal = ExtResource("5_ai0sp")
+
+[node name="Lock" type="TextureButton" parent="Panel/TopButtons"]
+modulate = Color(0.580392, 0.580392, 0.580392, 1)
+layout_mode = 2
+tooltip_text = "Lock element"
+mouse_filter = 1
+toggle_mode = true
+texture_normal = ExtResource("6_va2cr")
+texture_pressed = ExtResource("6_3ko56")
+
+[node name="LayerUp" type="TextureButton" parent="Panel/TopButtons"]
+modulate = Color(0.580392, 0.580392, 0.580392, 1)
+layout_mode = 2
+tooltip_text = "Send element to upper layer."
+mouse_filter = 1
+texture_normal = ExtResource("8_8svaf")
+
+[node name="LayerDown" type="TextureButton" parent="Panel/TopButtons"]
+modulate = Color(0.580392, 0.580392, 0.580392, 1)
+layout_mode = 2
+tooltip_text = "Send element to lower layer."
+mouse_filter = 1
+texture_normal = ExtResource("9_v3rig")
+
+[node name="Editable" type="TextureButton" parent="Panel/TopButtons"]
+modulate = Color(0.580392, 0.580392, 0.580392, 1)
+layout_mode = 2
+tooltip_text = "Editable element"
+mouse_filter = 1
+texture_normal = ExtResource("10_j8fi6")
+
+[node name="Rotate" type="TextureButton" parent="."]
+modulate = Color(0.580392, 0.580392, 0.580392, 1)
+offset_left = 178.0
+offset_top = -25.0
+offset_right = 198.0
+offset_bottom = -5.0
+mouse_filter = 1
+texture_normal = ExtResource("11_p2tdy")
 
 [node name="ResizeTop" type="TextureButton" parent="."]
 modulate = Color(0.580392, 0.580392, 0.580392, 1)
@@ -20,7 +109,7 @@ offset_right = 8.0
 offset_bottom = 8.0
 mouse_filter = 1
 mouse_default_cursor_shape = 9
-texture_normal = ExtResource("2_dtpeg")
+texture_normal = ExtResource("12_dmvi0")
 
 [node name="ResizeBottom" type="TextureButton" parent="."]
 modulate = Color(0.580392, 0.580392, 0.580392, 1)
@@ -28,7 +117,7 @@ offset_right = 8.0
 offset_bottom = 8.0
 mouse_filter = 1
 mouse_default_cursor_shape = 9
-texture_normal = ExtResource("2_dtpeg")
+texture_normal = ExtResource("13_yg3rm")
 
 [node name="ResizeLeft" type="TextureButton" parent="."]
 modulate = Color(0.580392, 0.580392, 0.580392, 1)
@@ -36,7 +125,7 @@ offset_right = 8.0
 offset_bottom = 8.0
 mouse_filter = 1
 mouse_default_cursor_shape = 10
-texture_normal = ExtResource("3_06l8r")
+texture_normal = ExtResource("14_f0bw3")
 
 [node name="ResizeRight" type="TextureButton" parent="."]
 modulate = Color(0.580392, 0.580392, 0.580392, 1)
@@ -44,7 +133,7 @@ offset_right = 8.0
 offset_bottom = 8.0
 mouse_filter = 1
 mouse_default_cursor_shape = 10
-texture_normal = ExtResource("3_06l8r")
+texture_normal = ExtResource("15_8qfok")
 
 [node name="ResizeBoth" type="TextureButton" parent="."]
 modulate = Color(0.580392, 0.580392, 0.580392, 1)
@@ -52,27 +141,13 @@ offset_right = 8.0
 offset_bottom = 8.0
 mouse_filter = 1
 mouse_default_cursor_shape = 12
-texture_normal = ExtResource("4_wt5lc")
-
-[node name="Close" type="TextureButton" parent="."]
-modulate = Color(0.580392, 0.580392, 0.580392, 1)
-offset_right = 8.0
-offset_bottom = 8.0
-mouse_filter = 1
-texture_normal = ExtResource("5_81nhu")
+texture_normal = ExtResource("16_i6s50")
 
 [node name="LeftButtons" type="HBoxContainer" parent="."]
-offset_left = 20.0
-offset_right = 60.0
-offset_bottom = 40.0
-
-[node name="ToggleVisible" type="TextureButton" parent="LeftButtons"]
-modulate = Color(0.580392, 0.580392, 0.580392, 1)
-layout_mode = 2
-mouse_filter = 1
-toggle_mode = true
-texture_normal = ExtResource("6_3dw0f")
-texture_pressed = ExtResource("7_vnetg")
+offset_left = 10.0
+offset_top = 5.0
+offset_right = 78.0
+offset_bottom = 45.0
 
 [node name="SizeMinus" type="TextureButton" parent="LeftButtons"]
 modulate = Color(0.580392, 0.580392, 0.580392, 1)
@@ -116,13 +191,19 @@ modulate = Color(0.956863, 0.262745, 0.211765, 1)
 layout_mode = 2
 texture_normal = ExtResource("10_dcbgi")
 
+[connection signal="button_down" from="Panel/TopButtons/Close" to="." method="_on_close_button_down"]
+[connection signal="button_down" from="Panel/TopButtons/ToggleVisible" to="." method="_on_toggle_visible_button_down"]
+[connection signal="pressed" from="Panel/TopButtons/Duplicate" to="." method="_on_duplicate_pressed"]
+[connection signal="button_down" from="Panel/TopButtons/Lock" to="." method="_on_toggle_visible_button_down"]
+[connection signal="button_down" from="Panel/TopButtons/LayerUp" to="." method="_on_toggle_visible_button_down"]
+[connection signal="button_down" from="Panel/TopButtons/LayerDown" to="." method="_on_toggle_visible_button_down"]
+[connection signal="button_down" from="Panel/TopButtons/Editable" to="." method="_on_toggle_visible_button_down"]
+[connection signal="button_down" from="Rotate" to="." method="_on_resize_both_button_down"]
 [connection signal="button_down" from="ResizeTop" to="." method="_on_resize_top_button_down"]
 [connection signal="button_down" from="ResizeBottom" to="." method="_on_resize_bottom_button_down"]
 [connection signal="button_down" from="ResizeLeft" to="." method="_on_resize_left_button_down"]
 [connection signal="button_down" from="ResizeRight" to="." method="_on_resize_right_button_down"]
 [connection signal="button_down" from="ResizeBoth" to="." method="_on_resize_both_button_down"]
-[connection signal="button_down" from="Close" to="." method="_on_close_button_down"]
-[connection signal="button_down" from="LeftButtons/ToggleVisible" to="." method="_on_toggle_visible_button_down"]
 [connection signal="button_down" from="LeftButtons/SizeMinus" to="." method="_on_size_minus_button_down"]
 [connection signal="button_down" from="LeftButtons/SizePlus" to="." method="_on_size_plus_button_down"]
 [connection signal="pressed" from="LeftButtons/TextColor" to="." method="_on_text_color_pressed"]

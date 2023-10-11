@@ -5,42 +5,50 @@ signal text_size_pressed(increment : int)
 signal toggle_visible_pressed
 signal close_pressed
 signal text_color_changed(color : Color)
+signal duplicate_pressed
 
 @onready var resize_top : TextureButton = $ResizeTop
 @onready var resize_bottom : TextureButton = $ResizeBottom
 @onready var resize_left : TextureButton = $ResizeLeft
 @onready var resize_right : TextureButton = $ResizeRight
 @onready var resize_both : TextureButton = $ResizeBoth
+@onready var rotate_button : TextureButton = $Rotate
+
+@onready var panel : Panel = $Panel
+@onready var top_buttons : HBoxContainer = $Panel/TopButtons
+@onready var toggle_visible : TextureButton= $Panel/TopButtons/ToggleVisible
 
 @onready var left_buttons : HBoxContainer = $LeftButtons
 
 @onready var size_minus : TextureButton = $LeftButtons/SizeMinus
 @onready var size_plus : TextureButton = $LeftButtons/SizePlus
-@onready var toggle_visible : TextureButton= $LeftButtons/ToggleVisible
+
 @onready var text_color : TextureButton = $LeftButtons/TextColor
 @onready var color_picker : HBoxContainer = $ColorPicker
 
 @onready var color_buttons : Array[TextureButton] = [$ColorPicker/Black, $ColorPicker/Red, $ColorPicker/Green, $ColorPicker/Blue]
 
-@onready var close : TextureButton = $Close
+var border_width : int = 15
+var border_thin_width : int = 4
 
-var border_width : int = 20
 var minimum_width_for_top_resize : int = 260
+
+func _ready():
+	panel.size.x = top_buttons.size.x + 20
 
 #
 # Reposition buttons when parent widget is resized
 #
 func resize(p_size : Vector2) -> void:
-	resize_top.position = Vector2((p_size.x - border_width) / 2.0 , 0.0)
-	resize_bottom.position = Vector2((p_size.x - border_width) / 2.0, p_size.y - border_width)
-	resize_left.position = Vector2(0.0, (p_size.y - border_width) / 2.0)
-	resize_right.position = Vector2(p_size.x - border_width, (p_size.y - border_width) / 2.0)
-	resize_both.position = p_size - Vector2.ONE * border_width
-	
-	close.position = Vector2(p_size.x - 2.0 * border_width, 0.0)
+	resize_top.position = Vector2((p_size.x - border_thin_width) / 2.0 - 6, - 10)
+	resize_bottom.position = Vector2((p_size.x - border_thin_width) / 2.0 - 6, p_size.y - 10)
+	resize_left.position = Vector2(-10.0, (p_size.y - border_thin_width) / 2.0)
+	resize_right.position = Vector2(p_size.x - border_thin_width - 6, (p_size.y - border_thin_width) / 2.0)
+	resize_both.position = p_size - Vector2.ONE * border_thin_width - Vector2(10,10)
+	rotate_button.position = Vector2(p_size.x - border_width, 0.0 ) + Vector2(-10,7)
 	color_picker.position = text_color.position + left_buttons.position
 
-	resize_top.visible = p_size.x > minimum_width_for_top_resize
+	resize_top.visible = resize_top.position.x > panel.size.x
 	
 func _on_resize_top_button_down():
 	emit_signal("resize_pressed", G.RESIZE.TOP)
@@ -102,3 +110,7 @@ func hide_button_size():
 func hide_button_color():
 	color_picker.hide()
 	text_color.hide()
+
+
+func _on_duplicate_pressed():
+	emit_signal("duplicate_pressed")

@@ -2,6 +2,7 @@ extends PanelContainer
 class_name Widget
 
 signal focus_requested(widget : Widget)
+signal duplicate_requested(widget : Widget)
 
 @export var border_width : int = 20
 
@@ -11,6 +12,7 @@ signal focus_requested(widget : Widget)
 @onready var unfocus_theme : StyleBoxFlat = load("res://Styles/Widget_unfocus.tres")
 
 var focus : bool = true
+var visible_on_presentation_screen : bool = true
 
 var current_action : G.ACTION = G.ACTION.NONE
 var resize_type : G.RESIZE = G.RESIZE.NONE
@@ -75,10 +77,8 @@ func resize(p_relative : Vector2, p_type : G.RESIZE) -> void:
 		match p_type:
 			G.RESIZE.RIGHT:
 				size.x += p_relative.x
-				size.y = size.x / aspect_ratio
 			G.RESIZE.BOTTOM:
 				size.y += p_relative.y
-				size.x = size.y * aspect_ratio
 			G.RESIZE.BOTH:
 				size += p_relative
 			G.RESIZE.LEFT:
@@ -99,6 +99,7 @@ func set_clone(p_clone : Widget) -> void:
 	clone = p_clone
 	p_clone.add_theme_stylebox_override("panel", unfocus_theme)
 	p_clone.buttons.hide()
+	synchronize()
 
 
 func is_master() -> bool:
@@ -110,6 +111,7 @@ func synchronize() -> void:
 		return
 	clone.set_position(position)
 	clone.set_size(size)
+	clone.visible = visible_on_presentation_screen
 
 
 func _on_buttons_resize_pressed(p_resize_type : G.RESIZE, p_keep_ratio : bool = false) -> void:
@@ -121,12 +123,14 @@ func _on_buttons_resize_pressed(p_resize_type : G.RESIZE, p_keep_ratio : bool = 
 func _on_buttons_toggle_visible_pressed() -> void:
 	current_action = G.ACTION.TOGGLE_VISIBLE
 	if is_master():
-		if clone.visible:
+		if visible_on_presentation_screen:
 			clone.hide()
 			modulate.a = 0.3
+			visible_on_presentation_screen = false
 		else:
 			clone.show()
 			modulate.a = 1.0
+			visible_on_presentation_screen = true
 
 
 func _on_buttons_close_pressed() -> void:
@@ -144,3 +148,5 @@ func set_focus(p_active: bool) -> void:
 	
 
 
+func _on_buttons_duplicate_pressed():
+	emit_signal("duplicate_requested", self)

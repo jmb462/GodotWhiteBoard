@@ -5,7 +5,7 @@
 [ext_resource type="PackedScene" uid="uid://b3n01htt38lsy" path="res://Widget/Buttons/Buttons.tscn" id="3_664bf"]
 
 [node name="Widget" type="PanelContainer"]
-custom_minimum_size = Vector2(150, 150)
+custom_minimum_size = Vector2(200, 150)
 offset_left = 1.0
 offset_top = -1.0
 offset_right = 557.0
@@ -21,4 +21,5 @@ script = ExtResource("2_c4on3")
 [connection signal="gui_input" from="." to="." method="_on_gui_input"]
 [connection signal="resized" from="." to="." method="_on_resized"]
 [connection signal="close_pressed" from="Buttons" to="." method="_on_buttons_close_pressed"]
+[connection signal="duplicate_pressed" from="Buttons" to="." method="_on_buttons_duplicate_pressed"]
 [connection signal="toggle_visible_pressed" from="Buttons" to="." method="_on_buttons_toggle_visible_pressed"]
