@@ -1,4 +1,4 @@
-[gd_scene load_steps=21 format=3 uid="uid://b3n01htt38lsy"]
+[gd_scene load_steps=22 format=3 uid="uid://b3n01htt38lsy"]
 
 [ext_resource type="Script" path="res://Widget/Buttons/Buttons.gd" id="1_g3tp5"]
 [ext_resource type="Texture2D" uid="uid://5d3rxudx6s3q" path="res://Assets/Buttons/close.png" id="5_81nhu"]
@@ -13,6 +13,7 @@
 [ext_resource type="Texture2D" uid="uid://cdt54ii5qmqk7" path="res://Assets/Buttons/layer_down.png" id="9_v3rig"]
 [ext_resource type="Texture2D" uid="uid://b7fn1abvn1koy" path="res://Assets/Buttons/color.png" id="10_dcbgi"]
 [ext_resource type="Texture2D" uid="uid://dt3yyfr1yghcf" path="res://Assets/Buttons/edit.png" id="10_j8fi6"]
+[ext_resource type="Texture2D" uid="uid://dv6hsvwqnn3gn" path="res://Assets/Buttons/not_editable.png" id="11_eq04b"]
 [ext_resource type="Texture2D" uid="uid://bkrt3fs0on4ov" path="res://Assets/Buttons/rotate.png" id="11_p2tdy"]
 [ext_resource type="Texture2D" uid="uid://bgmv4fg2rqir" path="res://Assets/Buttons/resize_top.png" id="12_dmvi0"]
 [ext_resource type="Texture2D" uid="uid://dw1t0o6pc01i" path="res://Assets/Buttons/resize_bottom.png" id="13_yg3rm"]
@@ -92,7 +93,9 @@ modulate = Color(0.580392, 0.580392, 0.580392, 1)
 layout_mode = 2
 tooltip_text = "Editable element"
 mouse_filter = 1
+toggle_mode = true
 texture_normal = ExtResource("10_j8fi6")
+texture_pressed = ExtResource("11_eq04b")
 
 [node name="Rotate" type="TextureButton" parent="."]
 modulate = Color(0.580392, 0.580392, 0.580392, 1)
@@ -194,10 +197,10 @@ texture_normal = ExtResource("10_dcbgi")
 [connection signal="button_down" from="Panel/TopButtons/Close" to="." method="_on_close_button_down"]
 [connection signal="button_down" from="Panel/TopButtons/ToggleVisible" to="." method="_on_toggle_visible_button_down"]
 [connection signal="pressed" from="Panel/TopButtons/Duplicate" to="." method="_on_duplicate_pressed"]
-[connection signal="button_down" from="Panel/TopButtons/Lock" to="." method="_on_toggle_visible_button_down"]
-[connection signal="button_down" from="Panel/TopButtons/LayerUp" to="." method="_on_toggle_visible_button_down"]
-[connection signal="button_down" from="Panel/TopButtons/LayerDown" to="." method="_on_toggle_visible_button_down"]
-[connection signal="button_down" from="Panel/TopButtons/Editable" to="." method="_on_toggle_visible_button_down"]
+[connection signal="pressed" from="Panel/TopButtons/Lock" to="." method="_on_lock_pressed"]
+[connection signal="pressed" from="Panel/TopButtons/LayerUp" to="." method="_on_layer_up_pressed"]
+[connection signal="pressed" from="Panel/TopButtons/LayerDown" to="." method="_on_layer_down_pressed"]
+[connection signal="pressed" from="Panel/TopButtons/Editable" to="." method="_on_editable_pressed"]
 [connection signal="button_down" from="Rotate" to="." method="_on_resize_both_button_down"]
 [connection signal="button_down" from="ResizeTop" to="." method="_on_resize_top_button_down"]
 [connection signal="button_down" from="ResizeBottom" to="." method="_on_resize_bottom_button_down"]

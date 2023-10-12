@@ -83,8 +83,13 @@ func _on_buttons_text_size_pressed(p_increment : int) -> void:
 
 func set_focus(p_active: bool) -> void:
 	super(p_active)
-	text_edit.editable = p_active
+	text_edit.editable = p_active and editable
 	text_edit.grab_focus()
 
 func _on_buttons_resize_pressed(p_resize_type : G.RESIZE, _p_keep_ratio : bool = false) -> void:
 	super(p_resize_type)
+
+
+func _on_buttons_editable_pressed():
+	text_edit.editable = !text_edit.editable
+	editable = text_edit.editable

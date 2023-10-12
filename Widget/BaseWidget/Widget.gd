@@ -3,8 +3,7 @@ class_name Widget
 
 signal focus_requested(widget : Widget)
 signal duplicate_requested(widget : Widget)
-
-@export var border_width : int = 20
+signal layer_change_requested(widget : Widget, direction : int)
 
 @onready var buttons : Node2D = $Buttons
 
@@ -13,6 +12,11 @@ signal duplicate_requested(widget : Widget)
 
 var focus : bool = true
 var visible_on_presentation_screen : bool = true
+
+# A locked widget cannot be resized or moved
+var locked : bool = false
+
+var editable : bool = true
 
 var current_action : G.ACTION = G.ACTION.NONE
 var resize_type : G.RESIZE = G.RESIZE.NONE
@@ -28,11 +32,12 @@ func _ready() -> void :
 
 func _on_gui_input(event : InputEvent) -> void:
 	if event is InputEventMouseMotion:
-		match current_action:
-			G.ACTION.MOVE:
-				move(event.relative)
-			G.ACTION.RESIZE:
-				resize(event.relative, resize_type)
+		if not locked:
+			match current_action:
+				G.ACTION.MOVE:
+					move(event.relative)
+				G.ACTION.RESIZE:
+					resize(event.relative, resize_type)
 
 	if event is InputEventMouseButton:
 		if event.button_index == MOUSE_BUTTON_LEFT:
@@ -150,3 +155,16 @@ func set_focus(p_active: bool) -> void:
 
 func _on_buttons_duplicate_pressed():
 	emit_signal("duplicate_requested", self)
+
+
+func _on_buttons_locked_pressed():
+	locked = !locked
+	mouse_default_cursor_shape = Control.CURSOR_ARROW if locked else Control.CURSOR_DRAG
+
+
+func _on_buttons_layer_down_pressed():
+	emit_signal("layer_change_requested", self, -1)
+
+
+func _on_buttons_layer_up_pressed():
+	emit_signal("layer_change_requested", self, 1)

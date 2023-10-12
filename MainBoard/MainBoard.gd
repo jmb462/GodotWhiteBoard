@@ -144,6 +144,8 @@ func duplicate_widget(p_widget : Widget) -> void:
 	new_widget.position = p_widget.position + Vector2(30,30)
 	new_widget.size = p_widget.size
 	new_widget.visible_on_presentation_screen = p_widget.visible_on_presentation_screen
+	new_widget.locked = p_widget.locked
+	new_widget.editable = p_widget.editable
 	set_focus(new_widget)
 	connect_widget_signals(new_widget)
 	clone_widget(new_widget)
@@ -160,7 +162,7 @@ func clone_widget(p_widget : Widget) -> void:
 	else:
 		return
 	var new_clone_widget : Widget = packed_widget.instantiate()
-	Display.add_child(new_clone_widget)
+	Display.presentation_screen.add_child(new_clone_widget)
 	new_clone_widget.position = p_widget.position
 	new_clone_widget.size = p_widget.size
 	# Store a reference to the cloned widget in the master widget
@@ -172,6 +174,8 @@ func clone_widget(p_widget : Widget) -> void:
 func connect_widget_signals(p_widget : Widget) -> void:
 	p_widget.connect("focus_requested", set_focus)
 	p_widget.connect("duplicate_requested", duplicate_widget)
+	p_widget.connect("layer_change_requested", change_layer)
+	
 #
 # Draw a size preview for widget creation by dragging
 #
@@ -203,3 +207,9 @@ func unfocus(p_widget  : Widget = focused_widget) -> void:
 	if is_instance_valid(p_widget):
 		p_widget.set_focus(false)
 		focused_widget = null
+
+func change_layer(p_widget : Widget, p_direction : int) -> void:
+	if p_widget.get_index() == 0 and p_direction == -1:
+		return
+	visible_background.move_child(p_widget, p_widget.get_index() + p_direction)
+	Display.presentation_screen.move_child(p_widget.clone, p_widget.get_index())

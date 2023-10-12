@@ -6,6 +6,11 @@ signal toggle_visible_pressed
 signal close_pressed
 signal text_color_changed(color : Color)
 signal duplicate_pressed
+signal layer_down_pressed
+signal layer_up_pressed
+signal locked_pressed
+signal editable_pressed
+#region Nodes references
 
 @onready var resize_top : TextureButton = $ResizeTop
 @onready var resize_bottom : TextureButton = $ResizeBottom
@@ -17,6 +22,7 @@ signal duplicate_pressed
 @onready var panel : Panel = $Panel
 @onready var top_buttons : HBoxContainer = $Panel/TopButtons
 @onready var toggle_visible : TextureButton= $Panel/TopButtons/ToggleVisible
+@onready var lock_button : TextureButton = $Panel/TopButtons/Lock
 
 @onready var left_buttons : HBoxContainer = $LeftButtons
 
@@ -27,6 +33,8 @@ signal duplicate_pressed
 @onready var color_picker : HBoxContainer = $ColorPicker
 
 @onready var color_buttons : Array[TextureButton] = [$ColorPicker/Black, $ColorPicker/Red, $ColorPicker/Green, $ColorPicker/Blue]
+
+#endregion
 
 var border_width : int = 15
 var border_thin_width : int = 4
@@ -50,6 +58,7 @@ func resize(p_size : Vector2) -> void:
 
 	resize_top.visible = resize_top.position.x > panel.size.x
 	
+#region Follow button signals to parent widget
 func _on_resize_top_button_down():
 	emit_signal("resize_pressed", G.RESIZE.TOP)
 
@@ -92,6 +101,28 @@ func _on_green_pressed():
 func _on_red_pressed():
 	set_color(G.color[G.COLOR.RED], color_buttons[G.COLOR.RED])
 
+func _on_duplicate_pressed():
+	emit_signal("duplicate_pressed")
+
+func _on_layer_up_pressed():
+	emit_signal("layer_up_pressed")
+
+
+func _on_layer_down_pressed():
+	emit_signal("layer_down_pressed")
+
+
+func _on_editable_pressed():
+	emit_signal("editable_pressed")
+
+
+func _on_lock_pressed():
+	emit_signal("locked_pressed")
+	for button in [resize_both, resize_bottom, resize_left, resize_right, resize_top, rotate_button]:
+		button.visible = not lock_button.is_pressed()
+
+#endregion
+
 func set_color(p_color : Color, p_button : TextureButton = null) -> void:
 	text_color.modulate = p_color
 	# Move the color button at the first position
@@ -112,5 +143,6 @@ func hide_button_color():
 	text_color.hide()
 
 
-func _on_duplicate_pressed():
-	emit_signal("duplicate_pressed")
+
+
+
