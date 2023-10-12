@@ -143,6 +143,7 @@ func duplicate_widget(p_widget : Widget) -> void:
 	visible_background.add_child(new_widget)
 	new_widget.position = p_widget.position + Vector2(30,30)
 	new_widget.size = p_widget.size
+	new_widget.visible_on_presentation_screen = p_widget.visible_on_presentation_screen
 	set_focus(new_widget)
 	connect_widget_signals(new_widget)
 	clone_widget(new_widget)
