@@ -93,3 +93,7 @@ func _on_buttons_resize_pressed(p_resize_type : G.RESIZE, _p_keep_ratio : bool =
 func _on_buttons_editable_pressed():
 	text_edit.editable = !text_edit.editable
 	editable = text_edit.editable
+
+
+func _on_resized():
+	super()

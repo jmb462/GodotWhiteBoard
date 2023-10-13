@@ -2,6 +2,7 @@ extends Marker2D
 
 signal resize_pressed(resize_type : G.RESIZE)
 signal text_size_pressed(increment : int)
+signal rotate_pressed
 signal toggle_visible_pressed
 signal close_pressed
 signal text_color_changed(color : Color)
@@ -143,6 +144,6 @@ func hide_button_color():
 	text_color.hide()
 
 
-
-
-
+func _on_rotate_button_down():
+	print("buttons : rotate pressed emit")
+	emit_signal("rotate_pressed")

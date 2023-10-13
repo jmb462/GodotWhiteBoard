@@ -8,21 +8,26 @@
 custom_minimum_size = Vector2(200, 150)
 offset_left = 1.0
 offset_top = -1.0
-offset_right = 557.0
-offset_bottom = 385.0
+offset_right = 601.0
+offset_bottom = 199.0
 grow_horizontal = 2
 grow_vertical = 2
+pivot_offset = Vector2(300, 200)
 mouse_default_cursor_shape = 6
 theme_override_styles/panel = ExtResource("1_fypau")
 script = ExtResource("2_c4on3")
 
 [node name="Buttons" parent="." instance=ExtResource("3_664bf")]
 
+[node name="Pivot" type="Marker2D" parent="."]
+modulate = Color(0.447059, 0, 0.447059, 1)
+scale = Vector2(3, 3)
+
 [connection signal="gui_input" from="." to="." method="_on_gui_input"]
-[connection signal="resized" from="." to="." method="_on_resized"]
 [connection signal="close_pressed" from="Buttons" to="." method="_on_buttons_close_pressed"]
 [connection signal="duplicate_pressed" from="Buttons" to="." method="_on_buttons_duplicate_pressed"]
 [connection signal="layer_down_pressed" from="Buttons" to="." method="_on_buttons_layer_down_pressed"]
 [connection signal="layer_up_pressed" from="Buttons" to="." method="_on_buttons_layer_up_pressed"]
 [connection signal="locked_pressed" from="Buttons" to="." method="_on_buttons_locked_pressed"]
+[connection signal="rotate_pressed" from="Buttons" to="." method="_on_buttons_rotate_pressed"]
 [connection signal="toggle_visible_pressed" from="Buttons" to="." method="_on_buttons_toggle_visible_pressed"]

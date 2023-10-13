@@ -201,7 +201,7 @@ texture_normal = ExtResource("10_dcbgi")
 [connection signal="pressed" from="Panel/TopButtons/LayerUp" to="." method="_on_layer_up_pressed"]
 [connection signal="pressed" from="Panel/TopButtons/LayerDown" to="." method="_on_layer_down_pressed"]
 [connection signal="pressed" from="Panel/TopButtons/Editable" to="." method="_on_editable_pressed"]
-[connection signal="button_down" from="Rotate" to="." method="_on_resize_both_button_down"]
+[connection signal="button_down" from="Rotate" to="." method="_on_rotate_button_down"]
 [connection signal="button_down" from="ResizeTop" to="." method="_on_resize_top_button_down"]
 [connection signal="button_down" from="ResizeBottom" to="." method="_on_resize_bottom_button_down"]
 [connection signal="button_down" from="ResizeLeft" to="." method="_on_resize_left_button_down"]

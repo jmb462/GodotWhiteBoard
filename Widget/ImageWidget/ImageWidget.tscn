@@ -6,12 +6,12 @@
 
 [node name="ImageWidget" instance=ExtResource("1_mgu1k")]
 script = ExtResource("2_83fny")
-border_width = null
 
 [node name="TextureRect" type="TextureRect" parent="." index="0"]
 layout_mode = 2
 texture = ExtResource("3_01vwm")
 stretch_mode = 4
 
+[connection signal="resized" from="." to="." method="_on_resized"]
 [connection signal="gui_input" from="TextureRect" to="." method="_on_texture_rect_gui_input"]
 [connection signal="resize_pressed" from="Buttons" to="." method="_on_buttons_resize_pressed"]

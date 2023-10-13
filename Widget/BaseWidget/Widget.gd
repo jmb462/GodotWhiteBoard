@@ -6,6 +6,7 @@ signal duplicate_requested(widget : Widget)
 signal layer_change_requested(widget : Widget, direction : int)
 
 @onready var buttons : Node2D = $Buttons
+@onready var pivot : Marker2D = $Pivot
 
 @onready var focus_theme : StyleBoxFlat = load("res://Styles/Widget_master_selected.tres")
 @onready var unfocus_theme : StyleBoxFlat = load("res://Styles/Widget_unfocus.tres")
@@ -35,9 +36,12 @@ func _on_gui_input(event : InputEvent) -> void:
 		if not locked:
 			match current_action:
 				G.ACTION.MOVE:
-					move(event.relative)
+					move(event.relative.rotated(rotation))
 				G.ACTION.RESIZE:
+					print(resize_type)
 					resize(event.relative, resize_type)
+				G.ACTION.ROTATE:
+					rotate_widget(event.global_position)
 
 	if event is InputEventMouseButton:
 		if event.button_index == MOUSE_BUTTON_LEFT:
@@ -92,10 +96,16 @@ func resize(p_relative : Vector2, p_type : G.RESIZE) -> void:
 			G.RESIZE.TOP:
 				size.y -= p_relative.y
 				position.y += p_relative.y
+	set_pivot(size / 2.0)
 	synchronize()
 
+func rotate_widget(p_position : Vector2) -> void:
+	var corner_angle = pivot.position.angle_to(pivot.position + Vector2(size.x, -size.y) / 2.0)
+	rotation = snapped(pivot.global_position.angle_to_point(p_position) - corner_angle, PI / 24)
+	synchronize()
 
 func _on_resized() -> void:
+	set_pivot(size / 2.0)
 	await get_tree().process_frame
 	buttons.resize(size)
 
@@ -116,6 +126,8 @@ func synchronize() -> void:
 		return
 	clone.set_position(position)
 	clone.set_size(size)
+	clone.pivot_offset = pivot_offset
+	clone.rotation = rotation
 	clone.visible = visible_on_presentation_screen
 
 
@@ -168,3 +180,13 @@ func _on_buttons_layer_down_pressed():
 
 func _on_buttons_layer_up_pressed():
 	emit_signal("layer_change_requested", self, 1)
+
+
+func _on_buttons_rotate_pressed():
+	print("widget rotate pressed")
+	current_action = G.ACTION.ROTATE
+	G.debug_action(current_action)
+
+func set_pivot(p_position : Vector2) -> void:
+		pivot_offset = p_position
+		pivot.position = p_position

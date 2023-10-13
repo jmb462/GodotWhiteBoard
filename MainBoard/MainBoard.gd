@@ -116,6 +116,7 @@ func create_text_widget() -> void:
 	visible_background.add_child(new_widget)
 	new_widget.position = new_widget_rect.position
 	new_widget.size = new_widget_rect.size
+	new_widget.pivot_offset = new_widget_rect.size / 2.0
 	new_widget_rect = Rect2()
 	set_focus(new_widget)
 	connect_widget_signals(new_widget)
@@ -127,6 +128,7 @@ func create_image_widget(p_image : Image = null) -> void:
 	visible_background.add_child(new_widget)
 	new_widget.position = new_widget_rect.position
 	new_widget.size = new_widget_rect.size
+	new_widget.pivot_offset = new_widget_rect.size / 2.0
 	new_widget_rect = Rect2()
 	set_focus(new_widget)
 	connect_widget_signals(new_widget)
