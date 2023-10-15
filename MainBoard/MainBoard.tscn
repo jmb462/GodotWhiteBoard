@@ -1,18 +1,7 @@
 [gd_scene load_steps=3 format=3 uid="uid://hsjvadwsbdih"]
 
 [ext_resource type="Script" path="res://MainBoard/MainBoard.gd" id="1_ngbew"]
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_2ivir"]
-bg_color = Color(0.6, 0.6, 0.6, 0)
-border_width_left = 20
-border_width_top = 20
-border_width_right = 20
-border_width_bottom = 20
-border_color = Color(0.8, 0.8, 0.8, 0.513726)
-corner_radius_top_left = 20
-corner_radius_top_right = 20
-corner_radius_bottom_right = 20
-corner_radius_bottom_left = 20
+[ext_resource type="StyleBox" uid="uid://crndftp4jr808" path="res://Styles/Widget_preview.tres" id="2_qotcm"]
 
 [node name="MainBoard" type="Control"]
 layout_mode = 3
@@ -54,12 +43,17 @@ text = "Paste Image"
 layout_mode = 2
 text = "Pen"
 
-[node name="RectPreview" type="Panel" parent="."]
-visible = false
-layout_mode = 0
+[node name="PreviewAnchor" type="Control" parent="."]
+anchors_preset = 0
 offset_right = 40.0
 offset_bottom = 40.0
-theme_override_styles/panel = SubResource("StyleBoxFlat_2ivir")
+
+[node name="RectPreview" type="Panel" parent="PreviewAnchor"]
+custom_minimum_size = Vector2(1, 1)
+layout_mode = 0
+offset_right = 1.0
+offset_bottom = 1.0
+theme_override_styles/panel = ExtResource("2_qotcm")
 
 [connection signal="resized" from="." to="." method="_on_resized"]
 [connection signal="gui_input" from="VisibleBackground" to="." method="_on_visible_background_gui_input"]

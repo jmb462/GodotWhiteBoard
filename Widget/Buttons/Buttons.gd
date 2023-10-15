@@ -11,6 +11,7 @@ signal layer_down_pressed
 signal layer_up_pressed
 signal locked_pressed
 signal editable_pressed
+signal resizing_stopped
 #region Nodes references
 
 @onready var resize_top : TextureButton = $ResizeTop
@@ -19,6 +20,12 @@ signal editable_pressed
 @onready var resize_right : TextureButton = $ResizeRight
 @onready var resize_both : TextureButton = $ResizeBoth
 @onready var rotate_button : TextureButton = $Rotate
+
+@onready var markers : Array[Marker2D] = [$Markers/Top, $Markers/TopRight,
+											$Markers/Right, $Markers/BottomRight,
+											$Markers/Bottom, $Markers/BottomLeft,
+											$Markers/Left, $Markers/TopLeft,
+											$Markers/Middle]
 
 @onready var panel : Panel = $Panel
 @onready var top_buttons : HBoxContainer = $Panel/TopButtons
@@ -48,7 +55,12 @@ func _ready():
 #
 # Reposition buttons when parent widget is resized
 #
-func resize(p_size : Vector2) -> void:
+func update_positions(p_size : Vector2) -> void:
+	update_markers_positions(p_size)
+	update_buttons_positions(p_size)
+	adjust_top_resize_button_visibility()
+
+func update_buttons_positions(p_size : Vector2) -> void:
 	resize_top.position = Vector2((p_size.x - border_thin_width) / 2.0 - 6, - 10)
 	resize_bottom.position = Vector2((p_size.x - border_thin_width) / 2.0 - 6, p_size.y - 10)
 	resize_left.position = Vector2(-10.0, (p_size.y - border_thin_width) / 2.0)
@@ -57,8 +69,23 @@ func resize(p_size : Vector2) -> void:
 	rotate_button.position = Vector2(p_size.x - border_width, 0.0 ) + Vector2(-10,7)
 	color_picker.position = text_color.position + left_buttons.position
 
+func update_markers_positions(p_size : Vector2) -> void:
+	markers[G.MARKER.TOP].position = Vector2(p_size.x / 2.0, 0.0)
+	markers[G.MARKER.TOP_RIGHT].position = Vector2(p_size.x, 0.0)
+	markers[G.MARKER.RIGHT].position = Vector2(p_size.x, p_size.y / 2.0)
+	markers[G.MARKER.BOTTOM_RIGHT].position = Vector2(p_size.x, p_size.y)
+	markers[G.MARKER.BOTTOM].position = Vector2(p_size.x / 2.0, p_size.y)
+	markers[G.MARKER.BOTTOM_LEFT].position = Vector2(0.0, p_size.y)
+	markers[G.MARKER.LEFT].position = Vector2(0.0, p_size.y / 2.0)
+	markers[G.MARKER.TOP_LEFT].position = Vector2(0.0, 0.0)
+	markers[G.MARKER.MIDDLE].position = p_size / 2.0
+
+func adjust_top_resize_button_visibility() -> void:
+	var resize_top_visible = resize_top.visible
 	resize_top.visible = resize_top.position.x > panel.size.x
-	
+	if resize_top_visible and not resize_top.visible:
+		emit_signal("resizing_stopped")
+		
 #region Follow button signals to parent widget
 func _on_resize_top_button_down():
 	emit_signal("resize_pressed", G.RESIZE.TOP)
@@ -145,5 +172,8 @@ func hide_button_color():
 
 
 func _on_rotate_button_down():
-	print("buttons : rotate pressed emit")
 	emit_signal("rotate_pressed")
+
+
+func get_marker_position(p_marker : G.MARKER):
+	return markers[p_marker].global_position

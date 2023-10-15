@@ -194,6 +194,26 @@ modulate = Color(0.956863, 0.262745, 0.211765, 1)
 layout_mode = 2
 texture_normal = ExtResource("10_dcbgi")
 
+[node name="Markers" type="Node2D" parent="."]
+
+[node name="TopLeft" type="Marker2D" parent="Markers"]
+
+[node name="TopRight" type="Marker2D" parent="Markers"]
+
+[node name="BottomLeft" type="Marker2D" parent="Markers"]
+
+[node name="BottomRight" type="Marker2D" parent="Markers"]
+
+[node name="Top" type="Marker2D" parent="Markers"]
+
+[node name="Left" type="Marker2D" parent="Markers"]
+
+[node name="Right" type="Marker2D" parent="Markers"]
+
+[node name="Bottom" type="Marker2D" parent="Markers"]
+
+[node name="Middle" type="Marker2D" parent="Markers"]
+
 [connection signal="button_down" from="Panel/TopButtons/Close" to="." method="_on_close_button_down"]
 [connection signal="button_down" from="Panel/TopButtons/ToggleVisible" to="." method="_on_toggle_visible_button_down"]
 [connection signal="pressed" from="Panel/TopButtons/Duplicate" to="." method="_on_duplicate_pressed"]
