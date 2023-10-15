@@ -22,6 +22,10 @@ func synchronize() -> void:
 
 func _on_resized():
 	super()
+	if not is_instance_valid(texture_rect):
+		return
+	if not is_instance_valid(texture_rect.texture):
+		return
 	pivot_offset = texture_rect.texture.get_size() / 2.0
 	
 func _on_texture_rect_gui_input(event):

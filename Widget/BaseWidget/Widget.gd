@@ -96,7 +96,8 @@ func snap_angle(angle_rad : float , p_multiple : float, p_threshold : float) -> 
 		return angle_rad
 
 func _on_resized() -> void:
-	#await get_tree().process_frame
+	if not is_instance_valid(buttons):
+		return
 	buttons.update_positions(size)
 
 
