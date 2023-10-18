@@ -71,16 +71,18 @@ func update_buttons_positions(p_size : Vector2) -> void:
 
 func update_markers_positions(p_size : Vector2) -> void:
 	markers[G.MARKER.TOP].position = Vector2(p_size.x / 2.0, 0.0)
-	markers[G.MARKER.TOP_RIGHT].position = Vector2(p_size.x, 0.0)
+	markers[G.MARKER.TOP_RIGHT].position = Vector2(p_size.x - 4, 30.0)
 	markers[G.MARKER.RIGHT].position = Vector2(p_size.x, p_size.y / 2.0)
-	markers[G.MARKER.BOTTOM_RIGHT].position = Vector2(p_size.x, p_size.y)
+	markers[G.MARKER.BOTTOM_RIGHT].position = Vector2(p_size.x - 4, p_size.y - 4)
 	markers[G.MARKER.BOTTOM].position = Vector2(p_size.x / 2.0, p_size.y)
-	markers[G.MARKER.BOTTOM_LEFT].position = Vector2(0.0, p_size.y)
+	markers[G.MARKER.BOTTOM_LEFT].position = Vector2(4.0, p_size.y - 4.0)
 	markers[G.MARKER.LEFT].position = Vector2(0.0, p_size.y / 2.0)
-	markers[G.MARKER.TOP_LEFT].position = Vector2(0.0, 0.0)
+	markers[G.MARKER.TOP_LEFT].position = Vector2(4.0, 30.0)
 	markers[G.MARKER.MIDDLE].position = p_size / 2.0
 
 func adjust_top_resize_button_visibility() -> void:
+	if not resize_both.visible:
+		return
 	var resize_top_visible = resize_top.visible
 	resize_top.visible = resize_top.position.x > panel.size.x
 	if resize_top_visible and not resize_top.visible:
@@ -169,8 +171,14 @@ func hide_button_size():
 func hide_button_color():
 	color_picker.hide()
 	text_color.hide()
-
-
+	
+func hide_button_resize():
+	resize_both.hide()
+	resize_bottom.hide()
+	resize_left.hide()
+	resize_right.hide()
+	resize_top.hide()
+	
 func _on_rotate_button_down():
 	emit_signal("rotate_pressed")
 

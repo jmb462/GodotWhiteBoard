@@ -1,0 +1,13 @@
+[gd_scene load_steps=3 format=3 uid="uid://cl7xyljwqsvt"]
+
+[ext_resource type="PackedScene" uid="uid://b02vrjremtd2y" path="res://Widget/BaseWidget/Widget.tscn" id="1_74de6"]
+[ext_resource type="Script" path="res://Widget/GroupWidget/GroupWidget.gd" id="2_colaq"]
+
+[node name="GroupWidget" instance=ExtResource("1_74de6")]
+script = ExtResource("2_colaq")
+
+[node name="Container" type="Control" parent="." index="0"]
+layout_mode = 2
+
+[connection signal="gui_input" from="." to="." method="_on_gui_input"]
+[connection signal="resized" from="." to="." method="_on_resized"]

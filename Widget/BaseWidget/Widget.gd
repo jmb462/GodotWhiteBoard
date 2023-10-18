@@ -29,6 +29,8 @@ var pinned_marker_position : Vector2 = Vector2.ZERO
 # Reference to the same widget on presentation screen
 var clone : Widget = null
 
+# Reference to the parent widget if grouped with other widget
+var grouped_in : Widget = null
 
 func _ready() -> void :
 	_on_resized()
@@ -85,7 +87,7 @@ func rotate_widget(p_position : Vector2) -> void:
 	buttons.update_markers_positions(size)
 	var corner_angle : float = asin((size.y / 2.0) / buttons.get_marker_position(G.MARKER.MIDDLE).distance_to( buttons.get_marker_position(G.MARKER.TOP_RIGHT)))
 	var new_angle : float = buttons.get_marker_position(G.MARKER.MIDDLE).angle_to_point(p_position) + corner_angle
-	rotation = snap_angle(new_angle, PI / 2.0, PI / 72.0)
+	rotation = snap_angle(new_angle, PI / 2.0, PI / 36.0)
 	synchronize()
 
 func snap_angle(angle_rad : float , p_multiple : float, p_threshold : float) -> float:
@@ -209,12 +211,12 @@ func get_fix_marker(p_resize_type : G.RESIZE) -> G.MARKER:
 #
 func pin_marker(p_marker : G.MARKER) -> void:
 	pinned_marker = p_marker
-	pinned_marker_position = buttons.get_marker_position(p_marker)
+	pinned_marker_position = get_marker_position(p_marker)
 #
 # Restore the pinned position
 #
 func move_to_pin() -> void:
-	position -= buttons.get_marker_position(pinned_marker) - pinned_marker_position
+	position -= get_marker_position(pinned_marker) - pinned_marker_position
 
 #
 # Stop resizing when cannot use top grabber anymore
@@ -223,3 +225,10 @@ func move_to_pin() -> void:
 func _on_buttons_resizing_stopped():
 	if current_action == G.ACTION.RESIZE and resize_type == G.RESIZE.TOP:
 		current_action = G.ACTION.NONE
+
+func get_marker_position(p_marker : G.MARKER) -> Vector2:
+	return buttons.get_marker_position(p_marker)
+
+func group_into(p_widget) -> void:
+	grouped_in = p_widget
+	mouse_filter = MOUSE_FILTER_IGNORE

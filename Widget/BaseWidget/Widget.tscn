@@ -19,10 +19,6 @@ script = ExtResource("2_c4on3")
 
 [node name="Buttons" parent="." instance=ExtResource("3_664bf")]
 
-[node name="Pivot" type="Marker2D" parent="."]
-modulate = Color(0.447059, 0, 0.447059, 1)
-scale = Vector2(3, 3)
-
 [connection signal="close_pressed" from="Buttons" to="." method="_on_buttons_close_pressed"]
 [connection signal="duplicate_pressed" from="Buttons" to="." method="_on_buttons_duplicate_pressed"]
 [connection signal="layer_down_pressed" from="Buttons" to="." method="_on_buttons_layer_down_pressed"]

@@ -7,7 +7,8 @@ class_name TextWidget
 
 
 func _ready():
-	set_focus(true)
+	if get_parent().name == "visible_background":
+		set_focus(true)
 
 func set_clone(p_clone : Widget) -> void:
 	super(p_clone)

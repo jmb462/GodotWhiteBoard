@@ -7,6 +7,7 @@ extends Control
 
 @onready var packed_text_widget : PackedScene = preload("res://Widget/TextWidget/TextWidget.tscn")
 @onready var packed_image_widget : PackedScene = preload("res://Widget/ImageWidget/ImageWidget.tscn")
+@onready var packed_group_widget : PackedScene = preload("res://Widget/GroupWidget/GroupWidget.tscn")
 
 enum BOARD_MODE { NONE, SELECT, TEXT_POSITION, TEXT_SIZE, PEN, IMAGE_POSITION, IMAGE_SIZE, PASTE_IMAGE}
 var board_mode : BOARD_MODE = BOARD_MODE.NONE
@@ -14,6 +15,8 @@ var board_mode : BOARD_MODE = BOARD_MODE.NONE
 var preview_rect : Rect2 = Rect2()
 
 var focused_widget : Array[Widget] = []
+
+var temp_group : Widget = null
 
 func _ready() -> void:
 	_on_resized()
@@ -65,7 +68,10 @@ func _on_pen_pressed() -> void:
 func _on_visible_background_gui_input(event) -> void:
 	if event is InputEventMouseButton:
 		if event.button_index == MOUSE_BUTTON_LEFT:
-			unfocus()
+			if event.is_pressed():
+				if is_instance_valid(temp_group):
+					ungroup()
+				unfocus()
 			if board_mode == BOARD_MODE.TEXT_POSITION:
 				if event.is_pressed():
 					drag_size_preview(event.position)
@@ -99,7 +105,7 @@ func _on_visible_background_gui_input(event) -> void:
 				if not event.is_pressed():
 					rect_preview.hide()
 					preview_rect = Rect2()
-					print("NEED TO GROUP")
+					group_widgets()
 					board_mode = BOARD_MODE.NONE
 					
 	if event is InputEventMouseMotion:
@@ -137,6 +143,7 @@ func create_image_widget(p_image : Image = null) -> void:
 		new_widget.set_texture(p_image)
 		new_widget.position = (visible_background.size - new_widget.size) / 2.0
 	clone_widget(new_widget)
+	board_mode = BOARD_MODE.NONE
 
 #
 # Duplicate a widget on control screen
@@ -157,17 +164,9 @@ func duplicate_widget(p_widget : Widget) -> void:
 # Clone a widget from the control screen to the presentation screen
 #
 func clone_widget(p_widget : Widget) -> void:
-	var packed_widget : PackedScene = null
-	if p_widget is TextWidget:
-		packed_widget = packed_text_widget
-	elif p_widget is ImageWidget:
-		packed_widget = packed_image_widget
-	else:
-		return
-	var new_clone_widget : Widget = packed_widget.instantiate()
+	var new_clone_widget : Widget = p_widget.duplicate(DUPLICATE_USE_INSTANTIATION)
 	Display.presentation_screen.add_child(new_clone_widget)
-	new_clone_widget.position = p_widget.position
-	new_clone_widget.size = p_widget.size
+
 	# Store a reference to the cloned widget in the master widget
 	p_widget.set_clone(new_clone_widget)
 
@@ -201,13 +200,17 @@ func _on_widget_deleted(p_widget : Widget) -> void:
 # Set focus on widget (and unfocus previous focused widget)
 #
 func set_focus(p_widget : Widget, p_exclusive = true) -> void:
+	if is_instance_valid(p_widget.grouped_in):
+		set_focus(p_widget.grouped_in)
+		return
 	if p_exclusive:
 		unfocus()
-	focused_widget.append(p_widget)
-	p_widget.set_focus(true)
+	if not p_widget in focused_widget:
+		focused_widget.append(p_widget)
+		p_widget.set_focus(true)
 	
 #
-# Unfocus widget
+# Unfocus a specific widget or all if p_widget is null
 #
 func unfocus(p_widget  : Widget = null) -> void:
 	if is_instance_valid(p_widget):
@@ -215,8 +218,9 @@ func unfocus(p_widget  : Widget = null) -> void:
 		p_widget.set_focus(false)		
 	else:
 		for widget in focused_widget:
-			unfocus(widget)
-			
+			widget.set_focus(false)
+		focused_widget.clear()
+
 
 func change_layer(p_widget : Widget, p_direction : int) -> void:
 	if p_widget.get_index() == 0 and p_direction == -1:
@@ -230,3 +234,70 @@ func check_selected_widgets():
 	for widget in visible_background.get_children():
 		if widget.get_rect().intersects(preview_rect.abs()):
 			set_focus(widget, false)
+
+func ungroup() -> void:
+	for widget in temp_group.container.get_children():
+		print(widget)
+		widget.pin_marker(G.MARKER.TOP_LEFT)
+		var global_rotation = widget.get_global_transform().get_rotation()
+		widget.reparent(visible_background)
+		
+		widget.rotation = global_rotation
+		widget.move_to_pin()
+		clone_widget(widget)
+	if temp_group.is_master():
+		temp_group.clone.queue_free()
+	temp_group.queue_free()
+	unfocus()
+	
+func group_widgets() -> void:
+	if focused_widget.is_empty():
+		return
+	if focused_widget.size() == 1:
+		set_focus(focused_widget[0])	
+		return
+	
+	focused_widget.sort_custom(sort_by_index)
+	
+	var new_widget : GroupWidget = packed_group_widget.instantiate()
+	visible_background.add_child(new_widget)
+	var rect : Rect2 = get_container_rect(focused_widget)
+	new_widget.position = rect.position
+	new_widget.size = rect.size
+	new_widget.pivot_offset = preview_rect.size / 2.0
+	connect_widget_signals(new_widget)
+	new_widget.position -= Vector2(4,30)
+	
+	for widget in focused_widget:
+		widget.pin_marker(G.MARKER.TOP_LEFT)
+		widget.reparent(new_widget.container)
+		widget.group_into(new_widget)
+		if widget.is_master():
+			widget.clone.queue_free()
+	
+	await get_tree().process_frame
+	
+	for widget in focused_widget:
+		widget.move_to_pin()
+	
+	set_focus(new_widget)
+	temp_group = new_widget
+	clone_widget(new_widget)
+	
+func sort_by_index(a : Widget, b : Widget) -> bool:
+	if a.get_index() < b.get_index():
+		return true
+	return false
+
+func get_container_rect(p_widgets : Array[Widget]) -> Rect2:
+	
+	var array_x : Array[float] = []
+	var array_y : Array[float] = []
+	for widget in p_widgets:
+		for marker in [G.MARKER.TOP_LEFT, G.MARKER.TOP_RIGHT, G.MARKER.BOTTOM_LEFT, G.MARKER.BOTTOM_RIGHT]:
+			array_x.append(widget.get_marker_position(marker).x)
+			array_y.append(widget.get_marker_position(marker).y)
+	var rect : Rect2 = Rect2(array_x.min(), array_y.min(), array_x.max() - array_x.min(), array_y.max() - array_y.min())
+	rect.position -= visible_background.position
+	rect.size += Vector2(8,34)
+	return rect

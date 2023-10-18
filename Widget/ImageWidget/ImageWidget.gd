@@ -20,7 +20,7 @@ func synchronize() -> void:
 		return
 	super()
 
-func _on_resized():
+func _on_resized() -> void:
 	super()
 	if not is_instance_valid(texture_rect):
 		return
@@ -28,7 +28,7 @@ func _on_resized():
 		return
 	pivot_offset = texture_rect.texture.get_size() / 2.0
 	
-func _on_texture_rect_gui_input(event):
+func _on_texture_rect_gui_input(event) -> void:
 	if event is InputEventMouseButton:
 		if event.button_index == MOUSE_BUTTON_LEFT:
 			if event.is_pressed():
