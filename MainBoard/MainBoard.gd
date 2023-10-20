@@ -34,17 +34,6 @@ func _on_resized() -> void:
 		vbox.custom_minimum_size.x = visible_background.position.x
 
 
-#
-#	Text button has been pressed for widget creation
-#
-func _on_text_pressed() -> void:
-	board_mode = BOARD_MODE.TEXT_POSITION
-	visible_background.set_default_cursor_shape(CURSOR_CROSS)
-
-func _on_image_pressed():
-	board_mode = BOARD_MODE.IMAGE_POSITION
-	visible_background.set_default_cursor_shape(CURSOR_CROSS)
-
 func _on_drop(data):
 	var image : Image = Image.new()
 	image.load(data[0])
@@ -301,3 +290,19 @@ func get_container_rect(p_widgets : Array[Widget]) -> Rect2:
 	rect.position -= visible_background.position
 	rect.size += Vector2(8,34)
 	return rect
+
+
+func _on_palette_text_pressed() -> void:
+	board_mode = BOARD_MODE.TEXT_POSITION
+	visible_background.set_default_cursor_shape(CURSOR_CROSS)
+
+
+func _on_palette_image_pressed():
+	board_mode = BOARD_MODE.IMAGE_POSITION
+	visible_background.set_default_cursor_shape(CURSOR_CROSS)
+
+
+
+func _on_palette_pointer_pressed():
+	board_mode = BOARD_MODE.NONE
+	visible_background.set_default_cursor_shape(CURSOR_ARROW)

@@ -51,7 +51,7 @@ var minimum_width_for_top_resize : int = 260
 
 func _ready():
 	panel.size.x = top_buttons.size.x + 20
-
+	
 #
 # Reposition buttons when parent widget is resized
 #

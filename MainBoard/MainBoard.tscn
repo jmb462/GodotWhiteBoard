@@ -1,7 +1,8 @@
-[gd_scene load_steps=3 format=3 uid="uid://hsjvadwsbdih"]
+[gd_scene load_steps=4 format=3 uid="uid://hsjvadwsbdih"]
 
 [ext_resource type="Script" path="res://MainBoard/MainBoard.gd" id="1_ngbew"]
 [ext_resource type="StyleBox" uid="uid://crndftp4jr808" path="res://Styles/Widget_preview.tres" id="2_qotcm"]
+[ext_resource type="PackedScene" uid="uid://e4xfou5ve0gm" path="res://ToolPalette/ToolPalette.tscn" id="3_s80ig"]
 
 [node name="MainBoard" type="Control"]
 layout_mode = 3
@@ -27,21 +28,9 @@ grow_horizontal = 0
 grow_vertical = 2
 mouse_filter = 2
 
-[node name="Text" type="Button" parent="VBoxContainer"]
-layout_mode = 2
-text = "Text"
-
-[node name="Image" type="Button" parent="VBoxContainer"]
-layout_mode = 2
-text = "Image"
-
 [node name="PasteImage" type="Button" parent="VBoxContainer"]
 layout_mode = 2
 text = "Paste Image"
-
-[node name="Pen" type="Button" parent="VBoxContainer"]
-layout_mode = 2
-text = "Pen"
 
 [node name="PreviewAnchor" type="Control" parent="."]
 anchors_preset = 0
@@ -55,9 +44,20 @@ offset_right = 1.0
 offset_bottom = 1.0
 theme_override_styles/panel = ExtResource("2_qotcm")
 
+[node name="Palette" parent="." instance=ExtResource("3_s80ig")]
+layout_mode = 0
+anchors_preset = 0
+anchor_top = 0.0
+anchor_bottom = 0.0
+offset_left = 32.0
+offset_top = 32.0
+offset_right = 72.0
+offset_bottom = 288.0
+grow_vertical = 1
+
 [connection signal="resized" from="." to="." method="_on_resized"]
 [connection signal="gui_input" from="VisibleBackground" to="." method="_on_visible_background_gui_input"]
-[connection signal="pressed" from="VBoxContainer/Text" to="." method="_on_text_pressed"]
-[connection signal="pressed" from="VBoxContainer/Image" to="." method="_on_image_pressed"]
 [connection signal="pressed" from="VBoxContainer/PasteImage" to="." method="_on_paste_image_pressed"]
-[connection signal="pressed" from="VBoxContainer/Pen" to="." method="_on_pen_pressed"]
+[connection signal="image_pressed" from="Palette" to="." method="_on_palette_image_pressed"]
+[connection signal="pointer_pressed" from="Palette" to="." method="_on_palette_pointer_pressed"]
+[connection signal="text_pressed" from="Palette" to="." method="_on_palette_text_pressed"]
