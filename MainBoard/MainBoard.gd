@@ -1,7 +1,6 @@
 extends Control
 
 @onready var visible_background : ColorRect = $VisibleBackground
-@onready var vbox : VBoxContainer = $VBoxContainer
 @onready var preview_anchor : Control = $PreviewAnchor
 @onready var rect_preview : Panel = $PreviewAnchor/RectPreview
 
@@ -9,7 +8,7 @@ extends Control
 @onready var packed_image_widget : PackedScene = preload("res://Widget/ImageWidget/ImageWidget.tscn")
 @onready var packed_group_widget : PackedScene = preload("res://Widget/GroupWidget/GroupWidget.tscn")
 
-enum BOARD_MODE { NONE, SELECT, TEXT_POSITION, TEXT_SIZE, PEN, IMAGE_POSITION, IMAGE_SIZE, PASTE_IMAGE}
+enum BOARD_MODE { NONE, SELECT, TEXT_POSITION, TEXT_SIZE, PEN, IMAGE_POSITION, IMAGE_SIZE, PASTE_IMAGE, PASTE_TEXT}
 var board_mode : BOARD_MODE = BOARD_MODE.NONE
 
 var preview_rect : Rect2 = Rect2()
@@ -31,7 +30,6 @@ func _on_resized() -> void:
 		visible_background.size.x = get_window().size.y * 4.0 / 3.0
 		visible_background.position = Vector2((get_window().size.x - visible_background.size.x) / 2.0, 0.0)
 		preview_anchor.position = visible_background.position
-		vbox.custom_minimum_size.x = visible_background.position.x
 
 
 func _on_drop(data):
@@ -42,11 +40,6 @@ func _on_drop(data):
 #
 #	Image clipboard button pressed
 #
-func _on_paste_image_pressed():
-	if DisplayServer.clipboard_has_image():
-		board_mode = BOARD_MODE.PASTE_IMAGE
-		create_image_widget(DisplayServer.clipboard_get_image())
-
 #
 #	Free draw button has been pressed
 #
@@ -106,7 +99,7 @@ func _on_visible_background_gui_input(event) -> void:
 				check_selected_widgets()
 #	New widget creation
 #
-func create_text_widget() -> void:
+func create_text_widget() -> TextWidget:
 	#Create master text widget on control screen
 	var new_widget : TextWidget = packed_text_widget.instantiate()
 	visible_background.add_child(new_widget)
@@ -117,7 +110,8 @@ func create_text_widget() -> void:
 	set_focus(new_widget)
 	connect_widget_signals(new_widget)
 	clone_widget(new_widget)
-
+	return new_widget
+	
 func create_image_widget(p_image : Image = null) -> void:
 	#Create master image widget on control screen
 	var new_widget : ImageWidget = packed_image_widget.instantiate()
@@ -306,3 +300,15 @@ func _on_palette_image_pressed():
 func _on_palette_pointer_pressed():
 	board_mode = BOARD_MODE.NONE
 	visible_background.set_default_cursor_shape(CURSOR_ARROW)
+
+
+func _on_palette_paste_pressed():
+	if DisplayServer.clipboard_has_image():
+		board_mode = BOARD_MODE.PASTE_IMAGE
+		create_image_widget(DisplayServer.clipboard_get_image())
+	elif DisplayServer.clipboard_has():
+		board_mode = BOARD_MODE.PASTE_TEXT
+		var text_widget = create_text_widget()
+		text_widget.set_text(DisplayServer.clipboard_get())
+		text_widget.position = (visible_background.size - text_widget.size) / 2.0
+		text_widget.synchronize()

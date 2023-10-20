@@ -4,7 +4,8 @@ signal pointer_pressed
 signal text_pressed
 signal image_pressed
 signal pencil_pressed
-signal live_pressed
+signal freeze_pressed
+signal paste_pressed
 
 var is_mouse_down : bool = false
 
@@ -34,5 +35,9 @@ func _on_pointer_button_down():
 	
 
 
-func _on_live_button_down():
-	emit_signal("live_pressed")
+func _on_freeze_button_down():
+	emit_signal("freeze_pressed")
+
+
+func _on_paste_pressed():
+	emit_signal("paste_pressed")

@@ -1,4 +1,4 @@
-[gd_scene load_steps=8 format=3 uid="uid://e4xfou5ve0gm"]
+[gd_scene load_steps=10 format=3 uid="uid://e4xfou5ve0gm"]
 
 [ext_resource type="Texture2D" uid="uid://dusbbya14u8v0" path="res://Assets/Buttons/text-document-line-icon.png" id="1_fvej3"]
 [ext_resource type="Script" path="res://ToolPalette/ToolPalette.gd" id="1_lkeai"]
@@ -6,6 +6,8 @@
 [ext_resource type="Texture2D" uid="uid://cf4r0h6lm1adh" path="res://Assets/Buttons/pointer-arrow-icon.png" id="2_vmal5"]
 [ext_resource type="Texture2D" uid="uid://bibs83tmnvkou" path="res://Assets/Buttons/pencil-icon.png" id="3_qle6y"]
 [ext_resource type="Texture2D" uid="uid://w7otma88qi2b" path="res://Assets/Buttons/play-icon.png" id="6_eyn3v"]
+[ext_resource type="Shortcut" uid="uid://bkh12hs63gedy" path="res://Resources/shortcut_ctrl_v.tres" id="7_8syv0"]
+[ext_resource type="Texture2D" uid="uid://ceb488p27prt4" path="res://Assets/Buttons/paste-icon.png" id="8_xb4r2"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_v0xyi"]
 content_margin_left = 5.0
@@ -24,15 +26,18 @@ corner_radius_bottom_left = 10
 
 [node name="ToolPalette" type="Panel"]
 top_level = true
-custom_minimum_size = Vector2(48, 150)
-anchors_preset = 4
-anchor_top = 0.5
-anchor_bottom = 0.5
-offset_left = 20.0
-offset_top = -128.0
-offset_right = 60.0
-offset_bottom = 128.0
+custom_minimum_size = Vector2(48, 350)
+anchors_preset = -1
+anchor_left = 0.017
+anchor_top = 0.302
+anchor_right = 0.059
+anchor_bottom = 0.894
+offset_left = 0.415998
+offset_top = 0.303986
+offset_right = 0.0319977
+offset_bottom = -33.312
 grow_vertical = 2
+size_flags_vertical = 3
 theme_override_styles/panel = SubResource("StyleBoxFlat_v0xyi")
 script = ExtResource("1_lkeai")
 metadata/_edit_use_anchors_ = true
@@ -44,6 +49,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 offset_left = 4.0
 offset_right = -4.0
+offset_bottom = -0.110016
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_constants/separation = 10
@@ -74,9 +80,15 @@ layout_mode = 2
 toggle_mode = true
 icon = ExtResource("6_eyn3v")
 
+[node name="Paste" type="Button" parent="VBoxContainer"]
+layout_mode = 2
+shortcut = ExtResource("7_8syv0")
+icon = ExtResource("8_xb4r2")
+
 [connection signal="gui_input" from="." to="." method="_on_gui_input"]
 [connection signal="button_down" from="VBoxContainer/Pointer" to="." method="_on_pointer_button_down"]
 [connection signal="button_down" from="VBoxContainer/Text" to="." method="_on_text_button_down"]
 [connection signal="button_down" from="VBoxContainer/Image" to="." method="_on_image_button_down"]
 [connection signal="button_down" from="VBoxContainer/Pencil" to="." method="_on_pencil_button_down"]
 [connection signal="button_down" from="VBoxContainer/Freeze" to="." method="_on_live_button_down"]
+[connection signal="pressed" from="VBoxContainer/Paste" to="." method="_on_paste_pressed"]

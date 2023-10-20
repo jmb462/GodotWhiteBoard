@@ -17,21 +17,6 @@ script = ExtResource("1_ngbew")
 layout_mode = 2
 offset_bottom = 648.0
 
-[node name="VBoxContainer" type="VBoxContainer" parent="."]
-custom_minimum_size = Vector2(250, 0)
-layout_mode = 1
-anchors_preset = 11
-anchor_left = 1.0
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 0
-grow_vertical = 2
-mouse_filter = 2
-
-[node name="PasteImage" type="Button" parent="VBoxContainer"]
-layout_mode = 2
-text = "Paste Image"
-
 [node name="PreviewAnchor" type="Control" parent="."]
 anchors_preset = 0
 offset_right = 40.0
@@ -47,7 +32,9 @@ theme_override_styles/panel = ExtResource("2_qotcm")
 [node name="Palette" parent="." instance=ExtResource("3_s80ig")]
 layout_mode = 0
 anchors_preset = 0
+anchor_left = 0.0
 anchor_top = 0.0
+anchor_right = 0.0
 anchor_bottom = 0.0
 offset_left = 32.0
 offset_top = 32.0
@@ -57,7 +44,7 @@ grow_vertical = 1
 
 [connection signal="resized" from="." to="." method="_on_resized"]
 [connection signal="gui_input" from="VisibleBackground" to="." method="_on_visible_background_gui_input"]
-[connection signal="pressed" from="VBoxContainer/PasteImage" to="." method="_on_paste_image_pressed"]
 [connection signal="image_pressed" from="Palette" to="." method="_on_palette_image_pressed"]
+[connection signal="paste_pressed" from="Palette" to="." method="_on_palette_paste_pressed"]
 [connection signal="pointer_pressed" from="Palette" to="." method="_on_palette_pointer_pressed"]
 [connection signal="text_pressed" from="Palette" to="." method="_on_palette_text_pressed"]

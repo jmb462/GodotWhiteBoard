@@ -35,7 +35,6 @@ var grouped_in : Widget = null
 func _ready() -> void :
 	_on_resized()
 
-
 func _on_gui_input(event : InputEvent) -> void:
 	if event is InputEventMouseMotion:
 		if not locked:

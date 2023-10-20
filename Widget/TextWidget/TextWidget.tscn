@@ -5,6 +5,13 @@
 [ext_resource type="StyleBox" uid="uid://76ecu7324xen" path="res://Styles/TextWidget_textedit.tres" id="3_wnasp"]
 
 [node name="TextWidget" instance=ExtResource("1_a8fay")]
+custom_minimum_size = Vector2(400, 300)
+offset_left = 0.0
+offset_top = 0.0
+offset_right = 600.0
+offset_bottom = 300.0
+grow_horizontal = 1
+grow_vertical = 1
 script = ExtResource("2_bt86m")
 text_size_increment = 3
 
