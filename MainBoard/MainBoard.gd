@@ -1,15 +1,19 @@
 extends Control
 
-@onready var visible_background : ColorRect = $VisibleBackground
+@onready var boards : Control = $VBox/Boards
 @onready var preview_anchor : Control = $PreviewAnchor
 @onready var rect_preview : Panel = $PreviewAnchor/RectPreview
 
 @onready var packed_text_widget : PackedScene = preload("res://Widget/TextWidget/TextWidget.tscn")
 @onready var packed_image_widget : PackedScene = preload("res://Widget/ImageWidget/ImageWidget.tscn")
 @onready var packed_group_widget : PackedScene = preload("res://Widget/GroupWidget/GroupWidget.tscn")
+@onready var packed_board : PackedScene = preload("res://Board/Board.tscn")
 
 enum BOARD_MODE { NONE, SELECT, TEXT_POSITION, TEXT_SIZE, PEN, IMAGE_POSITION, IMAGE_SIZE, PASTE_IMAGE, PASTE_TEXT}
 var board_mode : BOARD_MODE = BOARD_MODE.NONE
+var boards_array : Array[Board] = []
+var current_board : int = -1
+var board : Board = null
 
 var preview_rect : Rect2 = Rect2()
 
@@ -18,19 +22,23 @@ var focused_widget : Array[Widget] = []
 var temp_group : Widget = null
 
 func _ready() -> void:
+	if not is_instance_valid(board):
+		add_board(current_board)
 	_on_resized()
 	get_tree().get_root().connect("files_dropped", _on_drop)
 
 
 func _on_resized() -> void:
 	if is_node_ready():
-		# Visible background delimits the presentation zone
-		# Need to take care of aspect ratio of the presentation screen
-		visible_background.size.y = get_window().size.y
-		visible_background.size.x = get_window().size.y * 4.0 / 3.0
-		visible_background.position = Vector2((get_window().size.x - visible_background.size.x) / 2.0, 0.0)
-		preview_anchor.position = visible_background.position
+		board_setup()
+		preview_anchor.position = board.position
 
+func board_setup():
+	# Visible background delimits the presentation zone
+	# Need to take care of aspect ratio of the presentation screen
+	board.size.y = get_window().size.y
+	board.size.x = get_window().size.y * 4.0 / 3.0
+	board.position = Vector2((get_window().size.x - board.size.x) / 2.0, 0.0)
 
 func _on_drop(data):
 	var image : Image = Image.new()
@@ -47,7 +55,7 @@ func _on_pen_pressed() -> void:
 	board_mode = BOARD_MODE.PEN
 
 
-func _on_visible_background_gui_input(event) -> void:
+func _on_board_gui_input(event) -> void:
 	if event is InputEventMouseButton:
 		if event.button_index == MOUSE_BUTTON_LEFT:
 			if event.is_pressed():
@@ -66,7 +74,7 @@ func _on_visible_background_gui_input(event) -> void:
 					# Time to create the widget
 					create_text_widget()
 					rect_preview.hide()
-					visible_background.set_default_cursor_shape(CURSOR_ARROW)
+					board.set_default_cursor_shape(CURSOR_ARROW)
 					board_mode = BOARD_MODE.NONE
 			elif board_mode == BOARD_MODE.IMAGE_SIZE:
 				if not event.is_pressed():
@@ -74,7 +82,7 @@ func _on_visible_background_gui_input(event) -> void:
 					# Time to create the widget
 					create_image_widget()
 					rect_preview.hide()
-					visible_background.set_default_cursor_shape(CURSOR_ARROW)
+					board.set_default_cursor_shape(CURSOR_ARROW)
 					board_mode = BOARD_MODE.NONE
 			elif board_mode == BOARD_MODE.NONE:
 				if event.is_pressed():
@@ -102,7 +110,7 @@ func _on_visible_background_gui_input(event) -> void:
 func create_text_widget() -> TextWidget:
 	#Create master text widget on control screen
 	var new_widget : TextWidget = packed_text_widget.instantiate()
-	visible_background.add_child(new_widget)
+	board.add_child(new_widget)
 	new_widget.position = preview_rect.abs().position
 	new_widget.size = preview_rect.abs().size
 	new_widget.pivot_offset = preview_rect.abs().size / 2.0
@@ -115,7 +123,7 @@ func create_text_widget() -> TextWidget:
 func create_image_widget(p_image : Image = null) -> void:
 	#Create master image widget on control screen
 	var new_widget : ImageWidget = packed_image_widget.instantiate()
-	visible_background.add_child(new_widget)
+	board.add_child(new_widget)
 	new_widget.position = preview_rect.position
 	new_widget.size = preview_rect.size
 	new_widget.pivot_offset = preview_rect.size / 2.0
@@ -124,7 +132,7 @@ func create_image_widget(p_image : Image = null) -> void:
 	connect_widget_signals(new_widget)
 	if is_instance_valid(p_image):
 		new_widget.set_texture(p_image)
-		new_widget.position = (visible_background.size - new_widget.size) / 2.0
+		new_widget.position = (board.size - new_widget.size) / 2.0
 	clone_widget(new_widget)
 	board_mode = BOARD_MODE.NONE
 
@@ -133,7 +141,7 @@ func create_image_widget(p_image : Image = null) -> void:
 #
 func duplicate_widget(p_widget : Widget) -> void:
 	var new_widget : Widget = p_widget.duplicate()
-	visible_background.add_child(new_widget)
+	board.add_child(new_widget)
 	new_widget.position = p_widget.position + Vector2(30,30)
 	new_widget.size = p_widget.size
 	new_widget.visible_on_presentation_screen = p_widget.visible_on_presentation_screen
@@ -208,13 +216,13 @@ func unfocus(p_widget  : Widget = null) -> void:
 func change_layer(p_widget : Widget, p_direction : int) -> void:
 	if p_widget.get_index() == 0 and p_direction == -1:
 		return
-	visible_background.move_child(p_widget, p_widget.get_index() + p_direction)
+	board.move_child(p_widget, p_widget.get_index() + p_direction)
 	Display.presentation_screen.move_child(p_widget.clone, p_widget.get_index())
 
 func check_selected_widgets():
 	unfocus()
 	rect_preview.show()
-	for widget in visible_background.get_children():
+	for widget in board.get_children():
 		if widget.get_rect().intersects(preview_rect.abs()):
 			set_focus(widget, false)
 
@@ -223,7 +231,7 @@ func ungroup() -> void:
 		print(widget)
 		widget.pin_marker(G.MARKER.TOP_LEFT)
 		var global_rotation = widget.get_global_transform().get_rotation()
-		widget.reparent(visible_background)
+		widget.reparent(board)
 		
 		widget.rotation = global_rotation
 		widget.move_to_pin()
@@ -243,7 +251,7 @@ func group_widgets() -> void:
 	focused_widget.sort_custom(sort_by_index)
 	
 	var new_widget : GroupWidget = packed_group_widget.instantiate()
-	visible_background.add_child(new_widget)
+	board.add_child(new_widget)
 	var rect : Rect2 = get_container_rect(focused_widget)
 	new_widget.position = rect.position
 	new_widget.size = rect.size
@@ -281,25 +289,25 @@ func get_container_rect(p_widgets : Array[Widget]) -> Rect2:
 			array_x.append(widget.get_marker_position(marker).x)
 			array_y.append(widget.get_marker_position(marker).y)
 	var rect : Rect2 = Rect2(array_x.min(), array_y.min(), array_x.max() - array_x.min(), array_y.max() - array_y.min())
-	rect.position -= visible_background.position
+	rect.position -= board.position
 	rect.size += Vector2(8,34)
 	return rect
 
 
 func _on_palette_text_pressed() -> void:
 	board_mode = BOARD_MODE.TEXT_POSITION
-	visible_background.set_default_cursor_shape(CURSOR_CROSS)
+	board.set_default_cursor_shape(CURSOR_CROSS)
 
 
 func _on_palette_image_pressed():
 	board_mode = BOARD_MODE.IMAGE_POSITION
-	visible_background.set_default_cursor_shape(CURSOR_CROSS)
+	board.set_default_cursor_shape(CURSOR_CROSS)
 
 
 
 func _on_palette_pointer_pressed():
 	board_mode = BOARD_MODE.NONE
-	visible_background.set_default_cursor_shape(CURSOR_ARROW)
+	board.set_default_cursor_shape(CURSOR_ARROW)
 
 
 func _on_palette_paste_pressed():
@@ -310,5 +318,41 @@ func _on_palette_paste_pressed():
 		board_mode = BOARD_MODE.PASTE_TEXT
 		var text_widget = create_text_widget()
 		text_widget.set_text(DisplayServer.clipboard_get())
-		text_widget.position = (visible_background.size - text_widget.size) / 2.0
+		text_widget.position = (board.size - text_widget.size) / 2.0
 		text_widget.synchronize()
+
+func add_board(p_index : int):
+	var new_board : Board = packed_board.instantiate()
+	new_board.connect("gui_input", _on_board_gui_input)
+	boards.add_child(new_board)
+	if is_instance_valid(board):
+		board.hide()
+	board = new_board
+	board_setup()
+	if p_index < 0:
+		boards_array.append(new_board)
+	else:
+		boards_array.insert(p_index + 1, new_board)
+	current_board = p_index + 1
+	print(boards_array)
+
+func _on_new_board_pressed():
+	add_board(current_board)
+
+func _on_previous_board_pressed():
+	if current_board > 0:
+		board.hide()
+		current_board -= 1
+		board = boards_array[current_board]
+		board.show()
+		
+func _on_next_board_pressed():
+	if current_board < boards_array.size() - 1:
+		board.hide()
+		current_board += 1
+		board = boards_array[current_board]
+		board.show()
+
+
+func _on_clear_board_pressed():
+	print("delete board")

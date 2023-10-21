@@ -1,0 +1,7 @@
+[gd_scene load_steps=2 format=3 uid="uid://cwapycy7g8jv3"]
+
+[ext_resource type="Script" path="res://Board/Board.gd" id="1_w8hh4"]
+
+[node name="Board" type="ColorRect"]
+offset_bottom = 648.0
+script = ExtResource("1_w8hh4")

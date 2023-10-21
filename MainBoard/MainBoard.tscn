@@ -1,8 +1,21 @@
-[gd_scene load_steps=4 format=3 uid="uid://hsjvadwsbdih"]
+[gd_scene load_steps=9 format=3 uid="uid://hsjvadwsbdih"]
 
 [ext_resource type="Script" path="res://MainBoard/MainBoard.gd" id="1_ngbew"]
+[ext_resource type="Texture2D" uid="uid://cdch3vwecjo3q" path="res://Assets/Buttons/new_board.png" id="2_4jg4w"]
 [ext_resource type="StyleBox" uid="uid://crndftp4jr808" path="res://Styles/Widget_preview.tres" id="2_qotcm"]
 [ext_resource type="PackedScene" uid="uid://e4xfou5ve0gm" path="res://ToolPalette/ToolPalette.tscn" id="3_s80ig"]
+[ext_resource type="Texture2D" uid="uid://dj8tk8b0qkokp" path="res://Assets/Buttons/previous.png" id="3_u3tpv"]
+[ext_resource type="Texture2D" uid="uid://cxqknx0or7gr8" path="res://Assets/Buttons/next.png" id="4_int1g"]
+[ext_resource type="Texture2D" uid="uid://cxnoj01cilkcj" path="res://Assets/Buttons/clear_board.png" id="5_fra2n"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_bgtxn"]
+bg_color = Color(0.8, 0.8, 0.8, 1)
+border_width_left = 10
+border_width_top = 10
+border_width_right = 10
+border_width_bottom = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
 
 [node name="MainBoard" type="Control"]
 layout_mode = 3
@@ -13,14 +26,55 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_ngbew")
 
-[node name="VisibleBackground" type="ColorRect" parent="."]
+[node name="VBox" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Panel" type="Panel" parent="VBox"]
+custom_minimum_size = Vector2(200, 48)
 layout_mode = 2
-offset_bottom = 648.0
+size_flags_horizontal = 4
+theme_override_styles/panel = SubResource("StyleBoxFlat_bgtxn")
+
+[node name="HBox" type="HBoxContainer" parent="VBox/Panel"]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_top = 4.0
+offset_bottom = 44.0
+grow_horizontal = 2
+theme_override_constants/separation = 8
+alignment = 1
+
+[node name="New" type="Button" parent="VBox/Panel/HBox"]
+layout_mode = 2
+icon = ExtResource("2_4jg4w")
+
+[node name="Previous" type="Button" parent="VBox/Panel/HBox"]
+layout_mode = 2
+icon = ExtResource("3_u3tpv")
+
+[node name="Next" type="Button" parent="VBox/Panel/HBox"]
+layout_mode = 2
+icon = ExtResource("4_int1g")
+
+[node name="Clear" type="Button" parent="VBox/Panel/HBox"]
+layout_mode = 2
+icon = ExtResource("5_fra2n")
+
+[node name="Boards" type="Control" parent="VBox"]
+layout_mode = 2
 
 [node name="PreviewAnchor" type="Control" parent="."]
+layout_mode = 2
 anchors_preset = 0
-offset_right = 40.0
-offset_bottom = 40.0
+offset_top = 4.0
+offset_right = 2.0
+offset_bottom = 4.0
 
 [node name="RectPreview" type="Panel" parent="PreviewAnchor"]
 custom_minimum_size = Vector2(1, 1)
@@ -30,7 +84,7 @@ offset_bottom = 1.0
 theme_override_styles/panel = ExtResource("2_qotcm")
 
 [node name="Palette" parent="." instance=ExtResource("3_s80ig")]
-layout_mode = 0
+layout_mode = 2
 anchors_preset = 0
 anchor_left = 0.0
 anchor_top = 0.0
@@ -43,7 +97,10 @@ offset_bottom = 288.0
 grow_vertical = 1
 
 [connection signal="resized" from="." to="." method="_on_resized"]
-[connection signal="gui_input" from="VisibleBackground" to="." method="_on_visible_background_gui_input"]
+[connection signal="pressed" from="VBox/Panel/HBox/New" to="." method="_on_new_board_pressed"]
+[connection signal="pressed" from="VBox/Panel/HBox/Previous" to="." method="_on_previous_board_pressed"]
+[connection signal="pressed" from="VBox/Panel/HBox/Next" to="." method="_on_next_board_pressed"]
+[connection signal="pressed" from="VBox/Panel/HBox/Clear" to="." method="_on_clear_board_pressed"]
 [connection signal="image_pressed" from="Palette" to="." method="_on_palette_image_pressed"]
 [connection signal="paste_pressed" from="Palette" to="." method="_on_palette_paste_pressed"]
 [connection signal="pointer_pressed" from="Palette" to="." method="_on_palette_pointer_pressed"]
