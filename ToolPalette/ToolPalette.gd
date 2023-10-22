@@ -35,9 +35,9 @@ func _on_pointer_button_down():
 	
 
 
-func _on_freeze_button_down():
-	emit_signal("freeze_pressed")
-
-
 func _on_paste_pressed():
 	emit_signal("paste_pressed")
+
+
+func _on_freeze_button_pressed():
+	emit_signal("freeze_pressed")

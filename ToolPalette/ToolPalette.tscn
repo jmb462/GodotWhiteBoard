@@ -90,5 +90,5 @@ icon = ExtResource("8_xb4r2")
 [connection signal="button_down" from="VBoxContainer/Text" to="." method="_on_text_button_down"]
 [connection signal="button_down" from="VBoxContainer/Image" to="." method="_on_image_button_down"]
 [connection signal="button_down" from="VBoxContainer/Pencil" to="." method="_on_pencil_button_down"]
-[connection signal="button_down" from="VBoxContainer/Freeze" to="." method="_on_live_button_down"]
+[connection signal="pressed" from="VBoxContainer/Freeze" to="." method="_on_freeze_button_pressed"]
 [connection signal="pressed" from="VBoxContainer/Paste" to="." method="_on_paste_pressed"]

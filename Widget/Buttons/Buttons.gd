@@ -111,9 +111,11 @@ func _on_size_plus_button_down():
 	emit_signal("text_size_pressed", 1)
 
 func _on_toggle_visible_button_down():
+	print("Buttons::_on_toggle_visible_button_down")
 	emit_signal("toggle_visible_pressed")
 
 func _on_close_button_down():
+	print("Buttons::_on_close_button_down")
 	emit_signal("close_pressed")
 
 func _on_text_color_pressed():
