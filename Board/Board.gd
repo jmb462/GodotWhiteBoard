@@ -20,15 +20,8 @@ func _ready():
 	connect_gui_input(_on_board_gui_input)
 	print("viewport size ", viewport.size)
 	await get_tree().process_frame
-	_on_resized()
-	
-func _on_resized():
-	if is_instance_valid(viewport):
-		viewport.size = Vector2(size.x, size.x / 1.333)
-		viewport.size /= 1.37
-		position.x = (size.x - viewport.size.x)/2
-		position.y = 0
-		print("viewport size 2", viewport.size)
+	viewport.size = size
+	whiteboard.size = size
 
 func _on_board_gui_input(event) -> void:
 	if event is InputEventMouseButton:

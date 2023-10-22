@@ -1,4 +1,5 @@
 extends Control
 
 func _ready():
-	get_window().mode = Window.MODE_MAXIMIZED
+	pass
+	#get_window().mode = Window.MODE_MAXIMIZED

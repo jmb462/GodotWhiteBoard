@@ -22,6 +22,7 @@ Display="*res://Display/Display.tscn"
 
 [display]
 
+window/size/mode=2
 window/size/always_on_top=true
 window/subwindows/embed_subwindows=false
 
