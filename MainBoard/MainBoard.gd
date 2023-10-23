@@ -4,10 +4,16 @@ var boards_array : Array[Board] = []
 var board : Board = null
 var current_board : int = -1
 
+# Index of the board when delete board is requested
+var delete_index : int = -1
+
 @onready var boards : Control = $VBox/HBox/Boards
 @onready var scroll_container : ScrollContainer = $VBox/HBox/ScrollContainer
 @onready var preview_list : PreviewList = $VBox/HBox/ScrollContainer/PreviewList
 @onready var main_menu : Panel = $VBox/MainMenu
+
+@onready var delete_confirmation_dialog : ConfirmationDialog = $DeleteConfirmationDialog
+@onready var clear_confirmation_dialog : ConfirmationDialog = $ClearConfirmationDialog
 
 @onready var packed_board : PackedScene = preload("res://Board/Board.tscn")
 
@@ -50,6 +56,7 @@ func _on_palette_paste_pressed():
 		text_widget.position = (board.size - text_widget.size) / 2.0
 		text_widget.synchronize()
 
+
 func add_board(p_index : int) -> Board:
 	if is_instance_valid(board):
 		board.unfocus()
@@ -78,16 +85,20 @@ func add_board(p_index : int) -> Board:
 	
 	return board
 
+
 func _on_new_board_pressed():
 	add_board(current_board)
+
 
 func _on_previous_board_pressed():
 	change_board(current_board - 1)
 	update_preview_list()
-		
+
+
 func _on_next_board_pressed():
 	change_board(current_board + 1)
 	update_preview_list()
+
 
 func change_board(p_index : int) -> void:
 	if p_index < 0:
@@ -107,7 +118,10 @@ func change_board(p_index : int) -> void:
 	
 func update_preview_list() -> void:
 	preview_list.select(current_board)
-	
+
+func clear_board_confirm():
+	clear_confirmation_dialog.popup_centered()
+
 func _on_clear_board_pressed():
 	for widget in board.get_widgets():
 		widget.delete()
@@ -123,10 +137,6 @@ func _on_palette_freeze_pressed():
 	#
 	#var tex = ImageTexture.create_from_image(img)
 	#$BoardsPreview/VBox/preview.texture = tex
-
-
-
-
 
 func _on_boards_resized():
 	if is_instance_valid(boards):
@@ -158,30 +168,37 @@ func _on_resized():
 		set_scroll_container_size()
 		set_boards_size()
 
+#
+# Delete all clones from display board
+#
 func clear_display() -> void:
 	for widget in Display.presentation_screen.get_children():
 		widget.master.clone = null
 		widget.queue_free()
 
+#
+# Clone each widget of board on display screen
+#
 func synchronize_display() -> void:
 	for widget in board.get_widgets():
 		board.clone_widget(widget)
 
+
+#
+# Mouse entered in board callback
+#
 func _on_board_mouse_entered() -> void:
 	preview_list.hide_overlay()
 
 
-func _on_preview_list_board_duplicate_requested(p_index):
-	duplicate_board(p_index)
-
-
-func _on_preview_list_board_delete_requested(p_index : int) -> void:
-	delete_board(p_index)
-
+#
+# Duplicate board and all widgets on a new board
+#
 func duplicate_board(p_index : int) -> void:
+	
 	var new_board = packed_board.instantiate()
 	var duplicated_board = boards_array[p_index]
-	
+	duplicated_board.unfocus()
 	boards.add_child(new_board)
 	boards.move_child(new_board, 0)
 	
@@ -193,8 +210,9 @@ func duplicate_board(p_index : int) -> void:
 	
 	create_board_preview(new_board, p_index + 1)
 	
-
-
+#
+# Create the board preview and add it to preview list
+#
 func create_board_preview(p_board : Board, p_to_index : int, autoselect_item : bool = false) :
 	var viewport_texture : ViewportTexture = ViewportTexture.new()
 	viewport_texture = p_board.viewport.get_texture()
@@ -207,9 +225,22 @@ func create_board_preview(p_board : Board, p_to_index : int, autoselect_item : b
 	if autoselect_item:
 		preview_list.select(p_to_index)
 
-func delete_board(p_index : int) -> void:
+#
+# Show a confirmation dialog when board deletion is requested
+#
+func delete_confirm(p_index : int) -> void:
 	# Cannot delete last board
 	if boards_array.size() <= 1:
+		return
+	delete_confirmation_dialog.popup_centered()
+	delete_confirmation_dialog.dialog_text = "Are you sure you want to delete page %s?" % str(p_index + 1)
+	delete_index = p_index
+
+#
+# Delete board at p_index
+#
+func delete_board(p_index : int = delete_index) -> void:
+	if p_index < 0:
 		return
 	var removed_board = boards_array[p_index]
 	boards_array.remove_at(p_index)

@@ -105,14 +105,19 @@ offset_right = 72.0
 offset_bottom = 288.0
 grow_vertical = 1
 
+[node name="DeleteConfirmationDialog" type="ConfirmationDialog" parent="."]
+
+[node name="ClearConfirmationDialog" type="ConfirmationDialog" parent="."]
+dialog_text = "Are you sure you want to clear current board?"
+
 [connection signal="resized" from="." to="." method="_on_resized"]
 [connection signal="pressed" from="VBox/MainMenu/HBox/New" to="." method="_on_new_board_pressed"]
 [connection signal="pressed" from="VBox/MainMenu/HBox/Previous" to="." method="_on_previous_board_pressed"]
 [connection signal="pressed" from="VBox/MainMenu/HBox/Next" to="." method="_on_next_board_pressed"]
-[connection signal="pressed" from="VBox/MainMenu/HBox/Clear" to="." method="_on_clear_board_pressed"]
+[connection signal="pressed" from="VBox/MainMenu/HBox/Clear" to="." method="clear_board_confirm"]
 [connection signal="resized" from="VBox/HBox/Boards" to="." method="_on_boards_resized"]
-[connection signal="board_delete_requested" from="VBox/HBox/ScrollContainer/PreviewList" to="." method="_on_preview_list_board_delete_requested"]
-[connection signal="board_duplicate_requested" from="VBox/HBox/ScrollContainer/PreviewList" to="." method="_on_preview_list_board_duplicate_requested"]
+[connection signal="board_delete_requested" from="VBox/HBox/ScrollContainer/PreviewList" to="." method="delete_confirm"]
+[connection signal="board_duplicate_requested" from="VBox/HBox/ScrollContainer/PreviewList" to="." method="duplicate_board"]
 [connection signal="board_requested" from="VBox/HBox/ScrollContainer/PreviewList" to="." method="change_board"]
 [connection signal="item_selected" from="VBox/HBox/ScrollContainer/PreviewList" to="." method="_on_preview_list_item_selected"]
 [connection signal="freeze_pressed" from="Palette" to="." method="_on_palette_freeze_pressed"]
@@ -120,3 +125,5 @@ grow_vertical = 1
 [connection signal="paste_pressed" from="Palette" to="." method="_on_palette_paste_pressed"]
 [connection signal="pointer_pressed" from="Palette" to="." method="_on_palette_pointer_pressed"]
 [connection signal="text_pressed" from="Palette" to="." method="_on_palette_text_pressed"]
+[connection signal="confirmed" from="DeleteConfirmationDialog" to="." method="delete_board"]
+[connection signal="confirmed" from="ClearConfirmationDialog" to="." method="_on_clear_board_pressed"]
