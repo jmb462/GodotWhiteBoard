@@ -1,6 +1,7 @@
 extends SubViewportContainer
 class_name Board
 
+signal board_mouse_entered
 
 var temp_group : Widget = null
 var focused_widget : Array[Widget] = []
@@ -123,7 +124,8 @@ func unfocus(p_widget  : Widget = null) -> void:
 		p_widget.set_focus(false)		
 	else:
 		for widget in focused_widget:
-			widget.set_focus(false)
+			if is_instance_valid(widget):
+				widget.set_focus(false)
 		focused_widget.clear()
 
 #
@@ -298,3 +300,7 @@ func set_mode(p_mode : G.BOARD_MODE) -> void:
 func get_mode() -> G.BOARD_MODE:
 	return board_mode
 
+
+
+func _on_mouse_entered():
+	emit_signal("board_mouse_entered")

@@ -6,7 +6,7 @@ var current_board : int = -1
 
 @onready var boards : Control = $VBox/HBox/Boards
 @onready var scroll_container : ScrollContainer = $VBox/HBox/ScrollContainer
-@onready var preview_list : ItemList = $VBox/HBox/ScrollContainer/PreviewList
+@onready var preview_list : PreviewList = $VBox/HBox/ScrollContainer/PreviewList
 @onready var main_menu : Panel = $VBox/MainMenu
 
 @onready var packed_board : PackedScene = preload("res://Board/Board.tscn")
@@ -53,8 +53,9 @@ func _on_palette_paste_pressed():
 func add_board(p_index : int):
 	if is_instance_valid(board):
 		board.unfocus()
-	var new_board : Board = packed_board.instantiate()	
+	var new_board = packed_board.instantiate()
 	boards.add_child(new_board)
+	new_board.connect("board_mouse_entered", _on_board_mouse_entered)
 	if is_instance_valid(board):
 		board.viewport.render_target_update_mode = SubViewport.UPDATE_DISABLED
 		board.hide()
@@ -82,9 +83,6 @@ func add_board(p_index : int):
 func _on_new_board_pressed():
 	add_board(current_board)
 
-func _on_item_list_item_selected(p_index :int ) -> void:
-	change_board(p_index)
-
 func _on_previous_board_pressed():
 	change_board(current_board - 1)
 	update_preview_list()
@@ -94,12 +92,16 @@ func _on_next_board_pressed():
 	update_preview_list()
 
 func change_board(p_index : int) -> void:
-	if p_index < 0 or p_index >= boards_array.size():
+	if p_index < 0:
 		return
 	board.unfocus()
 	board.hide()
 	clear_display()
 	current_board = p_index
+	
+	if current_board >= boards_array.size():
+		current_board = boards_array.size() - 1
+	
 	board = boards_array[current_board]
 	board.show()
 	synchronize_display()
@@ -166,3 +168,29 @@ func clear_display() -> void:
 func synchronize_display() -> void:
 	for widget in board.get_widgets():
 		board.clone_widget(widget)
+
+func _on_board_mouse_entered() -> void:
+	preview_list.hide_overlay()
+
+
+func _on_preview_list_board_duplicate_requested(p_index):
+	duplicate_board(p_index)
+
+
+func _on_preview_list_board_delete_requested(p_index : int) -> void:
+	delete_board(p_index)
+
+func duplicate_board(p_index : int) -> void:
+	print("duplicate board")
+
+func delete_board(p_index : int) -> void:
+	# Cannot delete last board
+	if boards_array.size() <= 1:
+		return
+	var removed_board = boards_array[p_index]
+	boards_array.remove_at(p_index)
+	preview_list.remove_item(p_index)
+	removed_board.queue_free()
+	if current_board == p_index:
+		change_board(current_board)
+		update_preview_list()

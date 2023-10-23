@@ -1,4 +1,4 @@
-[gd_scene load_steps=15 format=3 uid="uid://hsjvadwsbdih"]
+[gd_scene load_steps=9 format=3 uid="uid://hsjvadwsbdih"]
 
 [ext_resource type="Script" path="res://MainBoard/MainBoard.gd" id="1_ngbew"]
 [ext_resource type="Texture2D" uid="uid://cdch3vwecjo3q" path="res://Assets/Buttons/new_board.png" id="2_4jg4w"]
@@ -6,6 +6,7 @@
 [ext_resource type="Texture2D" uid="uid://dj8tk8b0qkokp" path="res://Assets/Buttons/previous.png" id="3_u3tpv"]
 [ext_resource type="Texture2D" uid="uid://cxqknx0or7gr8" path="res://Assets/Buttons/next.png" id="4_int1g"]
 [ext_resource type="Texture2D" uid="uid://cxnoj01cilkcj" path="res://Assets/Buttons/clear_board.png" id="5_fra2n"]
+[ext_resource type="PackedScene" uid="uid://c8xf0xhc7v7uf" path="res://PreviewList/PreviewList.tscn" id="6_c0of4"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_bgtxn"]
 bg_color = Color(0.8, 0.8, 0.8, 1)
@@ -15,23 +16,6 @@ border_width_right = 10
 border_width_bottom = 10
 corner_radius_bottom_right = 10
 corner_radius_bottom_left = 10
-
-[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_fo3yv"]
-
-[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_ekhcs"]
-
-[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_35lj6"]
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_8b2t5"]
-bg_color = Color(0.47451, 0.47451, 0.47451, 1)
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_g1idq"]
-bg_color = Color(0.47451, 0.47451, 0.47451, 1)
-corner_radius_bottom_left = 10
-
-[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_pb50m"]
-
-[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_vijou"]
 
 [node name="MainBoard" type="Control"]
 layout_mode = 3
@@ -105,23 +89,8 @@ offset_bottom = 596.0
 follow_focus = true
 horizontal_scroll_mode = 0
 
-[node name="PreviewList" type="ItemList" parent="VBox/HBox/ScrollContainer"]
-custom_minimum_size = Vector2(200, 200)
+[node name="PreviewList" parent="VBox/HBox/ScrollContainer" instance=ExtResource("6_c0of4")]
 layout_mode = 2
-size_flags_horizontal = 3
-size_flags_vertical = 3
-theme_override_constants/h_separation = 12
-theme_override_constants/v_separation = 7
-theme_override_styles/panel = SubResource("StyleBoxEmpty_fo3yv")
-theme_override_styles/focus = SubResource("StyleBoxEmpty_ekhcs")
-theme_override_styles/hovered = SubResource("StyleBoxEmpty_35lj6")
-theme_override_styles/selected = SubResource("StyleBoxFlat_8b2t5")
-theme_override_styles/selected_focus = SubResource("StyleBoxFlat_g1idq")
-theme_override_styles/cursor = SubResource("StyleBoxEmpty_pb50m")
-theme_override_styles/cursor_unfocused = SubResource("StyleBoxEmpty_vijou")
-allow_search = false
-auto_height = true
-icon_mode = 0
 
 [node name="Palette" parent="." instance=ExtResource("3_s80ig")]
 layout_mode = 2
@@ -142,7 +111,10 @@ grow_vertical = 1
 [connection signal="pressed" from="VBox/MainMenu/HBox/Next" to="." method="_on_next_board_pressed"]
 [connection signal="pressed" from="VBox/MainMenu/HBox/Clear" to="." method="_on_clear_board_pressed"]
 [connection signal="resized" from="VBox/HBox/Boards" to="." method="_on_boards_resized"]
-[connection signal="item_selected" from="VBox/HBox/ScrollContainer/PreviewList" to="." method="_on_item_list_item_selected"]
+[connection signal="board_delete_requested" from="VBox/HBox/ScrollContainer/PreviewList" to="." method="_on_preview_list_board_delete_requested"]
+[connection signal="board_duplicate_requested" from="VBox/HBox/ScrollContainer/PreviewList" to="." method="_on_preview_list_board_duplicate_requested"]
+[connection signal="board_requested" from="VBox/HBox/ScrollContainer/PreviewList" to="." method="change_board"]
+[connection signal="item_selected" from="VBox/HBox/ScrollContainer/PreviewList" to="." method="_on_preview_list_item_selected"]
 [connection signal="freeze_pressed" from="Palette" to="." method="_on_palette_freeze_pressed"]
 [connection signal="image_pressed" from="Palette" to="." method="_on_palette_image_pressed"]
 [connection signal="paste_pressed" from="Palette" to="." method="_on_palette_paste_pressed"]
