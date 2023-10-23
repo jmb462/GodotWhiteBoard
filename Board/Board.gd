@@ -20,7 +20,6 @@ func _ready():
 	connect_gui_input(_on_board_gui_input)
 	print("viewport size ", viewport.size)
 	await get_tree().process_frame
-	viewport.size = size
 	whiteboard.size = size
 
 func _on_board_gui_input(event) -> void:

@@ -51,13 +51,13 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="Panel" type="Panel" parent="VBox"]
+[node name="MainMenu" type="Panel" parent="VBox"]
 custom_minimum_size = Vector2(200, 48)
 layout_mode = 2
 size_flags_horizontal = 4
 theme_override_styles/panel = SubResource("StyleBoxFlat_bgtxn")
 
-[node name="HBox" type="HBoxContainer" parent="VBox/Panel"]
+[node name="HBox" type="HBoxContainer" parent="VBox/MainMenu"]
 layout_mode = 1
 anchors_preset = 10
 anchor_right = 1.0
@@ -67,19 +67,19 @@ grow_horizontal = 2
 theme_override_constants/separation = 8
 alignment = 1
 
-[node name="New" type="Button" parent="VBox/Panel/HBox"]
+[node name="New" type="Button" parent="VBox/MainMenu/HBox"]
 layout_mode = 2
 icon = ExtResource("2_4jg4w")
 
-[node name="Previous" type="Button" parent="VBox/Panel/HBox"]
+[node name="Previous" type="Button" parent="VBox/MainMenu/HBox"]
 layout_mode = 2
 icon = ExtResource("3_u3tpv")
 
-[node name="Next" type="Button" parent="VBox/Panel/HBox"]
+[node name="Next" type="Button" parent="VBox/MainMenu/HBox"]
 layout_mode = 2
 icon = ExtResource("4_int1g")
 
-[node name="Clear" type="Button" parent="VBox/Panel/HBox"]
+[node name="Clear" type="Button" parent="VBox/MainMenu/HBox"]
 layout_mode = 2
 icon = ExtResource("5_fra2n")
 
@@ -132,10 +132,10 @@ offset_bottom = 288.0
 grow_vertical = 1
 
 [connection signal="resized" from="." to="." method="_on_resized"]
-[connection signal="pressed" from="VBox/Panel/HBox/New" to="." method="_on_new_board_pressed"]
-[connection signal="pressed" from="VBox/Panel/HBox/Previous" to="." method="_on_previous_board_pressed"]
-[connection signal="pressed" from="VBox/Panel/HBox/Next" to="." method="_on_next_board_pressed"]
-[connection signal="pressed" from="VBox/Panel/HBox/Clear" to="." method="_on_clear_board_pressed"]
+[connection signal="pressed" from="VBox/MainMenu/HBox/New" to="." method="_on_new_board_pressed"]
+[connection signal="pressed" from="VBox/MainMenu/HBox/Previous" to="." method="_on_previous_board_pressed"]
+[connection signal="pressed" from="VBox/MainMenu/HBox/Next" to="." method="_on_next_board_pressed"]
+[connection signal="pressed" from="VBox/MainMenu/HBox/Clear" to="." method="_on_clear_board_pressed"]
 [connection signal="resized" from="VBox/HBox/Boards" to="." method="_on_boards_resized"]
 [connection signal="item_selected" from="VBox/HBox/ScrollContainer/PreviewList" to="." method="_on_item_list_item_selected"]
 [connection signal="freeze_pressed" from="Palette" to="." method="_on_palette_freeze_pressed"]

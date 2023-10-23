@@ -7,13 +7,14 @@ var current_board : int = -1
 @onready var boards : Control = $VBox/HBox/Boards
 @onready var scroll_container : ScrollContainer = $VBox/HBox/ScrollContainer
 @onready var preview_list : ItemList = $VBox/HBox/ScrollContainer/PreviewList
+@onready var main_menu : Panel = $VBox/MainMenu
 
 @onready var packed_board : PackedScene = preload("res://Board/Board.tscn")
+
 func _ready() -> void:
 	if not is_instance_valid(board):
 		add_board(current_board)
 	get_tree().get_root().connect("files_dropped", _on_drop)
-	await get_tree().process_frame
 	_on_resized()
 
 func _on_drop(data):
@@ -24,6 +25,7 @@ func _on_drop(data):
 #
 #	Free draw button has been pressed
 #
+
 func _on_pen_pressed() -> void:
 	board.set_mode(G.BOARD_MODE.PEN)
 
@@ -35,7 +37,6 @@ func _on_palette_image_pressed():
 
 func _on_palette_pointer_pressed():
 	board.set_mode(G.BOARD_MODE.NONE)
-
 
 
 func _on_palette_paste_pressed():
@@ -73,6 +74,10 @@ func add_board(p_index : int):
 	preview_list.move_item(i, current_board)
 	preview_list.select(current_board)
 	preview_list.icon_scale = 180 / vt.get_size().x
+	
+	clear_display()
+	set_scroll_container_size()
+	set_boards_size()
 
 func _on_new_board_pressed():
 	add_board(current_board)
@@ -81,77 +86,88 @@ func _on_previous_board_pressed():
 	if current_board > 0:
 		board.unfocus()
 		board.hide()
+		clear_display()
 		current_board -= 1
 		board = boards_array[current_board]
 		board.show()
+		synchronize_display()
 		preview_list.select(current_board)
 		
 func _on_next_board_pressed():
 	if current_board < boards_array.size() - 1:
 		board.unfocus()
 		board.hide()
+		clear_display()
 		current_board += 1
 		board = boards_array[current_board]
 		board.show()
+		synchronize_display()
 		preview_list.select(current_board)
 
 
 func _on_clear_board_pressed():
-	print("delete board")
-
+	for widget in board.get_widgets():
+		widget.delete()
 
 func _on_palette_freeze_pressed():
-	var rect : Rect2 = board.get_whiteboard_board()
-	var img : Image = get_viewport().get_texture().get_image()
-	img.blit_rect(img,rect, Vector2.ZERO)
-	img.crop(int(rect.size.x), int(rect.size.y))
-	var aspect_ratio : float = rect.size.x / rect.size.y
-	img.resize(150, int(150 / aspect_ratio) )
-	
-	var tex = ImageTexture.create_from_image(img)
-	$BoardsPreview/VBox/preview.texture = tex
+	pass
+	#var rect : Rect2 = board.get_whiteboard_board()
+	#var img : Image = get_viewport().get_texture().get_image()
+	#img.blit_rect(img,rect, Vector2.ZERO)
+	#img.crop(int(rect.size.x), int(rect.size.y))
+	#var aspect_ratio : float = rect.size.x / rect.size.y
+	#img.resize(150, int(150 / aspect_ratio) )
+	#
+	#var tex = ImageTexture.create_from_image(img)
+	#$BoardsPreview/VBox/preview.texture = tex
 
 
 func _on_item_list_item_selected(p_index :int ) -> void:
 	if p_index < boards_array.size():
 		board.unfocus()
 		board.hide()
+		clear_display()
 		current_board = p_index
 		board = boards_array[p_index]
 		board.show()
+		synchronize_display()
 
 
 func _on_boards_resized():
-	if is_instance_valid(board):
-		board.viewport.size = board.size
-	pass
-	#await get_tree().process_frame
-	#if is_instance_valid(boards):
-		#print("boards resized ",boards.size)
-		#for each_board in boards.get_children():
-			#each_board.setup_size(boards.size)
+	if is_instance_valid(boards):
+		for each_board in boards.get_children():
+			each_board.viewport.size = board.size
 
+func set_boards_size() -> void:
+	boards.size = Display.size
+	var display_aspect_ratio = float(Display.size.x)/float(Display.size.y)
+	var available_height = size.y -main_menu.size.y - 40
+	var sc_width = scroll_container.size.x if scroll_container.visible else 0.0
+	var available_width = size.x - sc_width - 40
+	var board_aspect_ratio = available_width / available_height
 
+	
+	if board_aspect_ratio > display_aspect_ratio:
+		boards.scale = Vector2.ONE * (available_height / float(Display.size.y))
+	else:
+		boards.scale = Vector2.ONE * (available_width / float(Display.size.x))
+	
+	boards.position.x = (size.x - boards.size.x * boards.scale.x - sc_width) / 2.0
 
+func set_scroll_container_size() -> void:
+	scroll_container.size.y = size.y - main_menu.size.y
+	scroll_container.position.x = size.x - scroll_container.size.x
+	
 func _on_resized():
 	if is_node_ready():
-		scroll_container.size.y = size.y - $VBox/Panel.size.y
-		scroll_container.position.x = size.x - $VBox/HBox/ScrollContainer.size.x
-		
-		boards.size = Display.size
-		var display_aspect_ratio = float(Display.size.x)/float(Display.size.y)
-		var available_height = size.y - $VBox/Panel.size.y - 40
-		var sc_width = scroll_container.size.x if scroll_container.visible else 0.0
-		var available_width = size.x - sc_width - 40
-		var board_aspect_ratio = available_width / available_height
-		print("ah ",available_height)
-		print("display aspect ratio :", display_aspect_ratio)
-		print("available_ratio", board_aspect_ratio)
-		
-		if board_aspect_ratio > display_aspect_ratio:
-			boards.scale = Vector2.ONE * (available_height / float(Display.size.y))
-		else:
-			boards.scale = Vector2.ONE * (available_width / float(Display.size.x))
-		
-		boards.position.x = (size.x - boards.size.x * boards.scale.x - sc_width) / 2.0
-		print(boards.size)
+		set_scroll_container_size()
+		set_boards_size()
+
+func clear_display() -> void:
+	for widget in Display.presentation_screen.get_children():
+		widget.master.clone = null
+		widget.queue_free()
+
+func synchronize_display() -> void:
+	for widget in board.get_widgets():
+		board.clone_widget(widget)

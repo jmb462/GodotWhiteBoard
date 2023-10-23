@@ -28,6 +28,7 @@ var pinned_marker_position : Vector2 = Vector2.ZERO
 
 # Reference to the same widget on presentation screen
 var clone : Widget = null
+var master : Widget = null
 
 # Reference to the parent widget if grouped with other widget
 var grouped_in : Widget = null
@@ -104,6 +105,7 @@ func _on_resized() -> void:
 
 func set_clone(p_clone : Widget) -> void:
 	clone = p_clone
+	p_clone.master = self
 	p_clone.add_theme_stylebox_override("panel", unfocus_theme)
 	p_clone.buttons.hide()
 	synchronize()
@@ -144,11 +146,13 @@ func _on_buttons_toggle_visible_pressed() -> void:
 
 func _on_buttons_close_pressed() -> void:
 	current_action = G.ACTION.CLOSE
+	delete()
+
+func delete() -> void:
 	emit_signal("widget_deleted", self)
 	queue_free()
 	if is_master():
 		clone.queue_free()
-
 
 func set_focus(p_active: bool) -> void:
 	focus = p_active
