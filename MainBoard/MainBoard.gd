@@ -50,7 +50,7 @@ func _on_palette_paste_pressed():
 		text_widget.position = (board.size - text_widget.size) / 2.0
 		text_widget.synchronize()
 
-func add_board(p_index : int):
+func add_board(p_index : int) -> Board:
 	if is_instance_valid(board):
 		board.unfocus()
 	var new_board = packed_board.instantiate()
@@ -71,14 +71,12 @@ func add_board(p_index : int):
 	
 	await get_tree().process_frame
 	
-	var i = preview_list.add_icon_item(vt)
-	preview_list.move_item(i, current_board)
-	preview_list.select(current_board)
-	preview_list.icon_scale = 180 / vt.get_size().x
-	
+	create_board_preview(board, current_board, true)
 	clear_display()
 	set_scroll_container_size()
 	set_boards_size()
+	
+	return board
 
 func _on_new_board_pressed():
 	add_board(current_board)
@@ -181,7 +179,33 @@ func _on_preview_list_board_delete_requested(p_index : int) -> void:
 	delete_board(p_index)
 
 func duplicate_board(p_index : int) -> void:
-	print("duplicate board")
+	var new_board = packed_board.instantiate()
+	var duplicated_board = boards_array[p_index]
+	
+	boards.add_child(new_board)
+	boards.move_child(new_board, 0)
+	
+	for widget in duplicated_board.get_widgets():
+		duplicated_board.copy_widget_to_board(widget, new_board)
+
+	new_board.connect("board_mouse_entered", _on_board_mouse_entered)
+	boards_array.insert(p_index + 1, new_board)
+	
+	create_board_preview(new_board, p_index + 1)
+	
+
+
+func create_board_preview(p_board : Board, p_to_index : int, autoselect_item : bool = false) :
+	var viewport_texture : ViewportTexture = ViewportTexture.new()
+	viewport_texture = p_board.viewport.get_texture()
+	
+	await get_tree().process_frame
+	
+	var index = preview_list.add_icon_item(viewport_texture)
+	preview_list.move_item(index, p_to_index)
+	preview_list.icon_scale = 180 / viewport_texture.get_size().x
+	if autoselect_item:
+		preview_list.select(p_to_index)
 
 func delete_board(p_index : int) -> void:
 	# Cannot delete last board

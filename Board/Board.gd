@@ -79,8 +79,8 @@ func adapt_size(p_size : Vector2) -> void:
 	size = p_size
 	viewport.size = p_size
 	
-func add(p_node : Node) -> void:
-	whiteboard.add_child(p_node)
+func add(p_node : Node, p_board : Board = self) -> void:
+	p_board.whiteboard.add_child(p_node)
 
 func get_widgets() -> Array[Node]:
 	return whiteboard.get_children()
@@ -250,20 +250,28 @@ func connect_widget_signals(p_widget : Widget) -> void:
 	p_widget.connect("widget_deleted", _on_widget_deleted)
 
 #
-# Duplicate a widget on control screen
+#	Copy a widget on chosen board
 #
-func duplicate_widget(p_widget : Widget) -> void:
+func copy_widget_to_board(p_widget : Widget, p_board : Board) -> Widget:
 	var new_widget : Widget = p_widget.duplicate()
-	add(new_widget)
-	new_widget.position = p_widget.position + Vector2(30,30)
+	add(new_widget, p_board)
+	new_widget.position = p_widget.position
 	new_widget.size = p_widget.size
 	new_widget.visible_on_presentation_screen = p_widget.visible_on_presentation_screen
 	new_widget.locked = p_widget.locked
 	new_widget.editable = p_widget.editable
+	new_widget.clone = null
+	p_board.connect_widget_signals(new_widget)
+	return new_widget
+
+#
+# Duplicate a widget on current board
+#
+func duplicate_widget(p_widget : Widget) -> void:
+	var new_widget : Widget = copy_widget_to_board(p_widget, self)
+	new_widget.position += Vector2(30,30)
 	set_focus(new_widget)
-	connect_widget_signals(new_widget)
 	clone_widget(new_widget)
-	
 
 
 func sort_by_index(a : Widget, b : Widget) -> bool:
