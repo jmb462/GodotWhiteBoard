@@ -1,8 +1,6 @@
 extends SubViewportContainer
 class_name Board
 
-signal board_mouse_entered
-
 var temp_group : Widget = null
 var focused_widget : Array[Widget] = []
 
@@ -15,13 +13,19 @@ var preview_rect : Rect2 = Rect2()
 
 @onready var rect_preview : Panel = $PreviewAnchor/RectPreview
 @onready var viewport : SubViewport = $SubViewport
-@onready var whiteboard : ColorRect = $SubViewport/WhiteBoard
+@onready var whiteboard : Panel = $SubViewport/WhiteBoard
 
 func _ready():
 	connect_gui_input(_on_board_gui_input)
 	print("viewport size ", viewport.size)
 	await get_tree().process_frame
 	whiteboard.size = size
+
+func _process(_delta):
+	if board_mode == G.BOARD_MODE.SELECT:
+		if not Input.is_action_pressed("selection_button"):
+			print("end selection by process")
+			end_select()
 
 func _on_board_gui_input(event) -> void:
 	if event is InputEventMouseButton:
@@ -58,13 +62,7 @@ func _on_board_gui_input(event) -> void:
 					rect_preview.position = event.position + Vector2(0, global_position.y)
 					preview_rect.position = event.position + Vector2(0, global_position.y)
 					preview_rect.size = Vector2.ZERO
-
-			elif board_mode == G.BOARD_MODE.SELECT:
-				if not event.is_pressed():
-					rect_preview.hide()
-					preview_rect = Rect2()
-					group_widgets()
-					board_mode = G.BOARD_MODE.NONE
+				
 					
 	if event is InputEventMouseMotion:
 		if board_mode in [G.BOARD_MODE.TEXT_SIZE, G.BOARD_MODE.SELECT]:
@@ -99,6 +97,12 @@ func set_child(p_widget : Widget) -> void:
 
 func connect_gui_input(p_callback : Callable) -> void:
 	whiteboard.connect("gui_input", p_callback)
+
+func end_select() -> void:
+	rect_preview.hide()
+	preview_rect = Rect2()
+	group_widgets()
+	board_mode = G.BOARD_MODE.NONE
 
 func ungroup() -> void:
 	for widget in temp_group.container.get_children():
@@ -309,6 +313,3 @@ func get_mode() -> G.BOARD_MODE:
 	return board_mode
 
 
-
-func _on_mouse_entered():
-	emit_signal("board_mouse_entered")

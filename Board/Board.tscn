@@ -1,7 +1,14 @@
-[gd_scene load_steps=3 format=3 uid="uid://cwapycy7g8jv3"]
+[gd_scene load_steps=4 format=3 uid="uid://cwapycy7g8jv3"]
 
 [ext_resource type="Script" path="res://Board/Board.gd" id="1_w8hh4"]
 [ext_resource type="StyleBox" uid="uid://crndftp4jr808" path="res://Styles/Widget_preview.tres" id="2_mnmqh"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_t1lwg"]
+bg_color = Color(1, 1, 1, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
 
 [node name="Board" type="SubViewportContainer"]
 clip_contents = true
@@ -21,7 +28,7 @@ msaa_2d = 3
 size = Vector2i(1152, 648)
 render_target_update_mode = 4
 
-[node name="WhiteBoard" type="ColorRect" parent="SubViewport"]
+[node name="WhiteBoard" type="Panel" parent="SubViewport"]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -31,6 +38,7 @@ grow_horizontal = 2
 grow_vertical = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_t1lwg")
 
 [node name="PreviewAnchor" type="Control" parent="."]
 layout_mode = 2
@@ -43,5 +51,4 @@ offset_right = 1.0
 offset_bottom = 1.0
 theme_override_styles/panel = ExtResource("2_mnmqh")
 
-[connection signal="mouse_entered" from="." to="." method="_on_mouse_entered"]
 [connection signal="resized" from="." to="." method="_on_resized"]

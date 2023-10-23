@@ -8,8 +8,7 @@ var current_board : int = -1
 var delete_index : int = -1
 
 @onready var boards : Control = $VBox/HBox/Boards
-@onready var scroll_container : ScrollContainer = $VBox/HBox/ScrollContainer
-@onready var preview_list : PreviewList = $VBox/HBox/ScrollContainer/PreviewList
+@onready var preview_list : PreviewList = $VBox/HBox/PreviewList
 @onready var main_menu : Panel = $VBox/MainMenu
 
 @onready var delete_confirmation_dialog : ConfirmationDialog = $DeleteConfirmationDialog
@@ -62,7 +61,6 @@ func add_board(p_index : int) -> Board:
 		board.unfocus()
 	var new_board = packed_board.instantiate()
 	boards.add_child(new_board)
-	new_board.connect("board_mouse_entered", _on_board_mouse_entered)
 	if is_instance_valid(board):
 		board.viewport.render_target_update_mode = SubViewport.UPDATE_DISABLED
 		board.hide()
@@ -78,7 +76,8 @@ func add_board(p_index : int) -> Board:
 	
 	await get_tree().process_frame
 	
-	create_board_preview(board, current_board, true)
+	preview_list.update_tree(boards_array)
+	preview_list.select(current_board)
 	clear_display()
 	set_scroll_container_size()
 	set_boards_size()
@@ -100,11 +99,11 @@ func _on_next_board_pressed():
 	update_preview_list()
 
 
-func change_board(p_index : int) -> void:
+func change_board(p_index : int, delayed : bool = true) -> void:
 	if p_index < 0:
 		return
+	board.set_mode(G.BOARD_MODE.NONE)
 	board.unfocus()
-	board.hide()
 	clear_display()
 	current_board = p_index
 	
@@ -112,10 +111,18 @@ func change_board(p_index : int) -> void:
 		current_board = boards_array.size() - 1
 	
 	board = boards_array[current_board]
-	board.show()
+	board.unfocus()
+	board.set_mode(G.BOARD_MODE.NONE)
 	synchronize_display()
-	
-	
+	if delayed:
+		await get_tree().create_timer(0.1).timeout
+	show_only_current_board()
+
+func show_only_current_board():
+	for i in boards_array.size():
+		boards_array[i].visible = i == current_board
+		
+
 func update_preview_list() -> void:
 	preview_list.select(current_board)
 
@@ -147,8 +154,8 @@ func set_boards_size() -> void:
 	boards.size = Display.size
 	var display_aspect_ratio = float(Display.size.x)/float(Display.size.y)
 	var available_height = size.y -main_menu.size.y - 40
-	var sc_width = scroll_container.size.x if scroll_container.visible else 0.0
-	var available_width = size.x - sc_width - 40
+	var preview_width = preview_list.size.x if preview_list.visible else 0.0
+	var available_width = size.x - preview_width - 40
 	var board_aspect_ratio = available_width / available_height
 
 	
@@ -157,11 +164,11 @@ func set_boards_size() -> void:
 	else:
 		boards.scale = Vector2.ONE * (available_width / float(Display.size.x))
 	
-	boards.position.x = (size.x - boards.size.x * boards.scale.x - sc_width) / 2.0
+	boards.position.x = (size.x - boards.size.x * boards.scale.x - preview_width) / 2.0
 
 func set_scroll_container_size() -> void:
-	scroll_container.size.y = size.y - main_menu.size.y
-	scroll_container.position.x = size.x - scroll_container.size.x
+	preview_list.size.y = board.size.y * boards.scale.y
+	preview_list.position.x = size.x - preview_list.size.x
 	
 func _on_resized():
 	if is_node_ready():
@@ -185,45 +192,26 @@ func synchronize_display() -> void:
 
 
 #
-# Mouse entered in board callback
-#
-func _on_board_mouse_entered() -> void:
-	preview_list.hide_overlay()
-
-
-#
 # Duplicate board and all widgets on a new board
 #
 func duplicate_board(p_index : int) -> void:
-	
+	Debug.add("duplicate ", p_index)
 	var new_board = packed_board.instantiate()
 	var duplicated_board = boards_array[p_index]
 	duplicated_board.unfocus()
 	boards.add_child(new_board)
 	boards.move_child(new_board, 0)
-	
 	for widget in duplicated_board.get_widgets():
 		duplicated_board.copy_widget_to_board(widget, new_board)
 
-	new_board.connect("board_mouse_entered", _on_board_mouse_entered)
 	boards_array.insert(p_index + 1, new_board)
-	
-	create_board_preview(new_board, p_index + 1)
-	
-#
-# Create the board preview and add it to preview list
-#
-func create_board_preview(p_board : Board, p_to_index : int, autoselect_item : bool = false) :
-	var viewport_texture : ViewportTexture = ViewportTexture.new()
-	viewport_texture = p_board.viewport.get_texture()
+
+	Debug.add("insert at ", p_index + 1)
 	
 	await get_tree().process_frame
 	
-	var index = preview_list.add_icon_item(viewport_texture)
-	preview_list.move_item(index, p_to_index)
-	preview_list.icon_scale = 180 / viewport_texture.get_size().x
-	if autoselect_item:
-		preview_list.select(p_to_index)
+	preview_list.update_tree(boards_array)
+	preview_list.select(current_board)
 
 #
 # Show a confirmation dialog when board deletion is requested
@@ -244,8 +232,26 @@ func delete_board(p_index : int = delete_index) -> void:
 		return
 	var removed_board = boards_array[p_index]
 	boards_array.remove_at(p_index)
-	preview_list.remove_item(p_index)
+	
 	removed_board.queue_free()
 	if current_board == p_index:
 		change_board(current_board)
-		update_preview_list()
+	
+	preview_list.update_tree(boards_array)
+	preview_list.select(current_board)
+
+
+func _on_preview_list_board_move(from_index, to_index):
+	boards_array.insert(to_index, boards_array[from_index])
+
+	if from_index < to_index:
+		boards_array.remove_at(from_index)
+		current_board = to_index - 1
+	else:
+		boards_array.remove_at(from_index + 1)
+		current_board = to_index
+		
+	change_board(current_board)
+	
+	preview_list.update_tree(boards_array)
+	preview_list.select(current_board)

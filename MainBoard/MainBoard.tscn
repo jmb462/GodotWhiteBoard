@@ -80,17 +80,11 @@ offset_right = 940.0
 offset_bottom = 596.0
 size_flags_horizontal = 3
 
-[node name="ScrollContainer" type="ScrollContainer" parent="VBox/HBox"]
-custom_minimum_size = Vector2(200, 500)
-layout_mode = 2
-offset_left = 944.0
-offset_right = 1152.0
-offset_bottom = 596.0
-follow_focus = true
-horizontal_scroll_mode = 0
-
-[node name="PreviewList" parent="VBox/HBox/ScrollContainer" instance=ExtResource("6_c0of4")]
-layout_mode = 2
+[node name="PreviewList" parent="VBox/HBox" instance=ExtResource("6_c0of4")]
+layout_mode = 0
+offset_right = 200.0
+hide_root = true
+scroll_horizontal_enabled = false
 
 [node name="Palette" parent="." instance=ExtResource("3_s80ig")]
 layout_mode = 2
@@ -116,10 +110,11 @@ dialog_text = "Are you sure you want to clear current board?"
 [connection signal="pressed" from="VBox/MainMenu/HBox/Next" to="." method="_on_next_board_pressed"]
 [connection signal="pressed" from="VBox/MainMenu/HBox/Clear" to="." method="clear_board_confirm"]
 [connection signal="resized" from="VBox/HBox/Boards" to="." method="_on_boards_resized"]
-[connection signal="board_delete_requested" from="VBox/HBox/ScrollContainer/PreviewList" to="." method="delete_confirm"]
-[connection signal="board_duplicate_requested" from="VBox/HBox/ScrollContainer/PreviewList" to="." method="duplicate_board"]
-[connection signal="board_requested" from="VBox/HBox/ScrollContainer/PreviewList" to="." method="change_board"]
-[connection signal="item_selected" from="VBox/HBox/ScrollContainer/PreviewList" to="." method="_on_preview_list_item_selected"]
+[connection signal="board_delete_requested" from="VBox/HBox/PreviewList" to="." method="delete_confirm"]
+[connection signal="board_duplicate_requested" from="VBox/HBox/PreviewList" to="." method="duplicate_board"]
+[connection signal="board_move" from="VBox/HBox/PreviewList" to="." method="_on_preview_list_board_move"]
+[connection signal="board_requested" from="VBox/HBox/PreviewList" to="." method="change_board"]
+[connection signal="item_selected" from="VBox/HBox/PreviewList" to="." method="_on_preview_list_item_selected"]
 [connection signal="freeze_pressed" from="Palette" to="." method="_on_palette_freeze_pressed"]
 [connection signal="image_pressed" from="Palette" to="." method="_on_palette_image_pressed"]
 [connection signal="paste_pressed" from="Palette" to="." method="_on_palette_paste_pressed"]

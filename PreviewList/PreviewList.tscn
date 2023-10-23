@@ -1,42 +1,45 @@
-[gd_scene load_steps=11 format=3 uid="uid://c8xf0xhc7v7uf"]
+[gd_scene load_steps=8 format=3 uid="uid://c8xf0xhc7v7uf"]
 
 [ext_resource type="Script" path="res://PreviewList/PreviewList.gd" id="1_4mklh"]
 [ext_resource type="Texture2D" uid="uid://5d3rxudx6s3q" path="res://Assets/Buttons/close.png" id="2_8f1yw"]
 [ext_resource type="Texture2D" uid="uid://g7ubw4n8yn7y" path="res://Assets/Buttons/duplicate.png" id="3_b7w47"]
 
-[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_fo3yv"]
-
-[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_ekhcs"]
-
-[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_35lj6"]
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_8b2t5"]
-bg_color = Color(0.47451, 0.47451, 0.47451, 1)
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_g1idq"]
-bg_color = Color(0.47451, 0.47451, 0.47451, 1)
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_e6x43"]
+bg_color = Color(0.8, 0.8, 0.8, 1)
+corner_radius_top_left = 10
 corner_radius_bottom_left = 10
 
-[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_pb50m"]
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_0qarx"]
 
-[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_vijou"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_d8uam"]
+bg_color = Color(0.454902, 0.454902, 0.454902, 1)
+corner_radius_top_left = 10
+corner_radius_bottom_left = 10
 
-[node name="PreviewList" type="ItemList"]
-custom_minimum_size = Vector2(200, 200)
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_dxei7"]
+content_margin_right = 619.0
+bg_color = Color(0.454902, 0.454902, 0.454902, 1)
+corner_radius_top_left = 10
+corner_radius_bottom_left = 10
+
+[node name="PreviewList" type="Tree"]
+custom_minimum_size = Vector2(100, 600)
+offset_right = 100.0
+offset_bottom = 600.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
-theme_override_constants/h_separation = 12
+theme_override_colors/guide_color = Color(0.482353, 0.482353, 0.482353, 0)
+theme_override_colors/drop_position_color = Color(0, 0, 0, 1)
 theme_override_constants/v_separation = 7
-theme_override_styles/panel = SubResource("StyleBoxEmpty_fo3yv")
-theme_override_styles/focus = SubResource("StyleBoxEmpty_ekhcs")
-theme_override_styles/hovered = SubResource("StyleBoxEmpty_35lj6")
-theme_override_styles/selected = SubResource("StyleBoxFlat_8b2t5")
-theme_override_styles/selected_focus = SubResource("StyleBoxFlat_g1idq")
-theme_override_styles/cursor = SubResource("StyleBoxEmpty_pb50m")
-theme_override_styles/cursor_unfocused = SubResource("StyleBoxEmpty_vijou")
+theme_override_constants/item_margin = 0
+theme_override_constants/inner_item_margin_left = 6
+theme_override_constants/icon_max_width = 184
+theme_override_styles/panel = SubResource("StyleBoxFlat_e6x43")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_0qarx")
+theme_override_styles/selected = SubResource("StyleBoxFlat_d8uam")
+theme_override_styles/selected_focus = SubResource("StyleBoxFlat_dxei7")
 allow_search = false
-auto_height = true
-icon_mode = 0
+drop_mode_flags = 2
 script = ExtResource("1_4mklh")
 
 [node name="ButtonsOverlay" type="HBoxContainer" parent="."]
@@ -57,5 +60,6 @@ texture_normal = ExtResource("3_b7w47")
 
 [connection signal="gui_input" from="." to="." method="_on_gui_input"]
 [connection signal="item_selected" from="." to="." method="_on_item_selected"]
+[connection signal="mouse_exited" from="." to="." method="_on_mouse_exited"]
 [connection signal="pressed" from="ButtonsOverlay/Delete" to="." method="_on_delete_pressed"]
 [connection signal="pressed" from="ButtonsOverlay/Duplicate" to="." method="_on_duplicate_pressed"]
