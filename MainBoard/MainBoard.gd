@@ -82,29 +82,32 @@ func add_board(p_index : int):
 func _on_new_board_pressed():
 	add_board(current_board)
 
+func _on_item_list_item_selected(p_index :int ) -> void:
+	change_board(p_index)
+
 func _on_previous_board_pressed():
-	if current_board > 0:
-		board.unfocus()
-		board.hide()
-		clear_display()
-		current_board -= 1
-		board = boards_array[current_board]
-		board.show()
-		synchronize_display()
-		preview_list.select(current_board)
+	change_board(current_board - 1)
+	update_preview_list()
 		
 func _on_next_board_pressed():
-	if current_board < boards_array.size() - 1:
-		board.unfocus()
-		board.hide()
-		clear_display()
-		current_board += 1
-		board = boards_array[current_board]
-		board.show()
-		synchronize_display()
-		preview_list.select(current_board)
+	change_board(current_board + 1)
+	update_preview_list()
 
-
+func change_board(p_index : int) -> void:
+	if p_index < 0 or p_index >= boards_array.size():
+		return
+	board.unfocus()
+	board.hide()
+	clear_display()
+	current_board = p_index
+	board = boards_array[current_board]
+	board.show()
+	synchronize_display()
+	
+	
+func update_preview_list() -> void:
+	preview_list.select(current_board)
+	
 func _on_clear_board_pressed():
 	for widget in board.get_widgets():
 		widget.delete()
@@ -122,15 +125,7 @@ func _on_palette_freeze_pressed():
 	#$BoardsPreview/VBox/preview.texture = tex
 
 
-func _on_item_list_item_selected(p_index :int ) -> void:
-	if p_index < boards_array.size():
-		board.unfocus()
-		board.hide()
-		clear_display()
-		current_board = p_index
-		board = boards_array[p_index]
-		board.show()
-		synchronize_display()
+
 
 
 func _on_boards_resized():

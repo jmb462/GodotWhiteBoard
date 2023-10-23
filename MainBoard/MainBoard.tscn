@@ -23,10 +23,11 @@ corner_radius_bottom_left = 10
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_35lj6"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_8b2t5"]
-bg_color = Color(0.294118, 0.294118, 0.294118, 1)
+bg_color = Color(0.47451, 0.47451, 0.47451, 1)
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_g1idq"]
-bg_color = Color(0.294118, 0.294118, 0.294118, 1)
+bg_color = Color(0.47451, 0.47451, 0.47451, 1)
+corner_radius_bottom_left = 10
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_pb50m"]
 
@@ -101,6 +102,7 @@ layout_mode = 2
 offset_left = 944.0
 offset_right = 1152.0
 offset_bottom = 596.0
+follow_focus = true
 horizontal_scroll_mode = 0
 
 [node name="PreviewList" type="ItemList" parent="VBox/HBox/ScrollContainer"]
@@ -108,6 +110,8 @@ custom_minimum_size = Vector2(200, 200)
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
+theme_override_constants/h_separation = 12
+theme_override_constants/v_separation = 7
 theme_override_styles/panel = SubResource("StyleBoxEmpty_fo3yv")
 theme_override_styles/focus = SubResource("StyleBoxEmpty_ekhcs")
 theme_override_styles/hovered = SubResource("StyleBoxEmpty_35lj6")
@@ -117,6 +121,7 @@ theme_override_styles/cursor = SubResource("StyleBoxEmpty_pb50m")
 theme_override_styles/cursor_unfocused = SubResource("StyleBoxEmpty_vijou")
 allow_search = false
 auto_height = true
+icon_mode = 0
 
 [node name="Palette" parent="." instance=ExtResource("3_s80ig")]
 layout_mode = 2
