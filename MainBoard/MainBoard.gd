@@ -230,12 +230,14 @@ func delete_confirm(p_index : int) -> void:
 func delete_board(p_index : int = delete_index) -> void:
 	if p_index < 0:
 		return
+	var offset : int = -1 if  p_index < current_board else 0
+		
 	var removed_board = boards_array[p_index]
 	boards_array.remove_at(p_index)
 	
 	removed_board.queue_free()
-	if current_board == p_index:
-		change_board(current_board)
+	if current_board + offset == p_index:
+		change_board(current_board + offset)
 	
 	preview_list.update_tree(boards_array)
 	preview_list.select(current_board)
