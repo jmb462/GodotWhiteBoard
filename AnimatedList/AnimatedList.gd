@@ -21,12 +21,14 @@ var grabbed_item_index : int = -1
 var real_size_y : float = 0.0
 
 # All theses signals should be connected at item creation
-var signals = ["selected","grabbed","dropped","mouse_exited","mouse_entered", "delete_requested", "duplicate_requested"]
+var signals = ["selected","grabbed","dropped","mouse_exited","mouse_entered", "delete_requested", "duplicate_requested", "scroll_requested"]
 
 # Used to center items horizontally into container
 var items_horizontal_offset = 0
 
 var preview_scale : float = 1.0
+
+var scroll_wheel_sensitivity = 50.0
 
 @onready var packed_item : PackedScene = preload("res://AnimatedList/AnimatedItem/AnimatedItem.tscn")
 
@@ -262,3 +264,13 @@ func _on_v_scroll_bar_value_changed(p_value : float) -> void:
 	var tween : Tween = create_tween()
 	tween.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
 	tween.tween_property(item_container, "position:y", -p_value, 0.2)
+	
+func _on_item_scroll_requested(p_button : MouseButton) -> void:
+	print("scroll ", p_button)
+	scrollbar.value += scroll_wheel_sensitivity * (1 if p_button == MOUSE_BUTTON_WHEEL_DOWN else -1)
+
+
+func _on_gui_input(p_event : InputEvent) -> void:
+	if p_event is InputEventMouseButton:
+		if p_event.button_index in [MOUSE_BUTTON_WHEEL_DOWN, MOUSE_BUTTON_WHEEL_UP]:
+			_on_item_scroll_requested(p_event.button_index)

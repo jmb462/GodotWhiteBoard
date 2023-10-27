@@ -10,11 +10,12 @@ signal mouse_entered(index : int)
 signal mouse_exited(index : int)
 signal delete_requested(index : int)
 signal duplicate_requested(index : int)
+signal scroll_requested(button : MouseButton)
 #endregion
 
 enum Z { NORMAL, UNDER, GRABBED}
 
-func _process(delta):
+func _process(_delta):
 	$Debug.text = str(index)
 
 #region Node references
@@ -110,23 +111,28 @@ func get_z() -> int:
 #region Mouse inputs
 
 func _input(event : InputEvent) -> void:
-	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
-		if is_left_mouse_down and is_grabbing:
-			is_grabbing = false
-			print("emitting dropped")
-			emit_signal("dropped", index)
-			launch_tween_scale(false)
-			is_left_mouse_down = false
-			set_z(Z.NORMAL)
-		if not event.is_pressed():
-			is_left_mouse_down = false
-
+	if event is InputEventMouseButton:
+		if event.button_index == MOUSE_BUTTON_LEFT:
+			if is_left_mouse_down and is_grabbing:
+				is_grabbing = false
+				print("emitting dropped")
+				emit_signal("dropped", index)
+				launch_tween_scale(false)
+				is_left_mouse_down = false
+				set_z(Z.NORMAL)
+			if not event.is_pressed():
+				is_left_mouse_down = false
+	
 func _on_mouse_detection_gui_input(p_event : InputEvent):
-	if is_left_mouse_click(p_event):
-		is_left_mouse_down = p_event.is_pressed()
-		if is_left_mouse_down and not mouse_over_buttons:
-			grab_start_position = p_event.position
-			emit_signal("selected", index)
+	if p_event is InputEventMouseButton:
+		if is_left_mouse_click(p_event):
+			is_left_mouse_down = p_event.is_pressed()
+			if is_left_mouse_down and not mouse_over_buttons:
+				grab_start_position = p_event.position
+				emit_signal("selected", index)
+		if p_event.button_index in [MOUSE_BUTTON_WHEEL_DOWN, MOUSE_BUTTON_WHEEL_UP]:
+				print("mouse wheel", p_event.button_index)
+				emit_signal("scroll_requested", p_event.button_index)
 					
 	if p_event is InputEventMouseMotion:
 		if not is_grabbing and is_left_mouse_down:
