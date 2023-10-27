@@ -26,7 +26,8 @@ func _process(_delta):
 		if not Input.is_action_pressed("selection_button"):
 			print("end selection by process")
 			end_select()
-
+	$Sprite2D/Debug.text = str(get_parent().get_parent().get_parent().get_parent().boards_array.find(self))
+	
 func _on_board_gui_input(event) -> void:
 	if event is InputEventMouseButton:
 		if event.button_index == MOUSE_BUTTON_LEFT:

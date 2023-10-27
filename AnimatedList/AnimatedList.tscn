@@ -1,0 +1,20 @@
+[gd_scene load_steps=2 format=3 uid="uid://dqrs686c4wgyd"]
+
+[ext_resource type="Script" path="res://AnimatedList/AnimatedList.gd" id="1_1yay0"]
+
+[node name="JuicyList" type="PanelContainer"]
+clip_contents = true
+custom_minimum_size = Vector2(200, 300)
+mouse_filter = 1
+mouse_force_pass_scroll_events = false
+script = ExtResource("1_1yay0")
+
+[node name="ItemsContainer" type="Node2D" parent="."]
+
+[node name="VScrollBar" type="VScrollBar" parent="."]
+visible = false
+layout_mode = 2
+size_flags_horizontal = 8
+max_value = 5.0
+
+[connection signal="value_changed" from="VScrollBar" to="." method="_on_v_scroll_bar_value_changed"]
