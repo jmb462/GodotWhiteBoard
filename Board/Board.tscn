@@ -1,14 +1,8 @@
 [gd_scene load_steps=4 format=3 uid="uid://cwapycy7g8jv3"]
 
 [ext_resource type="Script" path="res://Board/Board.gd" id="1_w8hh4"]
+[ext_resource type="StyleBox" uid="uid://h17ciyanrqsa" path="res://Resources/board_panel_style.tres" id="2_dgvqa"]
 [ext_resource type="StyleBox" uid="uid://crndftp4jr808" path="res://Styles/Widget_preview.tres" id="2_mnmqh"]
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_t1lwg"]
-bg_color = Color(1, 1, 1, 1)
-corner_radius_top_left = 10
-corner_radius_top_right = 10
-corner_radius_bottom_right = 10
-corner_radius_bottom_left = 10
 
 [node name="Board" type="SubViewportContainer"]
 clip_contents = true
@@ -38,7 +32,7 @@ grow_horizontal = 2
 grow_vertical = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
-theme_override_styles/panel = SubResource("StyleBoxFlat_t1lwg")
+theme_override_styles/panel = ExtResource("2_dgvqa")
 
 [node name="PreviewAnchor" type="Control" parent="."]
 layout_mode = 2
@@ -55,6 +49,7 @@ theme_override_styles/panel = ExtResource("2_mnmqh")
 position = Vector2(1866, 3)
 
 [node name="Debug" type="Label" parent="Sprite2D"]
+visible = false
 offset_right = 157.0
 offset_bottom = 69.0
 theme_override_colors/font_color = Color(0, 0, 0, 0.156863)

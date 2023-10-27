@@ -60,6 +60,7 @@ func add_board(p_index : int) -> Board:
 	if is_instance_valid(board):
 		board.unfocus()
 	var new_board = packed_board.instantiate()
+	board_signal_connect(new_board)
 	boards.add_child(new_board)
 	if is_instance_valid(board):
 		board.viewport.render_target_update_mode = SubViewport.UPDATE_DISABLED
@@ -181,7 +182,7 @@ func clear_display() -> void:
 		var tween = create_tween()
 		for widget in displayed_widgets:
 			tween.set_parallel().set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
-			tween.parallel().tween_property(widget, "modulate:a", 0.0, 0.2)
+			tween.tween_property(widget, "modulate:a", 0.0, 0.2)
 		await tween.finished
 		for widget in displayed_widgets:
 			if is_instance_valid(widget):
@@ -195,14 +196,12 @@ func clear_display() -> void:
 func synchronize_display() -> void:
 	for widget in board.get_widgets():
 		board.clone_widget(widget)
-
-
-#
+	
 # Duplicate board and all widgets on a new board
 #
 func duplicate_board(p_index : int) -> void:
-	print("duplicate_board ",p_index)
 	var new_board = packed_board.instantiate()
+	board_signal_connect(new_board)
 	var duplicated_board = boards_array[p_index]
 	duplicated_board.unfocus()
 	boards.add_child(new_board)
@@ -238,9 +237,11 @@ func delete_board(p_index : int = delete_index) -> void:
 	var removed_board = boards_array[p_index]
 	boards_array.remove_at(p_index)
 	
-	removed_board.queue_free()
+
 	if current_board + offset == p_index:
 		change_board(current_board + offset)
+	
+	removed_board.queue_free()
 	
 	preview_list.delete_item(p_index)
 	preview_list.select(current_board)
@@ -257,5 +258,10 @@ func _on_preview_list_item_moved(from_index : int , to_index : int):
 
 	change_board(to_index)
 
+func board_signal_connect(p_board : Board) -> void:
+	p_board.connect("mouse_entered", preview_list._on_mouse_exit_detected)
 
 
+
+func _on_mouse_entered():
+	preview_list._on_mouse_exit_detected()

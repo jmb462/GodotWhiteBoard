@@ -51,6 +51,7 @@ offset_bottom = 20.0
 texture_normal = ExtResource("4_tvpw8")
 
 [node name="Debug" type="Label" parent="."]
+visible = false
 offset_left = -6.0
 offset_top = 14.0
 offset_right = 88.0

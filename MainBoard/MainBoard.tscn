@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=3 uid="uid://hsjvadwsbdih"]
+[gd_scene load_steps=11 format=3 uid="uid://hsjvadwsbdih"]
 
 [ext_resource type="Script" path="res://MainBoard/MainBoard.gd" id="1_ngbew"]
 [ext_resource type="Texture2D" uid="uid://cdch3vwecjo3q" path="res://Assets/Buttons/new_board.png" id="2_4jg4w"]
@@ -6,6 +6,7 @@
 [ext_resource type="Texture2D" uid="uid://dj8tk8b0qkokp" path="res://Assets/Buttons/previous.png" id="3_u3tpv"]
 [ext_resource type="Texture2D" uid="uid://cxqknx0or7gr8" path="res://Assets/Buttons/next.png" id="4_int1g"]
 [ext_resource type="Texture2D" uid="uid://cxnoj01cilkcj" path="res://Assets/Buttons/clear_board.png" id="5_fra2n"]
+[ext_resource type="StyleBox" uid="uid://h17ciyanrqsa" path="res://Resources/board_panel_style.tres" id="6_0wgyw"]
 [ext_resource type="PackedScene" uid="uid://dqrs686c4wgyd" path="res://AnimatedList/AnimatedList.tscn" id="6_cseuc"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_bgtxn"]
@@ -40,6 +41,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+mouse_filter = 2
 
 [node name="MainMenu" type="Panel" parent="VBox"]
 custom_minimum_size = Vector2(200, 48)
@@ -88,6 +90,17 @@ offset_bottom = 596.0
 size_flags_horizontal = 3
 mouse_filter = 1
 
+[node name="Backpanel" type="Panel" parent="VBox/HBox/Boards"]
+show_behind_parent = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_styles/panel = ExtResource("6_0wgyw")
+
 [node name="PreviewList" parent="VBox/HBox" instance=ExtResource("6_cseuc")]
 layout_mode = 0
 offset_right = 200.0
@@ -113,6 +126,7 @@ mouse_filter = 1
 [node name="ClearConfirmationDialog" type="ConfirmationDialog" parent="."]
 dialog_text = "Are you sure you want to clear current board?"
 
+[connection signal="mouse_entered" from="." to="." method="_on_mouse_entered"]
 [connection signal="resized" from="." to="." method="_on_resized"]
 [connection signal="pressed" from="VBox/MainMenu/HBox/New" to="." method="_on_new_board_pressed"]
 [connection signal="pressed" from="VBox/MainMenu/HBox/Previous" to="." method="_on_previous_board_pressed"]

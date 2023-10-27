@@ -35,7 +35,7 @@ func _process(_delta):
 @export var grab_sensitivity : float = 5.0
 @export var grab_scale_factor : float = 1.2
 @export var tween_scale_duration : float = 0.05
-@export var buttons_max_opacity : float = 0.5
+@export var buttons_max_opacity : float = 0.35
 @export var buttons_fade_in_duration : float = 0.05
 @export var buttons_fade_out_duration : float = 0.05
 @export var hover_scale_factor : float = 1.05
@@ -50,19 +50,19 @@ var temp_index : int = 0
 
 var grab_start_position : Vector2 = Vector2.ZERO
 var is_grabbing : bool = false
+var grab_start_x : float = 0.0
+var grab_start_y_offset : float = 0.0
 
 var is_left_mouse_down : bool = false
-var mouse_over_buttons : bool = false
+var is_mouse_over_buttons : bool = false
 
 func _ready() -> void:
 	return
 
 func set_item_texture(p_texture):
 	preview.set_texture(p_texture)
-	print("pr", preview_scale)
 	var image : Image = Image.create(int(p_texture.get_size().x * preview_scale), int(p_texture.get_size().y  * preview_scale), false, Image.FORMAT_RGB8)
 	texture = ImageTexture.create_from_image(image)
-	print(image.get_size())
 	resize()
 
 func get_item_texture() -> Texture:
@@ -76,7 +76,6 @@ func set_preview_scale(p_scale : float) -> void:
 	preview.scale = Vector2.ONE * p_scale
 
 func resize() -> void:
-	print(texture.get_size())
 	mouse_detection.size = texture.get_size()
 	mouse_detection.position = - texture.get_size() / 2.0
 	buttons_overlay.position = - texture.get_size() / 2.0 + buttons_overlay_offset
@@ -96,7 +95,6 @@ func is_selected() -> bool:
 	return selected_overlay.visible
 
 func freeze_texture():
-	print("freeze texture")
 	var freezed_image : Image = preview.texture.get_image()
 	var freezed_texture : ImageTexture = ImageTexture.create_from_image(freezed_image)
 	preview.texture = freezed_texture
@@ -115,7 +113,10 @@ func _input(event : InputEvent) -> void:
 		if event.button_index == MOUSE_BUTTON_LEFT:
 			if is_left_mouse_down and is_grabbing:
 				is_grabbing = false
-				print("emitting dropped")
+				top_level = false
+				mouse_detection.mouse_default_cursor_shape=Control.CURSOR_ARROW
+				position.x = grab_start_x
+				position.y -= grab_start_y_offset
 				emit_signal("dropped", index)
 				launch_tween_scale(false)
 				is_left_mouse_down = false
@@ -127,18 +128,25 @@ func _on_mouse_detection_gui_input(p_event : InputEvent):
 	if p_event is InputEventMouseButton:
 		if is_left_mouse_click(p_event):
 			is_left_mouse_down = p_event.is_pressed()
-			if is_left_mouse_down and not mouse_over_buttons:
+			if is_left_mouse_down and not is_mouse_over_buttons:
 				grab_start_position = p_event.position
 				emit_signal("selected", index)
 		if p_event.button_index in [MOUSE_BUTTON_WHEEL_DOWN, MOUSE_BUTTON_WHEEL_UP]:
-				print("mouse wheel", p_event.button_index)
-				emit_signal("scroll_requested", p_event.button_index)
+			emit_signal("scroll_requested", p_event.button_index)
 					
 	if p_event is InputEventMouseMotion:
 		if not is_grabbing and is_left_mouse_down:
 			if p_event.position.distance_to(grab_start_position) > grab_sensitivity:
 				emit_signal("grabbed", index)
+				grab_start_x = position.x
+				var local_y = position.y
+				position = global_position
+				grab_start_y_offset = position.y - local_y
+				print(grab_start_y_offset)
+				top_level = true
 				is_grabbing = true
+				mouse_detection.mouse_default_cursor_shape = Control.CURSOR_VSIZE
+				
 				launch_tween_scale(true)
 
 func is_left_mouse_click(p_event : InputEvent, p_pressed : bool = true) -> bool:
@@ -162,11 +170,16 @@ func _on_mouse_detection_mouse_entered():
 
 func _on_mouse_detection_mouse_exited():
 	# Wait a frame to prevent mouse exit while hovering buttons
-	await get_tree().process_frame
-	if not mouse_over_buttons:
+	#await get_tree().process_frame
+	if not is_mouse_in_item():
 		emit_signal("mouse_exited", index)
 		launch_tween_over(false)
 
+func is_mouse_in_item() -> bool:
+	var item_rect : Rect2 = Rect2(Vector2.ZERO, get_size())
+	var mouse_position = get_local_mouse_position() + get_size() / 2.0
+	return item_rect.has_point(mouse_position)
+	
 
 func _on_delete_pressed() -> void:
 	# Prevent buttons action if hidden
@@ -182,7 +195,7 @@ func _on_duplicate_pressed() -> void:
 	emit_signal("duplicate_requested", index)
 
 func _on_buttons_mouse_over(p_over : bool) -> void:
-	mouse_over_buttons = p_over
+	is_mouse_over_buttons = p_over
 #endregion
 
 #region Tweens
@@ -208,3 +221,10 @@ func launch_delete_tween() -> void:
 	await tween.finished
 	queue_free()
 #endregion
+
+func force_mouse_exit() -> void:
+	if not is_mouse_in_item():
+		launch_tween_over(false)
+
+func get_grab_y() -> float:
+	return position.y - grab_start_y_offset

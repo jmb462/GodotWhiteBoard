@@ -91,6 +91,9 @@ func _on_item_selected(p_index : int) -> void:
 	emit_signal("item_selected", p_index)
 
 func _on_item_mouse_entered(p_index : int) -> void:
+	for i in items.size():
+		if i != p_index:
+			items[i].force_mouse_exit()
 	if is_grabbing():
 		return
 	emit_signal("item_mouse_entered", p_index)
@@ -134,11 +137,10 @@ func _process(_delta) -> void:
 	
 	if not is_grabbing():
 		return
-	
+		
 	if grabbed_item_index > items.size() -1:
 		print("Grabbed item index out of range (%s)" % grabbed_item_index)
 		return
-	
 	var grabbed_item : AnimatedItem = items[grabbed_item_index]
 
 	grabbed_item.position.y += relative_mouse.y
@@ -146,7 +148,7 @@ func _process(_delta) -> void:
 	for item in items:
 		if item == grabbed_item:
 			continue
-		if abs(grabbed_item.position.y - item.position.y) < item.get_size().y / 4.0:
+		if abs(grabbed_item.get_grab_y() - item.position.y) < item.get_size().y / 5.0:
 			tween_move_item(item)
 
 
@@ -174,7 +176,6 @@ func tween_reposition_grabbed() -> void:
 
 
 func select(p_index : int) -> void:
-	print("select called")
 	if p_index < 0 or p_index >= items.size():
 		return
 	selected_item = items[p_index]
@@ -191,14 +192,12 @@ func get_selected_index() -> int:
 
 func connect_all(p_item : AnimatedItem) -> void:
 	for signal_name in signals:
-		print("connecting ", signal_name)
 		p_item.connect(signal_name, Callable(self, "_on_item_" + signal_name))
 
 func _on_item_delete_requested(p_index : int) -> void:
 	emit_signal("item_delete_requested" , p_index)
 	
 func _on_item_duplicate_requested(p_index : int) -> void:
-	print("liste emet item_duplicate_requested")
 	emit_signal("item_duplicate_requested" , p_index)
 
 func delete_item(p_index : int) -> void:
@@ -266,7 +265,6 @@ func _on_v_scroll_bar_value_changed(p_value : float) -> void:
 	tween.tween_property(item_container, "position:y", -p_value, 0.2)
 	
 func _on_item_scroll_requested(p_button : MouseButton) -> void:
-	print("scroll ", p_button)
 	scrollbar.value += scroll_wheel_sensitivity * (1 if p_button == MOUSE_BUTTON_WHEEL_DOWN else -1)
 
 
@@ -274,3 +272,7 @@ func _on_gui_input(p_event : InputEvent) -> void:
 	if p_event is InputEventMouseButton:
 		if p_event.button_index in [MOUSE_BUTTON_WHEEL_DOWN, MOUSE_BUTTON_WHEEL_UP]:
 			_on_item_scroll_requested(p_event.button_index)
+
+func _on_mouse_exit_detected() -> void:
+	for item in items:
+		item.force_mouse_exit()
