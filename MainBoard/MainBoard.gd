@@ -145,7 +145,7 @@ func _on_palette_freeze_pressed():
 func _on_boards_resized():
 	if is_instance_valid(boards):
 		for each_board in boards.get_children():
-			each_board.viewport.size = board.size
+			each_board.custom_minimum_size = board.size
 
 func set_boards_size() -> void:
 	boards.size = Display.size
