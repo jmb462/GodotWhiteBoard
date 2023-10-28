@@ -1,3 +1,3 @@
 extends Window
 
-@onready var presentation_screen = $PresentationScreen
+@onready var presentation_screen : ColorRect = $PresentationScreen

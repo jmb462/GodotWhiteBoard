@@ -6,7 +6,7 @@ class_name TextWidget
 @onready var text_edit : TextEdit = $TextEdit
 
 
-func _ready():
+func _ready() -> void:
 	if get_parent().name == "board":
 		set_focus(true)
 
@@ -39,10 +39,10 @@ func _on_text_edit_text_changed() -> void:
 		autozoom()
 	synchronize()
 
-func _on_text_edit_gui_input(event):
-	if event is InputEventMouseButton:
-		if event.button_index == MOUSE_BUTTON_LEFT:
-			if event.is_pressed():
+func _on_text_edit_gui_input(p_event : InputEvent) -> void:
+	if p_event is InputEventMouseButton:
+		if p_event.button_index == MOUSE_BUTTON_LEFT:
+			if p_event.is_pressed():
 				if not focus:
 					text_edit.editable = true
 					text_edit.grab_focus()
@@ -91,10 +91,10 @@ func _on_buttons_resize_pressed(p_resize_type : G.RESIZE, _p_keep_ratio : bool =
 	super(p_resize_type)
 
 
-func _on_buttons_editable_pressed():
+func _on_buttons_editable_pressed() -> void:
 	text_edit.editable = !text_edit.editable
 	editable = text_edit.editable
 
 
-func _on_resized():
+func _on_resized() -> void:
 	super()

@@ -162,24 +162,24 @@ func set_focus(p_active: bool) -> void:
 	
 
 
-func _on_buttons_duplicate_pressed():
+func _on_buttons_duplicate_pressed() -> void:
 	emit_signal("duplicate_requested", self)
 
 
-func _on_buttons_locked_pressed():
+func _on_buttons_locked_pressed() ->  void:
 	locked = !locked
 	mouse_default_cursor_shape = Control.CURSOR_ARROW if locked else Control.CURSOR_DRAG
 
 
-func _on_buttons_layer_down_pressed():
+func _on_buttons_layer_down_pressed() -> void:
 	emit_signal("layer_change_requested", self, -1)
 
 
-func _on_buttons_layer_up_pressed():
+func _on_buttons_layer_up_pressed() -> void:
 	emit_signal("layer_change_requested", self, 1)
 
 
-func _on_buttons_rotate_pressed():
+func _on_buttons_rotate_pressed() -> void:
 	current_action = G.ACTION.ROTATE
 	buttons.update_markers_positions(size)
 	pin_marker(G.MARKER.MIDDLE)
@@ -225,13 +225,13 @@ func move_to_pin() -> void:
 # Stop resizing when cannot use top grabber anymore
 # because widget is too small
 #
-func _on_buttons_resizing_stopped():
+func _on_buttons_resizing_stopped() -> void:
 	if current_action == G.ACTION.RESIZE and resize_type == G.RESIZE.TOP:
 		current_action = G.ACTION.NONE
 
 func get_marker_position(p_marker : G.MARKER) -> Vector2:
 	return buttons.get_marker_position(p_marker)
 
-func group_into(p_widget) -> void:
+func group_into(p_widget : Widget) -> void:
 	grouped_in = p_widget
 	mouse_filter = MOUSE_FILTER_IGNORE

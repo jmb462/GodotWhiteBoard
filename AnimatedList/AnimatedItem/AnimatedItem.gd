@@ -15,7 +15,7 @@ signal scroll_requested(button : MouseButton)
 
 enum Z { NORMAL, UNDER, GRABBED}
 
-func _process(_delta):
+func _process(_delta : float) -> void:
 	$Debug.text = str(index)
 
 #region Node references
@@ -59,7 +59,7 @@ var is_mouse_over_buttons : bool = false
 func _ready() -> void:
 	return
 
-func set_item_texture(p_texture):
+func set_item_texture(p_texture : Texture2D) -> void:
 	preview.set_texture(p_texture)
 	var image : Image = Image.create(int(p_texture.get_size().x * preview_scale), int(p_texture.get_size().y  * preview_scale), false, Image.FORMAT_RGB8)
 	texture = ImageTexture.create_from_image(image)
@@ -94,7 +94,7 @@ func select(p_active : bool) -> void:
 func is_selected() -> bool:
 	return selected_overlay.visible
 
-func freeze_texture():
+func freeze_texture() -> void:
 	var freezed_image : Image = preview.texture.get_image()
 	var freezed_texture : ImageTexture = ImageTexture.create_from_image(freezed_image)
 	preview.texture = freezed_texture
@@ -124,7 +124,7 @@ func _input(event : InputEvent) -> void:
 			if not event.is_pressed():
 				is_left_mouse_down = false
 	
-func _on_mouse_detection_gui_input(p_event : InputEvent):
+func _on_mouse_detection_gui_input(p_event : InputEvent) -> void:
 	if p_event is InputEventMouseButton:
 		if is_left_mouse_click(p_event):
 			is_left_mouse_down = p_event.is_pressed()
@@ -139,10 +139,9 @@ func _on_mouse_detection_gui_input(p_event : InputEvent):
 			if p_event.position.distance_to(grab_start_position) > grab_sensitivity:
 				emit_signal("grabbed", index)
 				grab_start_x = position.x
-				var local_y = position.y
+				var local_y : float = position.y
 				position = global_position
 				grab_start_y_offset = position.y - local_y
-				print(grab_start_y_offset)
 				top_level = true
 				is_grabbing = true
 				mouse_detection.mouse_default_cursor_shape = Control.CURSOR_VSIZE
@@ -163,12 +162,12 @@ func is_left_mouse_click(p_event : InputEvent, p_pressed : bool = true) -> bool:
 
 #region Signal callbacks
 
-func _on_mouse_detection_mouse_entered():
+func _on_mouse_detection_mouse_entered() -> void:
 	emit_signal("mouse_entered", index)
 	if get_z() != 2:
 		launch_tween_over(true)
 
-func _on_mouse_detection_mouse_exited():
+func _on_mouse_detection_mouse_exited() -> void:
 	# Wait a frame to prevent mouse exit while hovering buttons
 	#await get_tree().process_frame
 	if not is_mouse_in_item():
@@ -177,7 +176,7 @@ func _on_mouse_detection_mouse_exited():
 
 func is_mouse_in_item() -> bool:
 	var item_rect : Rect2 = Rect2(Vector2.ZERO, get_size())
-	var mouse_position = get_local_mouse_position() + get_size() / 2.0
+	var mouse_position : Vector2 = get_local_mouse_position() + get_size() / 2.0
 	return item_rect.has_point(mouse_position)
 	
 

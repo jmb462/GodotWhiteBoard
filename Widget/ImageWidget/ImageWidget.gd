@@ -3,7 +3,7 @@ class_name ImageWidget
 
 @onready var texture_rect : TextureRect = $TextureRect
 
-func _ready():
+func _ready() -> void:
 	buttons.hide_button_size()
 	buttons.hide_button_color()
 
@@ -12,7 +12,7 @@ func set_clone(p_clone : Widget) -> void:
 	clone.texture_rect.texture = texture_rect.texture
 
 func set_texture(p_image : Image) -> void:
-	var texture = ImageTexture.create_from_image(p_image)
+	var texture : ImageTexture = ImageTexture.create_from_image(p_image)
 	texture_rect.texture = texture
 
 func synchronize() -> void:
@@ -28,10 +28,10 @@ func _on_resized() -> void:
 		return
 	pivot_offset = texture_rect.texture.get_size() / 2.0
 	
-func _on_texture_rect_gui_input(event) -> void:
-	if event is InputEventMouseButton:
-		if event.button_index == MOUSE_BUTTON_LEFT:
-			if event.is_pressed():
+func _on_texture_rect_gui_input(p_event : InputEvent) -> void:
+	if p_event is InputEventMouseButton:
+		if p_event.button_index == MOUSE_BUTTON_LEFT:
+			if p_event.is_pressed():
 				if not focus:
 					emit_signal("focus_requested", self)
 

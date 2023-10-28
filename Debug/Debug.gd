@@ -1,6 +1,6 @@
 extends Control
 
-@onready var text_edit = $TextEdit
+@onready var text_edit : TextEdit = $TextEdit
 
 func add(p_text : String, value : Variant) -> void:
 	text_edit.text += "\n%s : %s" % [p_text, value]

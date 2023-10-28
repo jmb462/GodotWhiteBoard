@@ -21,14 +21,14 @@ var grabbed_item_index : int = -1
 var real_size_y : float = 0.0
 
 # All theses signals should be connected at item creation
-var signals = ["selected","grabbed","dropped","mouse_exited","mouse_entered", "delete_requested", "duplicate_requested", "scroll_requested"]
+var signals : Array[StringName]= ["selected","grabbed","dropped","mouse_exited","mouse_entered", "delete_requested", "duplicate_requested", "scroll_requested"]
 
 # Used to center items horizontally into container
-var items_horizontal_offset = 0
+var items_horizontal_offset : int = 0
 
 var preview_scale : float = 1.0
 
-var scroll_wheel_sensitivity = 50.0
+var scroll_wheel_sensitivity : float = 50.0
 
 @onready var packed_item : PackedScene = preload("res://AnimatedList/AnimatedItem/AnimatedItem.tscn")
 
@@ -37,7 +37,7 @@ var scroll_wheel_sensitivity = 50.0
 @onready var scrollbar : VScrollBar = $VScrollBar
 @onready var item_container : Node2D = $ItemsContainer
 
-func _ready():
+func _ready() -> void:
 	pass
 
 
@@ -61,7 +61,7 @@ func autosize() -> void:
 		return
 	size.x = (item_max_size_horizontal + 2 * vertical_separation)
 	real_size_y = (get_item_vertical() + vertical_separation) * (items.size()) + vertical_separation
-	items_horizontal_offset = size.x / 2.0
+	items_horizontal_offset = int(size.x / 2.0)
 	for item in items:
 		item.position.x = items_horizontal_offset
 	show_scroll_bar(size.y < real_size_y)
@@ -130,7 +130,7 @@ func _on_item_dropped(_p_index : int) -> void:
 	items.sort_custom(reorder_by_temp_index)
 	grabbed_item_index = -1
 
-func _process(_delta) -> void:
+func _process(_delta : float) -> void:
 	var mouse_position : Vector2 = get_local_mouse_position()
 	var relative_mouse : Vector2 = mouse_position - last_mouse_position
 	last_mouse_position = mouse_position
@@ -164,12 +164,12 @@ func tween_move_item(item : AnimatedItem) -> void:
 	await tween.finished
 
 func swap_temp_index(item1 : AnimatedItem, item2 : AnimatedItem) -> void:
-	var tmp = item1.temp_index
+	var tmp : int = item1.temp_index
 	item1.temp_index = item2.temp_index
 	item2.temp_index = tmp
 
 func tween_reposition_grabbed() -> void:
-	var grabbed_item = items[grabbed_item_index]
+	var grabbed_item : AnimatedItem = items[grabbed_item_index]
 	var tween : Tween = create_tween()
 	tween.set_trans(Tween.TRANS_EXPO).set_ease(Tween.EASE_OUT)
 	tween.tween_property(grabbed_item, "position", get_item_position(grabbed_item.temp_index), 0.2)
@@ -191,7 +191,7 @@ func get_selected_index() -> int:
 	return selected_item.index
 
 func connect_all(p_item : AnimatedItem) -> void:
-	for signal_name in signals:
+	for signal_name : StringName in signals:
 		p_item.connect(signal_name, Callable(self, "_on_item_" + signal_name))
 
 func _on_item_delete_requested(p_index : int) -> void:
@@ -227,7 +227,7 @@ func reposition_after_delete() -> void:
 		await get_tree().create_timer(tween_number * (0.15 + 0.5)).timeout
 		autosize()
 
-func reposition_after_insert(p_item):
+func reposition_after_insert(p_item : AnimatedItem) -> void:
 	if items.size() < 2:
 		p_item.position = get_item_position(p_item.index)
 		return

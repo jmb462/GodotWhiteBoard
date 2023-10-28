@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=3 uid="uid://hsjvadwsbdih"]
+[gd_scene load_steps=13 format=3 uid="uid://hsjvadwsbdih"]
 
 [ext_resource type="Script" path="res://MainBoard/MainBoard.gd" id="1_ngbew"]
 [ext_resource type="Texture2D" uid="uid://cdch3vwecjo3q" path="res://Assets/Buttons/new_board.png" id="2_4jg4w"]
@@ -8,6 +8,7 @@
 [ext_resource type="Texture2D" uid="uid://cxnoj01cilkcj" path="res://Assets/Buttons/clear_board.png" id="5_fra2n"]
 [ext_resource type="StyleBox" uid="uid://h17ciyanrqsa" path="res://Resources/board_panel_style.tres" id="6_0wgyw"]
 [ext_resource type="PackedScene" uid="uid://dqrs686c4wgyd" path="res://AnimatedList/AnimatedList.tscn" id="6_cseuc"]
+[ext_resource type="Texture2D" uid="uid://1crjc8urthyh" path="res://Assets/Buttons/preview_toggle.png" id="8_dj1do"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_bgtxn"]
 bg_color = Color(0.8, 0.8, 0.8, 1)
@@ -21,6 +22,11 @@ corner_radius_bottom_left = 10
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ogoi0"]
 bg_color = Color(0.8, 0.8, 0.8, 1)
 corner_radius_top_left = 10
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_m6rbe"]
+bg_color = Color(0.8, 0.8, 0.8, 1)
+corner_radius_top_left = 5
+corner_radius_bottom_left = 5
 
 [node name="MainBoard" type="Control"]
 layout_mode = 3
@@ -107,6 +113,23 @@ offset_right = 200.0
 offset_bottom = 300.0
 theme_override_styles/panel = SubResource("StyleBoxFlat_ogoi0")
 
+[node name="Node2D" type="Node2D" parent="VBox/HBox/PreviewList"]
+position = Vector2(0, -32)
+
+[node name="TogglePreviewPanel" type="Panel" parent="."]
+offset_top = 20.0
+offset_right = 14.0
+offset_bottom = 40.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_m6rbe")
+
+[node name="TogglePreview" type="TextureButton" parent="TogglePreviewPanel"]
+modulate = Color(0.490196, 0.490196, 0.490196, 1)
+layout_mode = 0
+offset_right = 20.0
+offset_bottom = 20.0
+toggle_mode = true
+texture_normal = ExtResource("8_dj1do")
+
 [node name="Palette" parent="." instance=ExtResource("3_s80ig")]
 layout_mode = 2
 anchors_preset = 0
@@ -116,8 +139,8 @@ anchor_right = 0.0
 anchor_bottom = 0.0
 offset_left = 32.0
 offset_top = 32.0
-offset_right = 72.0
-offset_bottom = 288.0
+offset_right = 80.0
+offset_bottom = 382.0
 grow_vertical = 1
 mouse_filter = 1
 
@@ -137,6 +160,7 @@ dialog_text = "Are you sure you want to clear current board?"
 [connection signal="item_duplicate_requested" from="VBox/HBox/PreviewList" to="." method="duplicate_board"]
 [connection signal="item_moved" from="VBox/HBox/PreviewList" to="." method="_on_preview_list_item_moved"]
 [connection signal="item_selected" from="VBox/HBox/PreviewList" to="." method="change_board"]
+[connection signal="toggled" from="TogglePreviewPanel/TogglePreview" to="." method="_on_toggle_preview_toggled"]
 [connection signal="freeze_pressed" from="Palette" to="." method="_on_palette_freeze_pressed"]
 [connection signal="image_pressed" from="Palette" to="." method="_on_palette_image_pressed"]
 [connection signal="paste_pressed" from="Palette" to="." method="_on_palette_paste_pressed"]

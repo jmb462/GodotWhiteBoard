@@ -15,34 +15,34 @@ var preview_rect : Rect2 = Rect2()
 @onready var viewport : SubViewport = $SubViewport
 @onready var whiteboard : Panel = $SubViewport/WhiteBoard
 
-func _ready():
+func _ready() -> void:
 	connect_gui_input(_on_board_gui_input)
 	print("viewport size ", viewport.size)
 	await get_tree().process_frame
 	whiteboard.size = size
 
-func _process(_delta):
+func _process(_delta : float) -> void:
 	if board_mode == G.BOARD_MODE.SELECT:
 		if not Input.is_action_pressed("selection_button"):
 			print("end selection by process")
 			end_select()
 	$Sprite2D/Debug.text = str(get_parent().get_parent().get_parent().get_parent().boards_array.find(self))
 	
-func _on_board_gui_input(event) -> void:
-	if event is InputEventMouseButton:
-		if event.button_index == MOUSE_BUTTON_LEFT:
-			if event.is_pressed():
+func _on_board_gui_input(p_event : InputEvent) -> void:
+	if p_event is InputEventMouseButton:
+		if p_event.button_index == MOUSE_BUTTON_LEFT:
+			if p_event.is_pressed():
 				if is_instance_valid(temp_group):
 					ungroup()
 				unfocus()
 			if board_mode == G.BOARD_MODE.TEXT_POSITION:
-				if event.is_pressed():
-					drag_size_preview(event.position)
+				if p_event.is_pressed():
+					drag_size_preview(p_event.position)
 			elif board_mode == G.BOARD_MODE.IMAGE_POSITION:
-				if event.is_pressed():
-					drag_size_preview(event.position)	
+				if p_event.is_pressed():
+					drag_size_preview(p_event.position)	
 			elif board_mode == G.BOARD_MODE.TEXT_SIZE:
-				if not event.is_pressed():
+				if not p_event.is_pressed():
 					# Left button has been released
 					# Time to create the widget
 					create_text_widget()
@@ -50,7 +50,7 @@ func _on_board_gui_input(event) -> void:
 					set_cursor(CURSOR_ARROW)
 					board_mode = G.BOARD_MODE.NONE
 			elif board_mode == G.BOARD_MODE.IMAGE_SIZE:
-				if not event.is_pressed():
+				if not p_event.is_pressed():
 					# Left button has been released
 					# Time to create the widget
 					create_image_widget()
@@ -58,16 +58,16 @@ func _on_board_gui_input(event) -> void:
 					set_cursor(CURSOR_ARROW)
 					board_mode = G.BOARD_MODE.NONE
 			elif board_mode == G.BOARD_MODE.NONE:
-				if event.is_pressed():
+				if p_event.is_pressed():
 					board_mode = G.BOARD_MODE.SELECT
-					rect_preview.position = event.position + Vector2(0, global_position.y)
-					preview_rect.position = event.position + Vector2(0, global_position.y)
+					rect_preview.position = p_event.position + Vector2(0, global_position.y)
+					preview_rect.position = p_event.position + Vector2(0, global_position.y)
 					preview_rect.size = Vector2.ZERO
 				
 					
-	if event is InputEventMouseMotion:
+	if p_event is InputEventMouseMotion:
 		if board_mode in [G.BOARD_MODE.TEXT_SIZE, G.BOARD_MODE.SELECT]:
-			preview_rect.size += event.relative
+			preview_rect.size += p_event.relative
 			rect_preview.position = preview_rect.abs().position
 			rect_preview.size = preview_rect.abs().size
 			if board_mode == G.BOARD_MODE.SELECT:
@@ -106,10 +106,10 @@ func end_select() -> void:
 	board_mode = G.BOARD_MODE.NONE
 
 func ungroup() -> void:
-	for widget in temp_group.container.get_children():
+	for widget : Widget in temp_group.container.get_children():
 		print(widget)
 		widget.pin_marker(G.MARKER.TOP_LEFT)
-		var global_rotation = widget.get_global_transform().get_rotation()
+		var global_rotation : float = widget.get_global_transform().get_rotation()
 		set_child(widget)
 		
 		widget.rotation = global_rotation
@@ -189,11 +189,11 @@ func create_image_widget(p_image : Image = null) -> void:
 	clone_widget(new_widget)
 	board_mode = G.BOARD_MODE.NONE
 
-func check_selected_widgets():
+func check_selected_widgets() -> void:
 	unfocus()
 	rect_preview.show()
 	for widget in get_widgets():
-		var rect = widget.get_rect()
+		var rect : Rect2 = widget.get_rect()
 		rect.position += Vector2(0, global_position.y)
 		if rect.intersects(preview_rect.abs()):
 			set_focus(widget, false)
@@ -235,7 +235,7 @@ func group_widgets() -> void:
 	#
 # Set focus on widget (and unfocus previous focused widget)
 #
-func set_focus(p_widget : Widget, p_exclusive = true) -> void:
+func set_focus(p_widget : Widget, p_exclusive : bool = true) -> void:
 	if is_instance_valid(p_widget.grouped_in):
 		set_focus(p_widget.grouped_in)
 		return
@@ -293,7 +293,7 @@ func get_container_rect(p_widgets : Array[Widget]) -> Rect2:
 	var array_x : Array[float] = []
 	var array_y : Array[float] = []
 	for widget in p_widgets:
-		for marker in [G.MARKER.TOP_LEFT, G.MARKER.TOP_RIGHT, G.MARKER.BOTTOM_LEFT, G.MARKER.BOTTOM_RIGHT]:
+		for marker : G.MARKER in [G.MARKER.TOP_LEFT, G.MARKER.TOP_RIGHT, G.MARKER.BOTTOM_LEFT, G.MARKER.BOTTOM_RIGHT]:
 			array_x.append(widget.get_marker_position(marker).x)
 			array_y.append(widget.get_marker_position(marker).y)
 	var rect : Rect2 = Rect2(array_x.min(), array_y.min(), array_x.max() - array_x.min(), array_y.max() - array_y.min())

@@ -18,26 +18,26 @@ func _on_gui_input(event : InputEvent) -> void:
 			position += event.relative
 
 
-func _on_text_button_down():
+func _on_text_button_down() -> void:
 	emit_signal("text_pressed")
 
 
-func _on_image_button_down():
+func _on_image_button_down() -> void:
 	emit_signal("image_pressed")
 
 
-func _on_pencil_button_down():
+func _on_pencil_button_down() -> void:
 	emit_signal("pencil_pressed")
 
 
-func _on_pointer_button_down():
+func _on_pointer_button_down() -> void:
 	emit_signal("pointer_pressed")
 	
 
 
-func _on_paste_pressed():
+func _on_paste_pressed() -> void:
 	emit_signal("paste_pressed")
 
 
-func _on_freeze_button_pressed():
+func _on_freeze_button_pressed() -> void:
 	emit_signal("freeze_pressed")
