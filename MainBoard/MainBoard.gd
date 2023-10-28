@@ -287,12 +287,12 @@ func _on_toggle_preview_toggled(p_toggled_on : bool) -> void:
 	tween.set_parallel().set_trans(Tween.TRANS_CIRC).set_ease(Tween.EASE_IN_OUT)
 	
 	if p_toggled_on:
-		tween.tween_property(preview_list, "position:x", viewport_width, 0.4)
-		tween.tween_property(toggle_preview_panel, "position:x", viewport_width - toggle_preview_panel.size.x, 0.4)
-		tween.tween_method(animate_board_scale, preview_list.size.x, 0.0, 0.4)
+		tween.tween_property(preview_list, "position:x", viewport_width, 0.5)
+		tween.tween_property(toggle_preview_panel, "position:x", viewport_width - toggle_preview_panel.size.x, 0.5)
+		tween.tween_method(animate_board_scale, preview_list.size.x, 0.0, 0.5)
 	else:
-		tween.tween_property(preview_list, "position:x", viewport_width - preview_list.size.x, 0.2)
-		tween.tween_property(toggle_preview_panel, "position:x", viewport_width - preview_list.size.x - toggle_preview_panel.size.x, 0.2)
+		tween.tween_method(animate_board_scale, 0.0, preview_list.size.x, 0.5)
+		tween.tween_property(preview_list, "position:x", viewport_width - preview_list.size.x, 0.5)
+		tween.tween_property(toggle_preview_panel, "position:x", viewport_width - preview_list.size.x - toggle_preview_panel.size.x, 0.5)
 		
-		tween.tween_method(animate_board_scale, 0.0, preview_list.size.x, 0.4)
 	
