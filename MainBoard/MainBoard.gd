@@ -157,8 +157,7 @@ func set_boards_size() -> void:
 	boards.scale = Vector2.ONE * get_board_scale_factor(preview_width)
 	boards.position.x = (size.x - boards.size.x * boards.scale.x - preview_width) / 2.0
 
-func get_board_scale_factor(p_preview_width) -> float:
-	var main_menu_visible : bool = true
+func get_board_scale_factor(p_preview_width : float) -> float:
 	var display_aspect_ratio : float = float(Display.size.x)/float(Display.size.y)
 	
 	var available_height : float = size.y - 20

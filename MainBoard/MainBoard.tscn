@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" path="res://MainBoard/MainBoard.gd" id="1_ngbew"]
 [ext_resource type="Texture2D" uid="uid://cdch3vwecjo3q" path="res://Assets/Buttons/new_board.png" id="2_4jg4w"]
-[ext_resource type="PackedScene" uid="uid://e4xfou5ve0gm" path="res://ToolPalette/ToolPalette.tscn" id="3_s80ig"]
+[ext_resource type="PackedScene" uid="uid://e4xfou5ve0gm" path="res://ToolPalette/ToolPalett.tscn" id="3_s80ig"]
 [ext_resource type="Texture2D" uid="uid://dj8tk8b0qkokp" path="res://Assets/Buttons/previous.png" id="3_u3tpv"]
 [ext_resource type="Texture2D" uid="uid://cxqknx0or7gr8" path="res://Assets/Buttons/next.png" id="4_int1g"]
 [ext_resource type="Texture2D" uid="uid://cxnoj01cilkcj" path="res://Assets/Buttons/clear_board.png" id="5_fra2n"]
@@ -117,6 +117,7 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_ogoi0")
 position = Vector2(0, -32)
 
 [node name="TogglePreviewPanel" type="Panel" parent="."]
+layout_mode = 0
 offset_top = 20.0
 offset_right = 14.0
 offset_bottom = 40.0
@@ -130,7 +131,7 @@ offset_bottom = 20.0
 toggle_mode = true
 texture_normal = ExtResource("8_dj1do")
 
-[node name="Palette" parent="." instance=ExtResource("3_s80ig")]
+[node name="ToolPalett" parent="." instance=ExtResource("3_s80ig")]
 layout_mode = 2
 anchors_preset = 0
 anchor_left = 0.0
@@ -161,10 +162,10 @@ dialog_text = "Are you sure you want to clear current board?"
 [connection signal="item_moved" from="VBox/HBox/PreviewList" to="." method="_on_preview_list_item_moved"]
 [connection signal="item_selected" from="VBox/HBox/PreviewList" to="." method="change_board"]
 [connection signal="toggled" from="TogglePreviewPanel/TogglePreview" to="." method="_on_toggle_preview_toggled"]
-[connection signal="freeze_pressed" from="Palette" to="." method="_on_palette_freeze_pressed"]
-[connection signal="image_pressed" from="Palette" to="." method="_on_palette_image_pressed"]
-[connection signal="paste_pressed" from="Palette" to="." method="_on_palette_paste_pressed"]
-[connection signal="pointer_pressed" from="Palette" to="." method="_on_palette_pointer_pressed"]
-[connection signal="text_pressed" from="Palette" to="." method="_on_palette_text_pressed"]
+[connection signal="freeze_pressed" from="ToolPalett" to="." method="_on_palette_freeze_pressed"]
+[connection signal="image_pressed" from="ToolPalett" to="." method="_on_palette_image_pressed"]
+[connection signal="paste_pressed" from="ToolPalett" to="." method="_on_palette_paste_pressed"]
+[connection signal="pointer_pressed" from="ToolPalett" to="." method="_on_palette_pointer_pressed"]
+[connection signal="text_pressed" from="ToolPalett" to="." method="_on_palette_text_pressed"]
 [connection signal="confirmed" from="DeleteConfirmationDialog" to="." method="delete_board"]
 [connection signal="confirmed" from="ClearConfirmationDialog" to="." method="_on_clear_board_pressed"]

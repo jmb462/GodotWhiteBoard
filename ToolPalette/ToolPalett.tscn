@@ -1,13 +1,13 @@
 [gd_scene load_steps=10 format=3 uid="uid://e4xfou5ve0gm"]
 
-[ext_resource type="Texture2D" uid="uid://dusbbya14u8v0" path="res://Assets/Buttons/text-document-line-icon.png" id="1_fvej3"]
-[ext_resource type="Script" path="res://ToolPalette/ToolPalette.gd" id="1_lkeai"]
-[ext_resource type="Texture2D" uid="uid://ccqa1ltfcmdfh" path="res://Assets/Buttons/image-line-icon.png" id="2_62pn5"]
-[ext_resource type="Texture2D" uid="uid://cf4r0h6lm1adh" path="res://Assets/Buttons/pointer-arrow-icon.png" id="2_vmal5"]
-[ext_resource type="Texture2D" uid="uid://bibs83tmnvkou" path="res://Assets/Buttons/pencil-icon.png" id="3_qle6y"]
-[ext_resource type="Texture2D" uid="uid://w7otma88qi2b" path="res://Assets/Buttons/play-icon.png" id="6_eyn3v"]
-[ext_resource type="Shortcut" uid="uid://bkh12hs63gedy" path="res://Resources/shortcut_ctrl_v.tres" id="7_8syv0"]
-[ext_resource type="Texture2D" uid="uid://ceb488p27prt4" path="res://Assets/Buttons/paste-icon.png" id="8_xb4r2"]
+[ext_resource type="Script" path="res://ToolPalette/ToolPalett.gd" id="1_ubsnm"]
+[ext_resource type="Texture2D" uid="uid://cf4r0h6lm1adh" path="res://Assets/Buttons/pointer-arrow-icon.png" id="2_uvwls"]
+[ext_resource type="Texture2D" uid="uid://dusbbya14u8v0" path="res://Assets/Buttons/text-document-line-icon.png" id="3_tcxuq"]
+[ext_resource type="Texture2D" uid="uid://ccqa1ltfcmdfh" path="res://Assets/Buttons/image-line-icon.png" id="4_etkkf"]
+[ext_resource type="Texture2D" uid="uid://bibs83tmnvkou" path="res://Assets/Buttons/pencil-icon.png" id="5_kmvtu"]
+[ext_resource type="Texture2D" uid="uid://w7otma88qi2b" path="res://Assets/Buttons/play-icon.png" id="6_yji2n"]
+[ext_resource type="Shortcut" uid="uid://bkh12hs63gedy" path="res://Resources/shortcut_ctrl_v.tres" id="7_45xe0"]
+[ext_resource type="Texture2D" uid="uid://ceb488p27prt4" path="res://Assets/Buttons/paste-icon.png" id="8_vmlvg"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_v0xyi"]
 content_margin_left = 5.0
@@ -39,7 +39,7 @@ offset_bottom = -33.312
 grow_vertical = 2
 size_flags_vertical = 3
 theme_override_styles/panel = SubResource("StyleBoxFlat_v0xyi")
-script = ExtResource("1_lkeai")
+script = ExtResource("1_ubsnm")
 metadata/_edit_use_anchors_ = true
 
 [node name="VBoxContainer" type="VBoxContainer" parent="."]
@@ -56,34 +56,69 @@ theme_override_constants/separation = 10
 alignment = 1
 
 [node name="Pointer" type="Button" parent="VBoxContainer"]
+custom_minimum_size = Vector2(40, 40)
 layout_mode = 2
-icon = ExtResource("2_vmal5")
+size_flags_horizontal = 0
+size_flags_vertical = 0
+icon = ExtResource("2_uvwls")
 icon_alignment = 1
 
 [node name="Text" type="Button" parent="VBoxContainer"]
+custom_minimum_size = Vector2(40, 40)
 layout_mode = 2
-icon = ExtResource("1_fvej3")
+size_flags_horizontal = 0
+size_flags_vertical = 0
+icon = ExtResource("3_tcxuq")
 icon_alignment = 1
 
 [node name="Image" type="Button" parent="VBoxContainer"]
+custom_minimum_size = Vector2(40, 40)
 layout_mode = 2
-icon = ExtResource("2_62pn5")
+size_flags_horizontal = 0
+size_flags_vertical = 0
+icon = ExtResource("4_etkkf")
 icon_alignment = 1
 
 [node name="Pencil" type="Button" parent="VBoxContainer"]
+custom_minimum_size = Vector2(40, 40)
 layout_mode = 2
-icon = ExtResource("3_qle6y")
+size_flags_horizontal = 0
+size_flags_vertical = 0
+icon = ExtResource("5_kmvtu")
 icon_alignment = 1
 
 [node name="Freeze" type="Button" parent="VBoxContainer"]
+custom_minimum_size = Vector2(40, 40)
 layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 0
 toggle_mode = true
-icon = ExtResource("6_eyn3v")
+icon = ExtResource("6_yji2n")
 
 [node name="Paste" type="Button" parent="VBoxContainer"]
+custom_minimum_size = Vector2(40, 40)
 layout_mode = 2
-shortcut = ExtResource("7_8syv0")
-icon = ExtResource("8_xb4r2")
+size_flags_horizontal = 0
+size_flags_vertical = 0
+shortcut = ExtResource("7_45xe0")
+icon = ExtResource("8_vmlvg")
+
+[node name="HBoxContainer" type="HBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = 4.0
+offset_right = -8.0
+offset_bottom = 3.88998
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 10
+alignment = 1
+
+[node name="ClickTimer" type="Timer" parent="."]
+wait_time = 0.5
+one_shot = true
 
 [connection signal="gui_input" from="." to="." method="_on_gui_input"]
 [connection signal="button_down" from="VBoxContainer/Pointer" to="." method="_on_pointer_button_down"]
@@ -92,3 +127,4 @@ icon = ExtResource("8_xb4r2")
 [connection signal="button_down" from="VBoxContainer/Pencil" to="." method="_on_pencil_button_down"]
 [connection signal="pressed" from="VBoxContainer/Freeze" to="." method="_on_freeze_button_pressed"]
 [connection signal="pressed" from="VBoxContainer/Paste" to="." method="_on_paste_pressed"]
+[connection signal="timeout" from="ClickTimer" to="." method="_on_click_timer_timeout"]
