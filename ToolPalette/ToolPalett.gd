@@ -73,7 +73,7 @@ func rotate_palette() -> void:
 	
 	for child : Button in source_container.get_children():
 		child.reparent(dest_container)
-	
+		
 	# Prevent toolbar to be partially offscreen after changing orientation
 	var border_margin : int = 20
 	var to_screen_limit : Vector2 = Vector2.ZERO
