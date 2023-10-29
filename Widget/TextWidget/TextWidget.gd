@@ -5,6 +5,8 @@ class_name TextWidget
 
 @onready var text_edit : TextEdit = $TextEdit
 
+func get_type() -> String:
+	return "TextWidget"
 
 func _ready() -> void:
 	if get_parent().name == "board":

@@ -35,6 +35,9 @@ var master : Widget = null
 # Reference to the parent widget if grouped with other widget
 var grouped_in : Widget = null
 
+func get_type() -> String:
+	return "Widget"
+
 func _ready() -> void :
 	_on_resized()
 

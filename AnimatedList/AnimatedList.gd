@@ -51,7 +51,7 @@ func create_item(p_index : int, p_texture : Texture2D = null) -> AnimatedItem:
 	items.insert(p_index, item)
 	connect_all(item)	
 	reposition_after_insert(item)
-	for i in items.size():
+	for i : int in items.size():
 		items[i].set_indexes(i)
 	autosize()
 	return item
@@ -62,7 +62,7 @@ func autosize() -> void:
 	size.x = (item_max_size_horizontal + 2 * vertical_separation)
 	real_size_y = (get_item_vertical() + vertical_separation) * (items.size()) + vertical_separation
 	items_horizontal_offset = int(size.x / 2.0)
-	for item in items:
+	for item : AnimatedItem in items:
 		item.position.x = items_horizontal_offset
 	show_scroll_bar(size.y < real_size_y)
 
@@ -74,7 +74,7 @@ func get_item_vertical() -> float:
 func get_item_position(p_index : int) -> Vector2:
 	var item_position : Vector2 = Vector2(items_horizontal_offset, get_item_vertical() / 2.0 + vertical_separation)
 	var item_index : int = 0
-	for item in items:
+	for item : AnimatedItem in items:
 		if p_index == item_index:
 			return item_position
 		item_position += Vector2(0.0, item.get_size().y + vertical_separation) 
@@ -91,7 +91,7 @@ func _on_item_selected(p_index : int) -> void:
 	emit_signal("item_selected", p_index)
 
 func _on_item_mouse_entered(p_index : int) -> void:
-	for i in items.size():
+	for i : int in items.size():
 		if i != p_index:
 			items[i].force_mouse_exit()
 	if is_grabbing():
@@ -110,7 +110,7 @@ func _on_item_grabbed(p_index : int) -> void:
 	update_items_z(p_index)
 
 func update_items_z(p_index : int, p_except : int = -1) -> void:
-	for item in items:
+	for item : AnimatedItem in items:
 		if p_index > -1:
 			item.set_z(AnimatedItem.Z.GRABBED if item.index == p_index else AnimatedItem.Z.UNDER) 
 		elif item.index != p_except:
@@ -125,7 +125,7 @@ func _on_item_dropped(_p_index : int) -> void:
 	
 	emit_signal("item_moved", grabbed_item_index, items[grabbed_item_index].temp_index)
 	update_items_z(-1, grabbed_item_index)
-	for item in items:
+	for item : AnimatedItem in items:
 		item.index = item.temp_index
 	items.sort_custom(reorder_by_temp_index)
 	grabbed_item_index = -1
@@ -145,7 +145,7 @@ func _process(_delta : float) -> void:
 
 	grabbed_item.position.y += relative_mouse.y
 
-	for item in items:
+	for item : AnimatedItem in items:
 		if item == grabbed_item:
 			continue
 		if abs(grabbed_item.get_grab_y() - item.position.y) < item.get_size().y / 5.0:
@@ -179,7 +179,7 @@ func select(p_index : int) -> void:
 	if p_index < 0 or p_index >= items.size():
 		return
 	selected_item = items[p_index]
-	for i in items.size():
+	for i : int in items.size():
 		items[i].select(i == p_index)
 
 func reorder_by_temp_index(a : AnimatedItem, b : AnimatedItem) -> bool:
@@ -206,7 +206,7 @@ func delete_item(p_index : int) -> void:
 	items[p_index].freeze_texture()
 	items[p_index].launch_delete_tween()
 	items.remove_at(p_index)
-	for i in items.size():
+	for i : int in items.size():
 		items[i].set_indexes(i)
 	reposition_after_delete()
 	
@@ -274,5 +274,5 @@ func _on_gui_input(p_event : InputEvent) -> void:
 			_on_item_scroll_requested(p_event.button_index)
 
 func _on_mouse_exit_detected() -> void:
-	for item in items:
+	for item : AnimatedItem in items:
 		item.force_mouse_exit()

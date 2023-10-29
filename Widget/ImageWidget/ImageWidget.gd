@@ -1,12 +1,20 @@
 extends Widget
 class_name ImageWidget
 
+## Unique ID used to save image resource
+var image_uid : int = 0
+
 @onready var texture_rect : TextureRect = $Anchor/TextureRect
 
 func _ready() -> void:
 	buttons.hide_button_size()
 	buttons.hide_button_color()
 	size = texture_rect.size + decoration_size
+	image_uid = ResourceUID.create_id()
+	
+	
+func get_type() -> String:
+	return "ImageWidget"
 
 func set_clone(p_clone : Widget) -> void:
 	super(p_clone)
@@ -17,6 +25,12 @@ func set_texture(p_image : Image) -> void:
 	texture_rect.size = p_image.get_size()
 	texture_rect.texture = texture
 	size = texture_rect.size + decoration_size
+
+func get_texture() -> Texture2D:
+	return texture_rect.texture
+
+func get_image_size() -> Vector2:
+	return texture_rect.size
 
 func synchronize() -> void:
 	if not is_master():

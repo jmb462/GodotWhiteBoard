@@ -115,6 +115,7 @@ dialog_text = "Are you sure you want to clear current board?"
 [connection signal="new_button_pressed" from="VBox/MainMenu" to="." method="_on_new_board_pressed"]
 [connection signal="next_button_pressed" from="VBox/MainMenu" to="." method="_on_next_board_pressed"]
 [connection signal="previous_button_pressed" from="VBox/MainMenu" to="." method="_on_previous_board_pressed"]
+[connection signal="saved_button_pressed" from="VBox/MainMenu" to="." method="_on_main_menu_saved_button_pressed"]
 [connection signal="resized" from="VBox/HBox/BoardsContainer" to="." method="_on_boards_resized"]
 [connection signal="item_delete_requested" from="VBox/HBox/PreviewList" to="." method="delete_confirm"]
 [connection signal="item_duplicate_requested" from="VBox/HBox/PreviewList" to="." method="duplicate_board"]

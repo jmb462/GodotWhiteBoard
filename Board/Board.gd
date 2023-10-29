@@ -140,7 +140,7 @@ func unfocus(p_widget  : Widget = null) -> void:
 			focused_widget.remove_at(focused_widget.find(p_widget))
 		p_widget.set_focus(false)		
 	else:
-		for widget in focused_widget:
+		for widget : Widget in focused_widget:
 			if is_instance_valid(widget):
 				widget.set_focus(false)
 		focused_widget.clear()
@@ -203,7 +203,7 @@ func create_image_widget(p_image : Image = null) -> void:
 func check_selected_widgets() -> void:
 	unfocus()
 	rect_preview.show()
-	for widget in get_widgets():
+	for widget : Widget in get_widgets():
 		var rect : Rect2 = widget.get_rect()
 		rect.position += Vector2(0, global_position.y)
 		if rect.intersects(preview_rect.abs()):
@@ -228,7 +228,7 @@ func group_widgets() -> void:
 	connect_widget_signals(new_widget)
 	new_widget.position -= Vector2(4,30)
 	
-	for widget in focused_widget:
+	for widget : Widget in focused_widget:
 		widget.pin_marker(G.MARKER.TOP_LEFT)
 		widget.reparent(new_widget.container)
 		widget.group_into(new_widget)
@@ -237,7 +237,7 @@ func group_widgets() -> void:
 	
 	await get_tree().process_frame
 	
-	for widget in focused_widget:
+	for widget : Widget in focused_widget:
 		widget.move_to_pin()
 	
 	set_focus(new_widget)
@@ -303,7 +303,7 @@ func get_container_rect(p_widgets : Array[Widget]) -> Rect2:
 	
 	var array_x : Array[float] = []
 	var array_y : Array[float] = []
-	for widget in p_widgets:
+	for widget : Widget in p_widgets:
 		for marker : G.MARKER in [G.MARKER.TOP_LEFT, G.MARKER.TOP_RIGHT, G.MARKER.BOTTOM_LEFT, G.MARKER.BOTTOM_RIGHT]:
 			array_x.append(widget.get_marker_position(marker).x)
 			array_y.append(widget.get_marker_position(marker).y)

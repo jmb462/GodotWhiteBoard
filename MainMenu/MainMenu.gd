@@ -1,5 +1,6 @@
-extends Panel
+extends PanelContainer
 
+signal saved_button_pressed
 signal new_button_pressed
 signal previous_button_pressed
 signal next_button_pressed
@@ -37,3 +38,7 @@ func _on_main_board_boards_changed(p_current_board : int, p_total_boards : int) 
 func _on_widgets_count_modified(p_count : int) -> void:
 	print("widgets modifierd", p_count)
 	clear_button.disabled = p_count == 0
+
+
+func _on_save_pressed() -> void:
+	emit_signal("saved_button_pressed")

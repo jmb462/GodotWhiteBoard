@@ -17,7 +17,7 @@ var delete_index : int = -1
 
 @onready var boards_container : Control = $VBox/HBox/BoardsContainer
 @onready var preview_list : AnimatedList = $VBox/HBox/PreviewList
-@onready var main_menu : Panel = $VBox/MainMenu
+@onready var main_menu : PanelContainer = $VBox/MainMenu
 
 @onready var delete_confirmation_dialog : ConfirmationDialog = $DeleteConfirmationDialog
 @onready var clear_confirmation_dialog : ConfirmationDialog = $ClearConfirmationDialog
@@ -139,14 +139,14 @@ func set_board(p_board : Board) -> void:
 	emit_signal("boards_changed", current_board, boards.size())
 
 func show_only_current_board() -> void:
-	for i in boards.size():
+	for i : int in boards.size():
 		boards[i].visible = i == current_board
 
 func clear_board_confirm() -> void:
 	clear_confirmation_dialog.popup_centered()
 
 func _on_clear_board_pressed() -> void:
-	for widget in board.get_widgets():
+	for widget : Widget in board.get_widgets():
 		widget.delete()
 
 func _on_palette_freeze_pressed() -> void:
@@ -163,6 +163,7 @@ func _on_palette_freeze_pressed() -> void:
 
 func _on_boards_resized() -> void:
 	if is_instance_valid(boards_container):
+		#warning-ignore:INFERRED_DECLARATION
 		for each_board in boards_container.get_children():
 			each_board.custom_minimum_size = board.size
 
@@ -224,7 +225,7 @@ func clear_display() -> void:
 # Clone each widget of board on display screen
 #
 func synchronize_display() -> void:
-	for widget in board.get_widgets():
+	for widget : Widget in board.get_widgets():
 		board.clone_widget(widget)
 	
 ## Duplicate board and all widgets on a new board
@@ -235,7 +236,7 @@ func duplicate_board(p_index : int) -> void:
 	duplicated_board.unfocus()
 	boards_container.add_child(new_board)
 	boards_container.move_child(new_board, 0)
-	for widget in duplicated_board.get_widgets():
+	for widget : Widget in duplicated_board.get_widgets():
 		duplicated_board.copy_widget_to_board(widget, new_board)
 
 	boards.insert(p_index + 1, new_board)
@@ -304,3 +305,22 @@ func _on_toggle_preview_toggled(p_toggled_on : bool) -> void:
 		tween.tween_method(animate_board_scale, 0.0, preview_list.size.x, 0.5)
 		tween.tween_property(preview_list, "position:x", viewport_width - preview_list.size.x, 0.5)
 		tween.tween_property(toggle_preview_panel, "position:x", viewport_width - preview_list.size.x - toggle_preview_panel.size.x, 0.5)
+
+
+func _on_main_menu_saved_button_pressed() -> void:
+
+	for widget : Widget in board.get_widgets():
+		if widget is Widget:
+			var widget_data : WidgetData
+			match widget.get_type():
+				"TextWidget":
+					widget_data = TextWidgetData.new()
+				"ImageWidget":
+					widget_data = ImageWidgetData.new()
+				_:
+					widget_data = WidgetData.new()
+			widget_data.store(widget)
+			widget_data.print_data()
+			var error : Error = ResourceSaver.save(widget_data, "user://widgets%s.tres"%widget.name)
+			if error != OK:
+				print("save error: %s" % error)
