@@ -28,23 +28,24 @@ func _on_drop(data : Variant) -> void:
 	image.load(data[0])
 	board.create_image_widget(image)
 
-#
-#	Free draw button has been pressed
-#
-
+#region Palett button callbacks
+## Called when palett pen button is pressed
 func _on_pen_pressed() -> void:
 	board.set_mode(G.BOARD_MODE.PEN)
 
+## Called when palett text button is pressed
 func _on_palette_text_pressed() -> void:
 	board.set_mode(G.BOARD_MODE.TEXT_POSITION)
 
+## Called when palett image button is pressed
 func _on_palette_image_pressed() -> void:
 	board.set_mode(G.BOARD_MODE.IMAGE_POSITION)
 
+## Called when palett arrow button is pressed
 func _on_palette_pointer_pressed() -> void:
 	board.set_mode(G.BOARD_MODE.NONE)
 
-
+## Called when palett paste button is pressed
 func _on_palette_paste_pressed() -> void:
 	if DisplayServer.clipboard_has_image():
 		board.set_mode(G.BOARD_MODE.PASTE_IMAGE)
@@ -55,7 +56,7 @@ func _on_palette_paste_pressed() -> void:
 		text_widget.set_text(DisplayServer.clipboard_get())
 		text_widget.position = (board.size - text_widget.size) / 2.0
 		text_widget.synchronize()
-
+#endregion
 
 func add_board(p_index : int) -> Board:
 	if is_instance_valid(board):

@@ -76,6 +76,7 @@ icon = ExtResource("3_u3tpv")
 
 [node name="Next" type="Button" parent="VBox/MainMenu/HBox"]
 layout_mode = 2
+disabled = true
 icon = ExtResource("4_int1g")
 
 [node name="Clear" type="Button" parent="VBox/MainMenu/HBox"]

@@ -157,9 +157,7 @@ func clone_widget(p_widget : Widget) -> void:
 	# Store a reference to the cloned widget in the master widget
 	p_widget.set_clone(new_clone_widget)
 
-#
-#	New widget creation
-#
+## Create a new TextWidget and add it to the board.
 func create_text_widget() -> TextWidget:
 	#Create master text widget on control screen
 	var new_widget : TextWidget = packed_text_widget.instantiate()
@@ -172,7 +170,8 @@ func create_text_widget() -> TextWidget:
 	connect_widget_signals(new_widget)
 	clone_widget(new_widget)
 	return new_widget
-	
+
+## Create a new ImageWidget and add it to the board.
 func create_image_widget(p_image : Image = null) -> void:
 	#Create master image widget on control screen
 	var new_widget : ImageWidget = packed_image_widget.instantiate()
@@ -198,6 +197,7 @@ func check_selected_widgets() -> void:
 		if rect.intersects(preview_rect.abs()):
 			set_focus(widget, false)
 
+## Group the currently selected widgets into a new GroupWidget
 func group_widgets() -> void:
 	if focused_widget.is_empty():
 		return
@@ -232,9 +232,8 @@ func group_widgets() -> void:
 	temp_group = new_widget
 	clone_widget(new_widget)
 	
-	#
-# Set focus on widget (and unfocus previous focused widget)
-#
+
+## Set focus on widget (and unfocus previous focused widget).
 func set_focus(p_widget : Widget, p_exclusive : bool = true) -> void:
 	if is_instance_valid(p_widget.grouped_in):
 		set_focus(p_widget.grouped_in)

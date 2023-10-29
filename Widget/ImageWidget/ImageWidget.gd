@@ -1,11 +1,12 @@
 extends Widget
 class_name ImageWidget
 
-@onready var texture_rect : TextureRect = $TextureRect
+@onready var texture_rect : TextureRect = $Anchor/TextureRect
 
 func _ready() -> void:
 	buttons.hide_button_size()
 	buttons.hide_button_color()
+	size = texture_rect.size + decoration_size
 
 func set_clone(p_clone : Widget) -> void:
 	super(p_clone)
@@ -13,11 +14,14 @@ func set_clone(p_clone : Widget) -> void:
 
 func set_texture(p_image : Image) -> void:
 	var texture : ImageTexture = ImageTexture.create_from_image(p_image)
+	texture_rect.size = p_image.get_size()
 	texture_rect.texture = texture
+	size = texture_rect.size + decoration_size
 
 func synchronize() -> void:
 	if not is_master():
 		return
+	clone.texture_rect.size = texture_rect.size
 	super()
 
 func _on_resized() -> void:
@@ -26,8 +30,34 @@ func _on_resized() -> void:
 		return
 	if not is_instance_valid(texture_rect.texture):
 		return
-	pivot_offset = texture_rect.texture.get_size() / 2.0
 	
+	size = texture_rect.size + decoration_size
+	pivot_offset = texture_rect.texture.get_size() / 2.0
+
+func resize(p_relative : Vector2, p_resize_type : G.RESIZE) -> void:
+	pin_marker(get_fix_marker(p_resize_type))
+	
+	var aspect_ratio : float = texture_rect.size.x / texture_rect.size.y
+	var direction : float = -1.0 if p_resize_type in [G.RESIZE.LEFT, G.RESIZE.TOP] else 1.0
+	match p_resize_type:
+		G.RESIZE.RIGHT, G.RESIZE.LEFT:
+			var new_size : float = texture_rect.size.x + (p_relative.x * direction)
+			texture_rect.size = Vector2(new_size, (new_size / aspect_ratio) if keep_ratio else texture_rect.size.y)
+		G.RESIZE.BOTTOM, G.RESIZE.TOP:
+			var new_size : float = texture_rect.size.y + (p_relative.y * direction)
+			texture_rect.size = Vector2((new_size * aspect_ratio) if keep_ratio else texture_rect.size.x, new_size)
+		G.RESIZE.BOTH:
+			var new_size : float = texture_rect.size.x + (p_relative.x * direction)
+			texture_rect.size = Vector2(new_size, (new_size / aspect_ratio) if keep_ratio else texture_rect.size.y + p_relative.y)
+	
+	size = texture_rect.size + decoration_size
+
+	buttons.update_positions(size)
+	move_to_pin()
+	synchronize()
+	
+	#super(p_relative, p_resize_type)
+
 func _on_texture_rect_gui_input(p_event : InputEvent) -> void:
 	if p_event is InputEventMouseButton:
 		if p_event.button_index == MOUSE_BUTTON_LEFT:

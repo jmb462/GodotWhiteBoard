@@ -14,6 +14,8 @@ signal layer_change_requested(widget : Widget, direction : int)
 var focus : bool = true
 var visible_on_presentation_screen : bool = true
 
+var decoration_size : Vector2 = Vector2(8.0, 34.0)
+
 # A locked widget cannot be resized or moved
 var locked : bool = false
 
@@ -63,13 +65,13 @@ func move(p_relative : Vector2) -> void:
 	synchronize()
 
 
-func resize(p_relative : Vector2, p_rotation_type : G.RESIZE) -> void:
+func resize(p_relative : Vector2, p_resize_type : G.RESIZE) -> void:
 	if size.y == 0:
 		return
 	var aspect_ratio : float = size.x / size.y
-	pin_marker(get_fix_marker(p_rotation_type))
-	var direction : float = -1.0 if p_rotation_type in [G.RESIZE.LEFT, G.RESIZE.TOP] else 1.0
-	match p_rotation_type:
+	pin_marker(get_fix_marker(p_resize_type))
+	var direction : float = -1.0 if p_resize_type in [G.RESIZE.LEFT, G.RESIZE.TOP] else 1.0
+	match p_resize_type:
 		G.RESIZE.RIGHT, G.RESIZE.LEFT:
 			var new_size : float = size.x + (p_relative.x * direction)
 			size = Vector2(new_size, (new_size / aspect_ratio) if keep_ratio else size.y)
@@ -82,6 +84,7 @@ func resize(p_relative : Vector2, p_rotation_type : G.RESIZE) -> void:
 	buttons.update_positions(size)
 	move_to_pin()
 	synchronize()
+
 
 func rotate_widget(p_position : Vector2) -> void:
 	buttons.update_markers_positions(size)

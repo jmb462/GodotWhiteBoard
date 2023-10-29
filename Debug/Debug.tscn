@@ -3,7 +3,6 @@
 [ext_resource type="Script" path="res://Debug/Debug.gd" id="1_qtu27"]
 
 [node name="Debug" type="Control"]
-visible = false
 custom_minimum_size = Vector2(500, 150)
 layout_mode = 3
 anchors_preset = 7
