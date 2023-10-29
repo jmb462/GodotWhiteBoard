@@ -1,6 +1,11 @@
 extends SubViewportContainer
 class_name Board
 
+signal board_created
+
+## Emitted when a widget is added or removed from board.
+signal widgets_count_modified(widgets_count : int)
+
 var temp_group : Widget = null
 var focused_widget : Array[Widget] = []
 
@@ -20,14 +25,19 @@ func _ready() -> void:
 	print("viewport size ", viewport.size)
 	await get_tree().process_frame
 	whiteboard.size = size
+	emit_signal("board_created")
 
 func _process(_delta : float) -> void:
 	if board_mode == G.BOARD_MODE.SELECT:
 		if not Input.is_action_pressed("selection_button"):
 			print("end selection by process")
 			end_select()
-	$Sprite2D/Debug.text = str(get_parent().get_parent().get_parent().get_parent().boards_array.find(self))
-	
+
+func activate() -> void:
+	unfocus()
+	set_mode(G.BOARD_MODE.NONE)
+	emit_signal("widgets_count_modified", whiteboard.get_child_count())
+
 func _on_board_gui_input(p_event : InputEvent) -> void:
 	if p_event is InputEventMouseButton:
 		if p_event.button_index == MOUSE_BUTTON_LEFT:
@@ -80,6 +90,7 @@ func adapt_size(p_size : Vector2) -> void:
 	
 func add(p_node : Node, p_board : Board = self) -> void:
 	p_board.whiteboard.add_child(p_node)
+	emit_signal("widgets_count_modified", p_board.whiteboard.get_child_count())
 
 func get_widgets() -> Array[Node]:
 	return whiteboard.get_children()
@@ -125,7 +136,8 @@ func ungroup() -> void:
 #
 func unfocus(p_widget  : Widget = null) -> void:
 	if is_instance_valid(p_widget):
-		focused_widget.remove_at(focused_widget.find(p_widget))
+		if focused_widget.find(p_widget) != -1:
+			focused_widget.remove_at(focused_widget.find(p_widget))
 		p_widget.set_focus(false)		
 	else:
 		for widget in focused_widget:
@@ -284,8 +296,8 @@ func sort_by_index(a : Widget, b : Widget) -> bool:
 	return false
 
 func _on_widget_deleted(p_widget : Widget) -> void:
-	print("widget deleted ", p_widget)
 	unfocus(p_widget)
+	emit_signal("widgets_count_modified", whiteboard.get_child_count() - 1)
 
 func get_container_rect(p_widgets : Array[Widget]) -> Rect2:
 	
