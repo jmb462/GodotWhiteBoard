@@ -15,12 +15,15 @@ var last_added_board : Board = null
 ## Curent board index
 var current_board : int = -1
 
-# Index of the board when delete board is requested
+## Index of the board when delete board is requested
 var delete_index : int = -1
+
+var is_loading : bool = false
 
 @onready var boards_container : Control = $VBox/HBox/BoardsContainer
 @onready var preview_list : AnimatedList = $VBox/HBox/PreviewList
 @onready var main_menu : PanelContainer = $VBox/MainMenu
+@onready var mask_panel : Panel = $MaskPanel
 
 @onready var delete_confirmation_dialog : ConfirmationDialog = $DeleteConfirmationDialog
 @onready var clear_confirmation_dialog : ConfirmationDialog = $ClearConfirmationDialog
@@ -318,7 +321,11 @@ func reset() -> void:
 	current_board = -1
 
 func _on_main_menu_load_button_pressed() -> void:
+	if is_loading:
+		return
+	is_loading = true
 	reset()
+	mask_boards()
 	var boards_data : BoardsData = load("user://boards_data.tres") 
 	for board_data : BoardData in boards_data.boards:
 		await get_tree().process_frame
@@ -326,7 +333,8 @@ func _on_main_menu_load_button_pressed() -> void:
 		board_data.restore(last_added_board)
 	await get_tree().process_frame
 	change_board(0)
-
+	mask_boards(false, boards_data.boards.size())
+	
 func _on_main_menu_saved_button_pressed() -> void:
 	var boards_data : BoardsData = get_data()
 	var error : Error = ResourceSaver.save(boards_data, "user://boards_data.tres")
@@ -339,4 +347,12 @@ func get_data() -> BoardsData:
 	boards_data.store(boards)
 	return boards_data
 
-
+func mask_boards(p_masked : bool = true, duration : float = 0.0) -> void:
+	if p_masked:
+		mask_panel.global_position = board.global_position
+		mask_panel.size = board.size * boards_container.scale
+		mask_panel.show()
+	else:
+		await get_tree().create_timer(0.05 * duration).timeout
+		mask_panel.hide()
+		is_loading = false
