@@ -241,3 +241,9 @@ func get_marker_position(p_marker : G.MARKER) -> Vector2:
 func group_into(p_widget : Widget) -> void:
 	grouped_in = p_widget
 	mouse_filter = MOUSE_FILTER_IGNORE
+
+## Returns a WidgetData resource with persistant data of the widget.
+func get_data() -> WidgetData:
+	var widget_data : WidgetData = WidgetData.new()
+	widget_data.store(self)
+	return widget_data

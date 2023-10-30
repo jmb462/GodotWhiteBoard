@@ -100,3 +100,9 @@ func _on_buttons_editable_pressed() -> void:
 
 func _on_resized() -> void:
 	super()
+
+## Returns a TextWidgetData resource with persistant data of the widget.
+func get_data() -> TextWidgetData:
+	var text_widget_data : TextWidgetData = TextWidgetData.new()
+	text_widget_data.store(self)
+	return text_widget_data

@@ -324,4 +324,8 @@ func set_mode(p_mode : G.BOARD_MODE) -> void:
 func get_mode() -> G.BOARD_MODE:
 	return board_mode
 
-
+## Returns a BoardData resource with persistant data of the board.
+func get_data() -> BoardData:
+	var board_data : BoardData = BoardData.new()
+	board_data.store(self)
+	return board_data

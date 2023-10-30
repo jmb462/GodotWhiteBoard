@@ -5,6 +5,7 @@ class_name TextWidgetData
 @export var text_color : Color = Color.BLACK
 @export var text_size : int = 12
 
+## Store persistant properties of the widget in the TextWidgetData resource.
 func store(p_widget : Widget) -> void:
 	var p_text_widget : TextWidget = p_widget as TextWidget
 	text = p_text_widget.get_text()
@@ -12,7 +13,8 @@ func store(p_widget : Widget) -> void:
 	text_size = p_text_widget.get_text_size()
 	super(p_widget)
 
-func setup_widget(p_widget : Widget) -> void:
+## Restore persistant properties of the widget from the TextWidgetData resource.
+func restore(p_widget : Widget) -> void:
 	var p_text_widget : TextWidget = p_widget as TextWidget
 	p_text_widget.set_text(text)
 	p_text_widget.set_text_color(text_color)

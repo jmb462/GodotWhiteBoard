@@ -164,8 +164,9 @@ func _on_palette_freeze_pressed() -> void:
 func _on_boards_resized() -> void:
 	if is_instance_valid(boards_container):
 		#warning-ignore:INFERRED_DECLARATION
-		for each_board in boards_container.get_children():
+		for each_board : Board in boards:
 			each_board.custom_minimum_size = board.size
+
 
 func set_boards_size() -> void:
 	boards_container.size = Display.size
@@ -308,19 +309,13 @@ func _on_toggle_preview_toggled(p_toggled_on : bool) -> void:
 
 
 func _on_main_menu_saved_button_pressed() -> void:
+	var boards_data : BoardsData = get_data()
+	var error : Error = ResourceSaver.save(boards_data, "user://boards_data.tres")
+	if error != OK:
+		print("Error while saving boards to disk (Error %s)" % error)
 
-	for widget : Widget in board.get_widgets():
-		if widget is Widget:
-			var widget_data : WidgetData
-			match widget.get_type():
-				"TextWidget":
-					widget_data = TextWidgetData.new()
-				"ImageWidget":
-					widget_data = ImageWidgetData.new()
-				_:
-					widget_data = WidgetData.new()
-			widget_data.store(widget)
-			widget_data.print_data()
-			var error : Error = ResourceSaver.save(widget_data, "user://widgets%s.tres"%widget.name)
-			if error != OK:
-				print("save error: %s" % error)
+## Returns a BoardsData resource with persistant data of all the boards.
+func get_data() -> BoardsData:
+	var boards_data : BoardsData = BoardsData.new()
+	boards_data.store(boards)
+	return boards_data

@@ -84,3 +84,9 @@ func set_focus(p_active: bool) -> void:
 
 func _on_buttons_resize_pressed(p_resize_type : G.RESIZE, _p_keep_ratio : bool = true) -> void:
 	super(p_resize_type, true)
+
+## Returns a ImageWidgetData resource with persistant data of the widget.
+func get_data() -> ImageWidgetData:
+	var image_widget_data : ImageWidgetData = ImageWidgetData.new()
+	image_widget_data.store(self)
+	return image_widget_data

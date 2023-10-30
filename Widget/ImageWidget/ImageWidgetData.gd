@@ -5,13 +5,15 @@ class_name ImageWidgetData
 @export var image_size : Vector2 = Vector2()
 @export var image_uid : int = 0
 
+## Store persistant properties of the widget in the ImageWidgetData resource.
 func store(p_widget : Widget) -> void:
 	var p_image_widget : ImageWidget = p_widget as ImageWidget
 	image_size = p_image_widget.get_image_size()
 	image_uid = p_image_widget.image_uid
 	p_image_widget.get_texture().get_image().save_png("user://%s.png"%image_uid)
 
-func setup_widget(p_widget : Widget) -> void:
+## Restore persistant properties of the widget from the ImageWidgetData resource.
+func restore(p_widget : Widget) -> void:
 	var p_image_widget : ImageWidget = p_widget as ImageWidget
 	p_image_widget.set_image_size(image_size)
 	p_image_widget.image_uid = image_uid

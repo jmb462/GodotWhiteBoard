@@ -7,7 +7,9 @@ class_name WidgetData
 @export var locked : bool = false
 @export var editable : bool = true
 @export var keep_ratio : bool = false
+@export var z_index : int = 0
 
+## Store persistant properties of the widget in the WidgetData resource.
 func store(p_widget : Widget) -> void:
 	rect = p_widget.get_rect()
 	global_rotation = p_widget.get_global_transform().get_rotation()
@@ -15,15 +17,19 @@ func store(p_widget : Widget) -> void:
 	locked = p_widget.locked
 	editable = p_widget.editable
 	keep_ratio = p_widget.keep_ratio
+	z_index = p_widget.z_index
+	
 
-func setup_widget(p_widget : Widget) -> void:
-	p_widget.size = rect.size
+## Restore persistant properties of the widget from the WidgetData resource.
+func restore(p_widget : Widget) -> void:
+	p_widget.position = rect.position
 	p_widget.size = rect.size
 	p_widget.global_rotation = global_rotation
 	p_widget.visible_on_presentation_screen = visible_on_presentation_screen
 	p_widget.locked = locked
 	p_widget.editable = editable
 	p_widget.keep_ratio = keep_ratio
+	p_widget.z_index = z_index
 
 func print_data() -> void:
 	print("===")
@@ -32,3 +38,4 @@ func print_data() -> void:
 	print("visible_on_presentation_screen %s" % visible_on_presentation_screen)
 	print("editable %s" % editable)
 	print("keep_ratio %s" % keep_ratio)
+	print("z_index %s" % z_index)
