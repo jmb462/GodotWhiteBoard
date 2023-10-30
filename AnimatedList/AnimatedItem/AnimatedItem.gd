@@ -54,6 +54,8 @@ var grab_start_position : Vector2 = Vector2.ZERO
 var is_grabbing : bool = false
 var grab_start_x : float = 0.0
 var grab_start_y_offset : float = 0.0
+## Prevent from dragging item
+var drag_enabled : bool = true
 
 var is_left_mouse_down : bool = false
 var is_mouse_over_buttons : bool = false
@@ -143,9 +145,10 @@ func _on_mouse_detection_gui_input(p_event : InputEvent) -> void:
 			emit_signal("scroll_requested", p_event.button_index)
 					
 	if p_event is InputEventMouseMotion:
-		if not is_grabbing and is_left_mouse_down:
+		if not is_grabbing and is_left_mouse_down and drag_enabled:
 			if p_event.position.distance_to(grab_start_position) > grab_sensitivity:
 				emit_signal("grabbed", index)
+				drag_enabled = false
 				grab_start_x = position.x
 				var local_y : float = position.y
 				position = global_position
@@ -235,3 +238,6 @@ func force_mouse_exit() -> void:
 
 func get_grab_y() -> float:
 	return position.y - grab_start_y_offset
+
+func enable_drag() -> void:
+	drag_enabled = true

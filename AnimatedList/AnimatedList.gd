@@ -173,8 +173,8 @@ func tween_reposition_grabbed() -> void:
 	var tween : Tween = create_tween()
 	tween.set_trans(Tween.TRANS_EXPO).set_ease(Tween.EASE_OUT)
 	tween.tween_property(grabbed_item, "position", get_item_position(grabbed_item.temp_index), 0.2)
-
-
+	tween.tween_callback(grabbed_item.enable_drag)
+	
 func select(p_index : int) -> void:
 	if p_index < 0 or p_index >= items.size():
 		return
