@@ -11,8 +11,9 @@ func store(p_board : Board) -> void:
 		widgets.push_back(widget.get_data())
 	
 ## Restore persistant properties of the board from the BoardData resource.
-#func restore(p_board : Board) -> void:
-	#pass
+func restore(p_board : Board) -> void:
+	p_board.set_deferred("set_size", size)
+	p_board.restore_widgets(widgets)
 
 func print_data() -> void:
 	print("===")

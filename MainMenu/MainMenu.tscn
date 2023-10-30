@@ -100,6 +100,7 @@ tooltip_text = "Clear current board"
 disabled = true
 icon = ExtResource("4_whu6h")
 
+[connection signal="pressed" from="HBox/Load" to="." method="_on_load_pressed"]
 [connection signal="pressed" from="HBox/Save" to="." method="_on_save_pressed"]
 [connection signal="pressed" from="HBox/New" to="." method="_on_new_pressed"]
 [connection signal="pressed" from="HBox/Previous" to="." method="_on_previous_pressed"]

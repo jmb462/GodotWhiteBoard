@@ -10,16 +10,21 @@ func store(p_widget : Widget) -> void:
 	var p_image_widget : ImageWidget = p_widget as ImageWidget
 	image_size = p_image_widget.get_image_size()
 	image_uid = p_image_widget.image_uid
-	p_image_widget.get_texture().get_image().save_png("user://%s.png"%image_uid)
-
+	p_image_widget.get_texture().get_image().save_png(get_image_path())
+	super(p_widget)
+	
 ## Restore persistant properties of the widget from the ImageWidgetData resource.
 func restore(p_widget : Widget) -> void:
+	super(p_widget)
 	var p_image_widget : ImageWidget = p_widget as ImageWidget
+	var image : Image = Image.new()
+	image.load(get_image_path())
+	p_image_widget.set_texture(image)
 	p_image_widget.set_image_size(image_size)
 	p_image_widget.image_uid = image_uid
-	var image : Image = load("user://%s.png"%image_uid)
-	p_image_widget.set_texture(image)
-	super(p_widget)
+
+func get_image_path() -> String:
+	return "user://%s.png"%image_uid
 
 func print_data() -> void:
 	super()

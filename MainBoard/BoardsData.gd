@@ -9,8 +9,8 @@ func store(p_boards : Array[Board]) -> void:
 		boards.push_back(board.get_data())
 
 ## Restore persistant properties of all the boards from the BoardsData resource.
-#func restore(p_board : Board) -> void:
-	#pass
+func restore(p_board : Board) -> void:
+	pass
 
 func print_data() -> void:
 	print("===")

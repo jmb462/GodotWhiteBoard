@@ -22,7 +22,6 @@ var preview_rect : Rect2 = Rect2()
 
 func _ready() -> void:
 	connect_gui_input(_on_board_gui_input)
-	print("viewport size ", viewport.size)
 	await get_tree().process_frame
 	whiteboard.size = size
 	emit_signal("board_created")
@@ -184,7 +183,7 @@ func create_text_widget() -> TextWidget:
 	return new_widget
 
 ## Create a new ImageWidget and add it to the board.
-func create_image_widget(p_image : Image = null) -> void:
+func create_image_widget(p_image : Image = null) -> ImageWidget:
 	#Create master image widget on control screen
 	var new_widget : ImageWidget = packed_image_widget.instantiate()
 	add(new_widget)
@@ -199,6 +198,7 @@ func create_image_widget(p_image : Image = null) -> void:
 		new_widget.position = (size - new_widget.size) / 2.0
 	clone_widget(new_widget)
 	board_mode = G.BOARD_MODE.NONE
+	return new_widget
 
 func check_selected_widgets() -> void:
 	unfocus()
@@ -329,3 +329,15 @@ func get_data() -> BoardData:
 	var board_data : BoardData = BoardData.new()
 	board_data.store(self)
 	return board_data
+
+func restore_widgets(p_widgets_data : Array[WidgetData]) -> void:
+	for widget_data : WidgetData in p_widgets_data:
+		if widget_data is TextWidgetData:
+			var new_widget : TextWidget = create_text_widget()
+			widget_data.restore(new_widget)
+		elif widget_data is ImageWidgetData:
+			var new_widget : ImageWidget = create_image_widget()
+			widget_data.restore(new_widget)
+		else:
+			print("Cannot restore a base widget")
+			

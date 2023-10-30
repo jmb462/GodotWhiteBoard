@@ -29,6 +29,10 @@ func set_texture(p_image : Image) -> void:
 func get_texture() -> Texture2D:
 	return texture_rect.texture
 
+func set_image_size(p_size : Vector2) -> void:
+	texture_rect.size = p_size
+	_on_resized()
+
 func get_image_size() -> Vector2:
 	return texture_rect.size
 

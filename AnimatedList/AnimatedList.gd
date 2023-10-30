@@ -276,3 +276,8 @@ func _on_gui_input(p_event : InputEvent) -> void:
 func _on_mouse_exit_detected() -> void:
 	for item : AnimatedItem in items:
 		item.force_mouse_exit()
+
+func reset() -> void:
+	for each_item : AnimatedItem in items:
+		each_item.queue_free()
+	items.clear()

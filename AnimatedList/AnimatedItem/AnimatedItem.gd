@@ -11,6 +11,7 @@ signal mouse_exited(index : int)
 signal delete_requested(index : int)
 signal duplicate_requested(index : int)
 signal scroll_requested(button : MouseButton)
+
 #endregion
 
 enum Z { NORMAL, UNDER, GRABBED}
@@ -43,9 +44,10 @@ func _process(_delta : float) -> void:
 
 var index : int = 0
 
+## Scale of the preview based on the real board size.
 var preview_scale : float = 1.0
 
-# Temporary index used during dragging an item
+## Temporary index used during dragging an item.
 var temp_index : int = 0
 
 var grab_start_position : Vector2 = Vector2.ZERO
@@ -59,38 +61,44 @@ var is_mouse_over_buttons : bool = false
 func _ready() -> void:
 	return
 
+## Set item texture.
 func set_item_texture(p_texture : Texture2D) -> void:
 	preview.set_texture(p_texture)
 	var image : Image = Image.create(int(p_texture.get_size().x * preview_scale), int(p_texture.get_size().y  * preview_scale), false, Image.FORMAT_RGB8)
 	texture = ImageTexture.create_from_image(image)
 	resize()
 
+## Returns the texture of the item.
 func get_item_texture() -> Texture:
 	return preview.texture
 
+## Returns the size of the item.
 func get_size() -> Vector2:
 	return texture.get_size()
 
+## Set preview scale based on the real board size.
 func set_preview_scale(p_scale : float) -> void:
 	preview_scale = p_scale
 	preview.scale = Vector2.ONE * p_scale
 
+## Resize item and adapt position of overlays.
 func resize() -> void:
 	mouse_detection.size = texture.get_size()
 	mouse_detection.position = - texture.get_size() / 2.0
 	buttons_overlay.position = - texture.get_size() / 2.0 + buttons_overlay_offset
 	selected_overlay.size = mouse_detection.size - Vector2(4,0)
 	selected_overlay.position = mouse_detection.position - Vector2(2,2)
-	
+
+## Set both index and temp_index (which is used while dragging item).
 func set_indexes(p_index : int) -> void:
 	index = p_index
 	temp_index = p_index
 
-
+## Toggle selected overlay based on given bool parameter.
 func select(p_active : bool) -> void:
 	selected_overlay.visible = p_active
 
-
+## Returns a boolean indicating if item is selected or not.
 func is_selected() -> bool:
 	return selected_overlay.visible
 

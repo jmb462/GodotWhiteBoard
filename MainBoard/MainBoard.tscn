@@ -112,6 +112,7 @@ dialog_text = "Are you sure you want to clear current board?"
 [connection signal="mouse_entered" from="." to="." method="_on_mouse_entered"]
 [connection signal="resized" from="." to="." method="_on_resized"]
 [connection signal="clear_button_pressed" from="VBox/MainMenu" to="." method="clear_board_confirm"]
+[connection signal="load_button_pressed" from="VBox/MainMenu" to="." method="_on_main_menu_load_button_pressed"]
 [connection signal="new_button_pressed" from="VBox/MainMenu" to="." method="_on_new_board_pressed"]
 [connection signal="next_button_pressed" from="VBox/MainMenu" to="." method="_on_next_board_pressed"]
 [connection signal="previous_button_pressed" from="VBox/MainMenu" to="." method="_on_previous_board_pressed"]
@@ -128,4 +129,4 @@ dialog_text = "Are you sure you want to clear current board?"
 [connection signal="pointer_pressed" from="ToolPalett" to="." method="_on_palette_pointer_pressed"]
 [connection signal="text_pressed" from="ToolPalett" to="." method="_on_palette_text_pressed"]
 [connection signal="confirmed" from="DeleteConfirmationDialog" to="." method="delete_board"]
-[connection signal="confirmed" from="ClearConfirmationDialog" to="." method="_on_clear_board_pressed"]
+[connection signal="confirmed" from="ClearConfirmationDialog" to="." method="clear_board"]

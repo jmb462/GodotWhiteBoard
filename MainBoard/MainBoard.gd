@@ -9,6 +9,9 @@ var boards : Array[Board] = []
 ## Current board
 var board : Board = null
 
+## Last added board
+var last_added_board : Board = null
+
 ## Curent board index
 var current_board : int = -1
 
@@ -72,7 +75,7 @@ func add_board(p_index : int) -> Board:
 	var new_board : Board = packed_board.instantiate()
 	board_signal_connect(new_board)
 	boards_container.add_child(new_board)
-
+	last_added_board = new_board
 	if is_instance_valid(board):
 		board.viewport.render_target_update_mode = SubViewport.UPDATE_DISABLED
 		board.hide()
@@ -85,7 +88,7 @@ func add_board(p_index : int) -> Board:
 	
 	await get_tree().process_frame
 	
-	var preview_texture : ViewportTexture = board.viewport.get_texture()
+	var preview_texture : ViewportTexture = new_board.viewport.get_texture()
 	
 	var scale_factor : float = float(preview_list.item_max_size_horizontal) / float(preview_texture.get_size().x)
 	
@@ -145,7 +148,7 @@ func show_only_current_board() -> void:
 func clear_board_confirm() -> void:
 	clear_confirmation_dialog.popup_centered()
 
-func _on_clear_board_pressed() -> void:
+func clear_board() -> void:
 	for widget : Widget in board.get_widgets():
 		widget.delete()
 
@@ -307,6 +310,22 @@ func _on_toggle_preview_toggled(p_toggled_on : bool) -> void:
 		tween.tween_property(preview_list, "position:x", viewport_width - preview_list.size.x, 0.5)
 		tween.tween_property(toggle_preview_panel, "position:x", viewport_width - preview_list.size.x - toggle_preview_panel.size.x, 0.5)
 
+func reset() -> void:
+	for each_board : Board in boards:
+		each_board.queue_free()
+	boards.clear()
+	preview_list.reset()
+	current_board = -1
+
+func _on_main_menu_load_button_pressed() -> void:
+	reset()
+	var boards_data : BoardsData = load("user://boards_data.tres") 
+	for board_data : BoardData in boards_data.boards:
+		await get_tree().process_frame
+		add_board(current_board)
+		board_data.restore(last_added_board)
+	await get_tree().process_frame
+	change_board(0)
 
 func _on_main_menu_saved_button_pressed() -> void:
 	var boards_data : BoardsData = get_data()
@@ -319,3 +338,5 @@ func get_data() -> BoardsData:
 	var boards_data : BoardsData = BoardsData.new()
 	boards_data.store(boards)
 	return boards_data
+
+
