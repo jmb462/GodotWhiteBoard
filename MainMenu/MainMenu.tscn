@@ -1,21 +1,23 @@
-[gd_scene load_steps=15 format=3 uid="uid://cxbnl7jaaybi"]
+[gd_scene load_steps=17 format=3 uid="uid://cxbnl7jaaybi"]
 
 [ext_resource type="Script" path="res://MainMenu/MainMenu.gd" id="1_bkrg0"]
 [ext_resource type="Texture2D" uid="uid://cdch3vwecjo3q" path="res://Assets/Buttons/new_board.png" id="1_wtaar"]
+[ext_resource type="Texture2D" uid="uid://klmqspkgaki6" path="res://Assets/Buttons/library.png" id="2_3kn8e"]
 [ext_resource type="Texture2D" uid="uid://dj8tk8b0qkokp" path="res://Assets/Buttons/previous.png" id="2_hqoo8"]
 [ext_resource type="Texture2D" uid="uid://cxqknx0or7gr8" path="res://Assets/Buttons/next.png" id="3_5lrh7"]
+[ext_resource type="Texture2D" uid="uid://jtgts8umn2fu" path="res://Assets/Buttons/board.png" id="3_d4fpb"]
 [ext_resource type="Texture2D" uid="uid://cxnoj01cilkcj" path="res://Assets/Buttons/clear_board.png" id="4_whu6h"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_bgtxn"]
 bg_color = Color(0.8, 0.8, 0.8, 1)
-border_width_left = 4
+border_width_left = 2
 border_width_top = 4
-border_width_right = 4
+border_width_right = 2
 border_width_bottom = 4
 corner_radius_bottom_right = 10
 corner_radius_bottom_left = 10
-expand_margin_left = 10.0
-expand_margin_right = 10.0
+expand_margin_top = 5.0
+expand_margin_bottom = 4.0
 
 [sub_resource type="InputEventKey" id="InputEventKey_3d5kh"]
 device = -1
@@ -48,7 +50,13 @@ keycode = 4194322
 events = [SubResource("InputEventKey_wjede"), SubResource("InputEventKey_o5viw")]
 
 [node name="MainMenu" type="PanelContainer"]
-custom_minimum_size = Vector2(260, 48)
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -356.0
+offset_right = 356.0
+offset_bottom = 48.0
+grow_horizontal = 2
 size_flags_horizontal = 4
 mouse_filter = 1
 theme_override_styles/panel = SubResource("StyleBoxFlat_bgtxn")
@@ -59,27 +67,32 @@ layout_mode = 2
 theme_override_constants/separation = 8
 alignment = 1
 
-[node name="Load" type="Button" parent="HBox"]
+[node name="Documents" type="Button" parent="HBox" groups=["board_page"]]
 layout_mode = 2
-text = "Load"
+tooltip_text = "Add new board"
+shortcut = SubResource("Shortcut_tn2hn")
+icon = ExtResource("2_3kn8e")
 
-[node name="Save" type="Button" parent="HBox"]
+[node name="Board" type="Button" parent="HBox" groups=["documents_page"]]
+visible = false
 layout_mode = 2
-text = "Save"
+tooltip_text = "Add new board"
+shortcut = SubResource("Shortcut_tn2hn")
+icon = ExtResource("3_d4fpb")
 
-[node name="New" type="Button" parent="HBox"]
+[node name="New" type="Button" parent="HBox" groups=["board_page"]]
 layout_mode = 2
 tooltip_text = "Add new board"
 shortcut = SubResource("Shortcut_tn2hn")
 icon = ExtResource("1_wtaar")
 
-[node name="Previous" type="Button" parent="HBox"]
+[node name="Previous" type="Button" parent="HBox" groups=["board_page"]]
 layout_mode = 2
 tooltip_text = "Show previous board"
 shortcut = SubResource("Shortcut_6tkx3")
 icon = ExtResource("2_hqoo8")
 
-[node name="PageNumber" type="Label" parent="HBox"]
+[node name="PageNumber" type="Label" parent="HBox" groups=["board_page"]]
 custom_minimum_size = Vector2(50, 0)
 layout_mode = 2
 theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.0784314)
@@ -87,21 +100,21 @@ text = "1 / 1"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="Next" type="Button" parent="HBox"]
+[node name="Next" type="Button" parent="HBox" groups=["board_page"]]
 layout_mode = 2
 tooltip_text = "Show next board"
 disabled = true
 shortcut = SubResource("Shortcut_gn146")
 icon = ExtResource("3_5lrh7")
 
-[node name="Clear" type="Button" parent="HBox"]
+[node name="Clear" type="Button" parent="HBox" groups=["board_page"]]
 layout_mode = 2
 tooltip_text = "Clear current board"
 disabled = true
 icon = ExtResource("4_whu6h")
 
-[connection signal="pressed" from="HBox/Load" to="." method="_on_load_pressed"]
-[connection signal="pressed" from="HBox/Save" to="." method="_on_save_pressed"]
+[connection signal="pressed" from="HBox/Documents" to="." method="_on_documents_pressed"]
+[connection signal="pressed" from="HBox/Board" to="." method="_on_board_pressed"]
 [connection signal="pressed" from="HBox/New" to="." method="_on_new_pressed"]
 [connection signal="pressed" from="HBox/Previous" to="." method="_on_previous_pressed"]
 [connection signal="pressed" from="HBox/Next" to="." method="_on_next_pressed"]

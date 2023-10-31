@@ -6,6 +6,9 @@ signal boards_changed(current_board : int, total_boards : int)
 ## Array of Board
 var boards : Array[Board] = []
 
+## Document data resource
+var document : Document = null
+
 ## Current board
 var board : Board = null
 
@@ -20,10 +23,14 @@ var delete_index : int = -1
 
 var is_loading : bool = false
 
-@onready var boards_container : Control = $VBox/HBox/BoardsContainer
-@onready var preview_list : AnimatedList = $VBox/HBox/PreviewList
+@onready var board_page : Control = $VBox/BoardPage
+@onready var boards_container : Control = $VBox/BoardPage/BoardsContainer
+@onready var preview_list : AnimatedList = $VBox/BoardPage/PreviewList
 @onready var main_menu : PanelContainer = $VBox/MainMenu
 @onready var mask_panel : Panel = $MaskPanel
+@onready var tool_palett : Panel = $ToolPalett
+@onready var document_manager = $VBox/DocumentManager
+
 
 @onready var delete_confirmation_dialog : ConfirmationDialog = $DeleteConfirmationDialog
 @onready var clear_confirmation_dialog : ConfirmationDialog = $ClearConfirmationDialog
@@ -35,7 +42,13 @@ func _ready() -> void:
 	if not is_instance_valid(board):
 		add_board(current_board)
 	get_tree().get_root().connect("files_dropped", _on_drop)
+	create_new_document()
 	_on_resized()
+	
+func create_new_document() -> void:
+	document = Document.new()
+	G.set_document_path(document)
+	
 
 func _on_drop(data : Variant) -> void:
 	var image : Image = Image.new()
@@ -75,6 +88,8 @@ func _on_palette_paste_pressed() -> void:
 func add_board(p_index : int) -> Board:
 	if is_instance_valid(board):
 		board.unfocus()
+		if board.is_modified:
+			save_thumbnail(board)
 	var new_board : Board = packed_board.instantiate()
 	board_signal_connect(new_board)
 	boards_container.add_child(new_board)
@@ -102,7 +117,7 @@ func add_board(p_index : int) -> Board:
 	clear_display()
 	set_preview_list_size()
 	set_boards_size()
-	
+	save_thumbnail(board)
 	return board
 
 
@@ -123,6 +138,8 @@ func change_board(p_index : int, delayed : bool = true) -> void:
 		return
 	board.set_mode(G.BOARD_MODE.NONE)
 	board.unfocus()
+	if not is_loading:
+		save_thumbnail(board)	
 	clear_display()
 	current_board = p_index
 	
@@ -157,15 +174,7 @@ func clear_board() -> void:
 
 func _on_palette_freeze_pressed() -> void:
 	pass
-	#var rect : Rect2 = board.get_whiteboard_board()
-	#var img : Image = get_viewport().get_texture().get_image()
-	#img.blit_rect(img,rect, Vector2.ZERO)
-	#img.crop(int(rect.size.x), int(rect.size.y))
-	#var aspect_ratio : float = rect.size.x / rect.size.y
-	#img.resize(150, int(150 / aspect_ratio) )
-	#
-	#var tex = ImageTexture.create_from_image(img)
-	#$BoardsPreview/VBox/preview.texture = tex
+
 
 func _on_boards_resized() -> void:
 	if is_instance_valid(boards_container):
@@ -320,32 +329,24 @@ func reset() -> void:
 	preview_list.reset()
 	current_board = -1
 
-func _on_main_menu_load_button_pressed() -> void:
+func load_document(p_document : Document, p_board_index : int = 0) -> void:
+	document = p_document
+	G.set_document_path(document)
 	if is_loading:
 		return
 	is_loading = true
 	reset()
 	mask_boards()
-	var boards_data : BoardsData = load("user://boards_data.tres") 
-	for board_data : BoardData in boards_data.boards:
+	for board_data : BoardData in p_document.boards:
 		await get_tree().process_frame
 		add_board(current_board)
 		board_data.restore(last_added_board)
 	await get_tree().process_frame
-	change_board(0)
-	mask_boards(false, boards_data.boards.size())
+	change_board(p_board_index)
+	mask_boards(false, p_document.boards.size())
 	
 func _on_main_menu_saved_button_pressed() -> void:
-	var boards_data : BoardsData = get_data()
-	var error : Error = ResourceSaver.save(boards_data, "user://boards_data.tres")
-	if error != OK:
-		print("Error while saving boards to disk (Error %s)" % error)
-
-## Returns a BoardsData resource with persistant data of all the boards.
-func get_data() -> BoardsData:
-	var boards_data : BoardsData = BoardsData.new()
-	boards_data.store(boards)
-	return boards_data
+	pass
 
 func mask_boards(p_masked : bool = true, duration : float = 0.0) -> void:
 	if p_masked:
@@ -356,3 +357,50 @@ func mask_boards(p_masked : bool = true, duration : float = 0.0) -> void:
 		await get_tree().create_timer(0.05 * duration).timeout
 		mask_panel.hide()
 		is_loading = false
+
+func save_thumbnail(p_board : Board) -> void:
+	if not p_board.is_modified:
+		return
+	board.unfocus()
+	p_board.is_modified = false
+	await get_tree().process_frame
+	await get_tree().process_frame
+	save_document()
+	var thumbnail : Image = p_board.get_thumbnail()
+	var path : String = G.document_path + "/%s_thumbnail.jpg"%[p_board.uid]
+	thumbnail.save_jpg(path)
+	
+func save_document() -> void:
+	if not DirAccess.dir_exists_absolute(G.document_path):
+		DirAccess.make_dir_recursive_absolute(G.document_path)
+	document.store(boards)
+	var error : Error = ResourceSaver.save(document, "%s/document.tres" % G.document_path)
+	if error != OK:
+		print("Error while saving boards to disk (Error %s)" % error)
+
+
+func _on_tree_exiting() -> void:
+	if is_instance_valid(board):
+		if boards.size() > 1 or board.is_modified:
+			save_thumbnail(board)
+
+
+func _on_main_menu_document_manager_requested():
+	board_page.hide()
+	tool_palett.hide()
+	toggle_preview_panel.hide()
+	document_manager.activate(document.uid, board.uid)
+	
+
+
+func _on_main_menu_board_requested():
+	board_page.show()
+	tool_palett.show()
+	toggle_preview_panel.show()
+	document_manager.hide()
+
+
+func _on_document_manager_document_requested(p_document : Document, p_board_index : int):
+	_on_main_menu_board_requested()
+	main_menu.show_only_board_buttons()
+	load_document(p_document, p_board_index)

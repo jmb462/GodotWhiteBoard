@@ -6,6 +6,11 @@ signal board_created
 ## Emitted when a widget is added or removed from board.
 signal widgets_count_modified(widgets_count : int)
 
+## Returns if the board has changed since last thumbnail snapshot.
+var is_modified : bool = false
+
+var uid : int = 0
+
 var temp_group : Widget = null
 var focused_widget : Array[Widget] = []
 
@@ -25,6 +30,8 @@ func _ready() -> void:
 	await get_tree().process_frame
 	whiteboard.size = size
 	emit_signal("board_created")
+	if uid == 0:
+		uid = ResourceUID.create_id()
 
 func _process(_delta : float) -> void:
 	if board_mode == G.BOARD_MODE.SELECT:
@@ -49,7 +56,7 @@ func _on_board_gui_input(p_event : InputEvent) -> void:
 					drag_size_preview(p_event.position)
 			elif board_mode == G.BOARD_MODE.IMAGE_POSITION:
 				if p_event.is_pressed():
-					drag_size_preview(p_event.position)	
+					drag_size_preview(p_event.position)
 			elif board_mode == G.BOARD_MODE.TEXT_SIZE:
 				if not p_event.is_pressed():
 					# Left button has been released
@@ -72,8 +79,8 @@ func _on_board_gui_input(p_event : InputEvent) -> void:
 					rect_preview.position = p_event.position + Vector2(0, global_position.y)
 					preview_rect.position = p_event.position + Vector2(0, global_position.y)
 					preview_rect.size = Vector2.ZERO
-				
-					
+
+
 	if p_event is InputEventMouseMotion:
 		if board_mode in [G.BOARD_MODE.TEXT_SIZE, G.BOARD_MODE.SELECT]:
 			preview_rect.size += p_event.relative
@@ -86,9 +93,10 @@ func adapt_size(p_size : Vector2) -> void:
 	print("adpat resized")
 	size = p_size
 	viewport.size = p_size
-	
+
 func add(p_node : Node, p_board : Board = self) -> void:
 	p_board.whiteboard.add_child(p_node)
+	is_modified = true
 	emit_signal("widgets_count_modified", p_board.whiteboard.get_child_count())
 
 func get_widgets() -> Array[Node]:
@@ -102,6 +110,9 @@ func get_whiteboard_rect() -> Rect2:
 
 func change_layer(p_widget : Widget, p_layer : int) -> void:
 	whiteboard.move_child(p_widget, p_layer)
+	is_modified = true
+	_on_widget_changed()
+	
 
 func set_child(p_widget : Widget) -> void:
 	p_widget.reparent(whiteboard)
@@ -121,7 +132,7 @@ func ungroup() -> void:
 		widget.pin_marker(G.MARKER.TOP_LEFT)
 		var global_rotation : float = widget.get_global_transform().get_rotation()
 		set_child(widget)
-		
+
 		widget.rotation = global_rotation
 		widget.move_to_pin()
 		clone_widget(widget)
@@ -137,7 +148,7 @@ func unfocus(p_widget  : Widget = null) -> void:
 	if is_instance_valid(p_widget):
 		if focused_widget.find(p_widget) != -1:
 			focused_widget.remove_at(focused_widget.find(p_widget))
-		p_widget.set_focus(false)		
+		p_widget.set_focus(false)
 	else:
 		for widget : Widget in focused_widget:
 			if is_instance_valid(widget):
@@ -154,7 +165,7 @@ func drag_size_preview(p_position : Vector2) -> void:
 			board_mode = G.BOARD_MODE.TEXT_SIZE
 		G.BOARD_MODE.IMAGE_POSITION:
 			board_mode = G.BOARD_MODE.IMAGE_SIZE
-	rect_preview.position = preview_rect.abs().position	
+	rect_preview.position = preview_rect.abs().position
 	rect_preview.size = preview_rect.abs().size
 	rect_preview.show()
 
@@ -214,11 +225,11 @@ func group_widgets() -> void:
 	if focused_widget.is_empty():
 		return
 	if focused_widget.size() == 1:
-		set_focus(focused_widget[0])	
+		set_focus(focused_widget[0])
 		return
-	
+
 	focused_widget.sort_custom(sort_by_index)
-	
+
 	var new_widget : GroupWidget = packed_group_widget.instantiate()
 	add(new_widget)
 	var rect : Rect2 = get_container_rect(focused_widget)
@@ -227,23 +238,23 @@ func group_widgets() -> void:
 	new_widget.pivot_offset = preview_rect.size / 2.0
 	connect_widget_signals(new_widget)
 	new_widget.position -= Vector2(4,30)
-	
+
 	for widget : Widget in focused_widget:
 		widget.pin_marker(G.MARKER.TOP_LEFT)
 		widget.reparent(new_widget.container)
 		widget.group_into(new_widget)
 		if widget.is_master():
 			widget.clone.queue_free()
-	
+
 	await get_tree().process_frame
-	
+
 	for widget : Widget in focused_widget:
 		widget.move_to_pin()
-	
+
 	set_focus(new_widget)
 	temp_group = new_widget
 	clone_widget(new_widget)
-	
+
 
 ## Set focus on widget (and unfocus previous focused widget).
 func set_focus(p_widget : Widget, p_exclusive : bool = true) -> void:
@@ -255,7 +266,7 @@ func set_focus(p_widget : Widget, p_exclusive : bool = true) -> void:
 	if not p_widget in focused_widget:
 		focused_widget.append(p_widget)
 		p_widget.set_focus(true)
-	
+
 	#
 #
 #
@@ -264,6 +275,7 @@ func connect_widget_signals(p_widget : Widget) -> void:
 	p_widget.connect("duplicate_requested", duplicate_widget)
 	p_widget.connect("layer_change_requested", change_layer)
 	p_widget.connect("widget_deleted", _on_widget_deleted)
+	p_widget.connect("widget_changed", _on_widget_changed)
 
 #
 #	Copy a widget on chosen board
@@ -297,10 +309,15 @@ func sort_by_index(a : Widget, b : Widget) -> bool:
 
 func _on_widget_deleted(p_widget : Widget) -> void:
 	unfocus(p_widget)
+	_on_widget_changed()
 	emit_signal("widgets_count_modified", whiteboard.get_child_count() - 1)
 
+func _on_widget_changed() -> void:
+	print('board changed')
+	is_modified = true
+
 func get_container_rect(p_widgets : Array[Widget]) -> Rect2:
-	
+
 	var array_x : Array[float] = []
 	var array_y : Array[float] = []
 	for widget : Widget in p_widgets:
@@ -314,13 +331,13 @@ func get_container_rect(p_widgets : Array[Widget]) -> Rect2:
 
 func set_mode(p_mode : G.BOARD_MODE) -> void:
 	board_mode = p_mode
-	
+
 	match board_mode:
 		G.BOARD_MODE.TEXT_POSITION, G.BOARD_MODE.IMAGE_POSITION:
 			set_cursor(CURSOR_CROSS)
 		_:
 			set_cursor(CURSOR_ARROW)
-			
+
 func get_mode() -> G.BOARD_MODE:
 	return board_mode
 
@@ -340,4 +357,13 @@ func restore_widgets(p_widgets_data : Array[WidgetData]) -> void:
 			widget_data.restore(new_widget)
 		else:
 			print("Cannot restore a base widget")
-			
+
+
+## Returns an image of the board
+func get_thumbnail() -> Image:
+	var image : Image = viewport.get_texture().get_image()
+	image.resize(480, 270)
+	return image
+
+func board_change() -> void:
+	is_modified = true

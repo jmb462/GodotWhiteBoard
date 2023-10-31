@@ -13,6 +13,11 @@ enum MARKER { TOP, TOP_RIGHT, RIGHT, BOTTOM_RIGHT, BOTTOM, BOTTOM_LEFT, LEFT, TO
 
 var color : Array[Color] = [Color.BLACK, Color("#F44336"), Color("#4CAF50"), Color("#2196F3")]
 
+var document_path : String = "user://Documents/"
+
+func set_document_path(p_document : Document) -> void:
+	document_path = p_document.get_document_path()
+
 func debug_action(p_action : ACTION) -> void:
 	print(ACTION.keys()[p_action])
 	

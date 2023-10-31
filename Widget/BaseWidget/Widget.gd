@@ -5,9 +5,10 @@ signal widget_deleted(widget : Widget)
 signal focus_requested(widget : Widget)
 signal duplicate_requested(widget : Widget)
 signal layer_change_requested(widget : Widget, direction : int)
+signal widget_changed
+
 
 @onready var buttons : Node2D = $Buttons
-
 @onready var focus_theme : StyleBoxFlat = load("res://Styles/Widget_master_selected.tres")
 @onready var unfocus_theme : StyleBoxFlat = load("res://Styles/Widget_unfocus.tres")
 
@@ -65,6 +66,7 @@ func _on_gui_input(event : InputEvent) -> void:
 
 func move(p_relative : Vector2) -> void:
 	position += p_relative
+	emit_signal("widget_changed")	
 	synchronize()
 
 
@@ -86,6 +88,7 @@ func resize(p_relative : Vector2, p_resize_type : G.RESIZE) -> void:
 			size = Vector2(new_size, (new_size / aspect_ratio) if keep_ratio else size.y + p_relative.y)
 	buttons.update_positions(size)
 	move_to_pin()
+	emit_signal("widget_changed")	
 	synchronize()
 
 
@@ -94,6 +97,7 @@ func rotate_widget(p_position : Vector2) -> void:
 	var corner_angle : float = asin((size.y / 2.0) / buttons.get_marker_position(G.MARKER.MIDDLE).distance_to( buttons.get_marker_position(G.MARKER.TOP_RIGHT)))
 	var new_angle : float = buttons.get_marker_position(G.MARKER.MIDDLE).angle_to_point(p_position) + corner_angle
 	rotation = snap_angle(new_angle, PI / 2.0, PI / 36.0)
+	emit_signal("widget_changed")	
 	synchronize()
 
 func snap_angle(angle_rad : float , p_multiple : float, p_threshold : float) -> float:
@@ -130,7 +134,6 @@ func synchronize() -> void:
 	clone.rotation = rotation
 	clone.visible = visible_on_presentation_screen
 
-
 func _on_buttons_resize_pressed(p_resize_type : G.RESIZE, p_keep_ratio : bool = false) -> void:
 	current_action = G.ACTION.RESIZE
 	resize_type = p_resize_type
@@ -148,6 +151,7 @@ func _on_buttons_toggle_visible_pressed() -> void:
 			clone.show()
 			modulate.a = 1.0
 			visible_on_presentation_screen = true
+	emit_signal("widget_changed")
 
 
 func _on_buttons_close_pressed() -> void:

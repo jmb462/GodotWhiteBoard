@@ -1,8 +1,9 @@
-[gd_scene load_steps=9 format=3 uid="uid://hsjvadwsbdih"]
+[gd_scene load_steps=10 format=3 uid="uid://hsjvadwsbdih"]
 
 [ext_resource type="Script" path="res://MainBoard/MainBoard.gd" id="1_ngbew"]
 [ext_resource type="PackedScene" uid="uid://cxbnl7jaaybi" path="res://MainMenu/MainMenu.tscn" id="2_w6b54"]
 [ext_resource type="PackedScene" uid="uid://e4xfou5ve0gm" path="res://ToolPalette/ToolPalett.tscn" id="3_s80ig"]
+[ext_resource type="PackedScene" uid="uid://5tkvllinrdx5" path="res://DocumentManager/DocumentManager.tscn" id="5_wltpl"]
 [ext_resource type="StyleBox" uid="uid://h17ciyanrqsa" path="res://Resources/board_panel_style.tres" id="6_0wgyw"]
 [ext_resource type="PackedScene" uid="uid://dqrs686c4wgyd" path="res://AnimatedList/AnimatedList.tscn" id="6_cseuc"]
 [ext_resource type="Texture2D" uid="uid://1crjc8urthyh" path="res://Assets/Buttons/preview_toggle.png" id="8_dj1do"]
@@ -40,12 +41,12 @@ mouse_filter = 2
 [node name="MainMenu" parent="VBox" instance=ExtResource("2_w6b54")]
 layout_mode = 2
 
-[node name="HBox" type="Control" parent="VBox"]
+[node name="BoardPage" type="Control" parent="VBox"]
 layout_mode = 2
 size_flags_vertical = 3
 mouse_filter = 1
 
-[node name="BoardsContainer" type="Control" parent="VBox/HBox"]
+[node name="BoardsContainer" type="Control" parent="VBox/BoardPage"]
 custom_minimum_size = Vector2(500, 500)
 layout_mode = 2
 anchors_preset = 0
@@ -54,7 +55,7 @@ offset_bottom = 596.0
 size_flags_horizontal = 3
 mouse_filter = 1
 
-[node name="Backpanel" type="Panel" parent="VBox/HBox/BoardsContainer"]
+[node name="Backpanel" type="Panel" parent="VBox/BoardPage/BoardsContainer"]
 show_behind_parent = true
 layout_mode = 1
 anchors_preset = 15
@@ -65,14 +66,18 @@ grow_vertical = 2
 mouse_filter = 2
 theme_override_styles/panel = ExtResource("6_0wgyw")
 
-[node name="PreviewList" parent="VBox/HBox" instance=ExtResource("6_cseuc")]
+[node name="PreviewList" parent="VBox/BoardPage" instance=ExtResource("6_cseuc")]
 layout_mode = 0
 offset_right = 200.0
 offset_bottom = 300.0
 theme_override_styles/panel = SubResource("StyleBoxFlat_ogoi0")
 
-[node name="Node2D" type="Node2D" parent="VBox/HBox/PreviewList"]
+[node name="Node2D" type="Node2D" parent="VBox/BoardPage/PreviewList"]
 position = Vector2(0, -32)
+
+[node name="DocumentManager" parent="VBox" instance=ExtResource("5_wltpl")]
+visible = false
+layout_mode = 2
 
 [node name="TogglePreviewPanel" type="Panel" parent="."]
 layout_mode = 0
@@ -124,17 +129,19 @@ dialog_text = "Are you sure you want to clear current board?"
 [connection signal="boards_changed" from="." to="VBox/MainMenu" method="_on_main_board_boards_changed"]
 [connection signal="mouse_entered" from="." to="." method="_on_mouse_entered"]
 [connection signal="resized" from="." to="." method="_on_resized"]
+[connection signal="tree_exiting" from="." to="." method="_on_tree_exiting"]
+[connection signal="board_requested" from="VBox/MainMenu" to="." method="_on_main_menu_board_requested"]
 [connection signal="clear_button_pressed" from="VBox/MainMenu" to="." method="clear_board_confirm"]
-[connection signal="load_button_pressed" from="VBox/MainMenu" to="." method="_on_main_menu_load_button_pressed"]
+[connection signal="document_manager_requested" from="VBox/MainMenu" to="." method="_on_main_menu_document_manager_requested"]
 [connection signal="new_button_pressed" from="VBox/MainMenu" to="." method="_on_new_board_pressed"]
 [connection signal="next_button_pressed" from="VBox/MainMenu" to="." method="_on_next_board_pressed"]
 [connection signal="previous_button_pressed" from="VBox/MainMenu" to="." method="_on_previous_board_pressed"]
-[connection signal="saved_button_pressed" from="VBox/MainMenu" to="." method="_on_main_menu_saved_button_pressed"]
-[connection signal="resized" from="VBox/HBox/BoardsContainer" to="." method="_on_boards_resized"]
-[connection signal="item_delete_requested" from="VBox/HBox/PreviewList" to="." method="delete_confirm"]
-[connection signal="item_duplicate_requested" from="VBox/HBox/PreviewList" to="." method="duplicate_board"]
-[connection signal="item_moved" from="VBox/HBox/PreviewList" to="." method="_on_preview_list_item_moved"]
-[connection signal="item_selected" from="VBox/HBox/PreviewList" to="." method="change_board"]
+[connection signal="resized" from="VBox/BoardPage/BoardsContainer" to="." method="_on_boards_resized"]
+[connection signal="item_delete_requested" from="VBox/BoardPage/PreviewList" to="." method="delete_confirm"]
+[connection signal="item_duplicate_requested" from="VBox/BoardPage/PreviewList" to="." method="duplicate_board"]
+[connection signal="item_moved" from="VBox/BoardPage/PreviewList" to="." method="_on_preview_list_item_moved"]
+[connection signal="item_selected" from="VBox/BoardPage/PreviewList" to="." method="change_board"]
+[connection signal="document_requested" from="VBox/DocumentManager" to="." method="_on_document_manager_document_requested"]
 [connection signal="toggled" from="TogglePreviewPanel/TogglePreview" to="." method="_on_toggle_preview_toggled"]
 [connection signal="freeze_pressed" from="ToolPalett" to="." method="_on_palette_freeze_pressed"]
 [connection signal="image_pressed" from="ToolPalett" to="." method="_on_palette_image_pressed"]

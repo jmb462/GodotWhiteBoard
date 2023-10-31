@@ -1,0 +1,46 @@
+[gd_scene load_steps=3 format=3 uid="uid://5tkvllinrdx5"]
+
+[ext_resource type="Script" path="res://DocumentManager/DocumentManager.gd" id="1_xd02x"]
+[ext_resource type="PackedScene" uid="uid://ntxe1m0aiw02" path="res://DocumentManager/DocumentTree/DocumentTree.tscn" id="2_6g8m3"]
+
+[node name="DocumentManager" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+script = ExtResource("1_xd02x")
+
+[node name="HBox" type="HBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="DocumentTree" parent="HBox" instance=ExtResource("2_6g8m3")]
+custom_minimum_size = Vector2(390, 0)
+layout_mode = 2
+
+[node name="ThumbnailsContainer" type="Control" parent="HBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="BoardList" type="ItemList" parent="HBox/ThumbnailsContainer"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+theme_override_constants/h_separation = 13
+theme_override_constants/v_separation = 15
+max_columns = 3
+
+[connection signal="document_selected" from="HBox/DocumentTree" to="." method="show_thumbnails"]
+[connection signal="item_activated" from="HBox/ThumbnailsContainer/BoardList" to="." method="_on_board_list_item_activated"]

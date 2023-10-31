@@ -1,11 +1,11 @@
 extends PanelContainer
 
-signal load_button_pressed
-signal saved_button_pressed
 signal new_button_pressed
 signal previous_button_pressed
 signal next_button_pressed
 signal clear_button_pressed
+signal document_manager_requested
+signal board_requested
 
 @onready var h_box : HBoxContainer = $HBox
 @onready var new_button : Button = $HBox/New
@@ -13,6 +13,8 @@ signal clear_button_pressed
 @onready var next_button : Button = $HBox/Next
 @onready var clear_button : Button = $HBox/Clear
 @onready var page_number : Label = $HBox/PageNumber
+@onready var board_button = $HBox/Board
+@onready var documents_button = $HBox/Documents
 
 func _on_new_pressed() -> void:
 	emit_signal("new_button_pressed")
@@ -40,9 +42,15 @@ func _on_widgets_count_modified(p_count : int) -> void:
 	clear_button.disabled = p_count == 0
 
 
-func _on_save_pressed() -> void:
-	emit_signal("saved_button_pressed")
-
-
-func _on_load_pressed() -> void:
-	emit_signal("load_button_pressed")
+func _on_documents_pressed():
+	emit_signal("document_manager_requested")
+	get_tree().call_group("board_page", "hide")
+	get_tree().call_group("documents_page", "show")
+	
+func _on_board_pressed():
+	emit_signal("board_requested")
+	show_only_board_buttons()
+	
+func show_only_board_buttons():
+	get_tree().call_group("board_page", "show")
+	get_tree().call_group("documents_page", "hide")

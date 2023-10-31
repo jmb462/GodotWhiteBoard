@@ -1,0 +1,19 @@
+[gd_scene load_steps=2 format=3 uid="uid://ntxe1m0aiw02"]
+
+[ext_resource type="Script" path="res://DocumentManager/DocumentTree/DocumentTree.gd" id="1_eikl3"]
+
+[node name="FileTree" type="Tree"]
+custom_minimum_size = Vector2(500, 0)
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_vertical = 3
+hide_root = true
+select_mode = 1
+script = ExtResource("1_eikl3")
+
+[connection signal="gui_input" from="." to="." method="_on_gui_input"]
+[connection signal="item_edited" from="." to="." method="_on_item_edited"]
+[connection signal="item_selected" from="." to="." method="_on_item_selected"]
