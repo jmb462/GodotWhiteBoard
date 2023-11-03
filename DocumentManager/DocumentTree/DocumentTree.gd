@@ -31,7 +31,6 @@ func dir_contents(path : String, parent_item : TreeItem) -> void:
 					dir_contents(new_path, dir_item)
 				else:
 					var doc_path : String = new_path + "/document.tres"
-					print("doc_path : ", doc_path)
 					document = load(doc_path)
 					var doc_item : TreeItem = create_new_item(parent_item, document.get_formated_file_name(), document_icon, new_path)
 					document_items.append(doc_item)
@@ -88,11 +87,6 @@ func rename_folder(item : TreeItem) -> void:
 	if not new_name.is_valid_filename():
 		item.set_text(0, old_item_text)
 		item.set_editable(0, false)
-	print(old_item_text)
-	print("new : ", new_name)
-	print("item path ",old_path)
-	print("item_path slice", old_path.split("/", false))
-	print("base", old_path.get_base_dir())
 	var new_path : String = old_path.get_base_dir()+'/'+new_name
 	DirAccess.rename_absolute(old_path, new_path)
 	rebuild_tree()

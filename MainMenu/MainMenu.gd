@@ -13,8 +13,8 @@ signal board_requested
 @onready var next_button : Button = $HBox/Next
 @onready var clear_button : Button = $HBox/Clear
 @onready var page_number : Label = $HBox/PageNumber
-@onready var board_button = $HBox/Board
-@onready var documents_button = $HBox/Documents
+@onready var board_button : Button = $HBox/Board
+@onready var documents_button : Button = $HBox/Documents
 
 func _on_new_pressed() -> void:
 	emit_signal("new_button_pressed")
@@ -42,15 +42,15 @@ func _on_widgets_count_modified(p_count : int) -> void:
 	clear_button.disabled = p_count == 0
 
 
-func _on_documents_pressed():
+func _on_documents_pressed() -> void:
 	emit_signal("document_manager_requested")
 	get_tree().call_group("board_page", "hide")
 	get_tree().call_group("documents_page", "show")
 	
-func _on_board_pressed():
+func _on_board_pressed() -> void:
 	emit_signal("board_requested")
 	show_only_board_buttons()
 	
-func show_only_board_buttons():
+func show_only_board_buttons() -> void:
 	get_tree().call_group("board_page", "show")
 	get_tree().call_group("documents_page", "hide")

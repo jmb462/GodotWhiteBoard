@@ -12,9 +12,7 @@ class_name WidgetData
 ## Store persistant properties of the widget in the WidgetData resource.
 func store(p_widget : Widget) -> void:
 	rect = p_widget.get_rect()
-	print(rect)
 	global_rotation = p_widget.get_global_transform().get_rotation()
-	print(global_rotation)
 	visible_on_presentation_screen = p_widget.visible_on_presentation_screen
 	locked = p_widget.locked
 	editable = p_widget.editable

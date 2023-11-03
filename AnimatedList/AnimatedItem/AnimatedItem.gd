@@ -179,8 +179,6 @@ func _on_mouse_detection_mouse_entered() -> void:
 		launch_tween_over(true)
 
 func _on_mouse_detection_mouse_exited() -> void:
-	# Wait a frame to prevent mouse exit while hovering buttons
-	#await get_tree().process_frame
 	if not is_mouse_in_item():
 		emit_signal("mouse_exited", index)
 		launch_tween_over(false)

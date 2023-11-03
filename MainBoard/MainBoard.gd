@@ -29,7 +29,7 @@ var is_loading : bool = false
 @onready var main_menu : PanelContainer = $VBox/MainMenu
 @onready var mask_panel : Panel = $MaskPanel
 @onready var tool_palett : Panel = $ToolPalett
-@onready var document_manager = $VBox/DocumentManager
+@onready var document_manager : DocumentManager = $VBox/DocumentManager
 
 
 @onready var delete_confirmation_dialog : ConfirmationDialog = $DeleteConfirmationDialog
@@ -111,13 +111,14 @@ func add_board(p_index : int) -> Board:
 	var scale_factor : float = float(preview_list.item_max_size_horizontal) / float(preview_texture.get_size().x)
 	
 	preview_list.preview_scale = scale_factor
-	var preview_item : AnimatedItem = preview_list.create_item(p_index + 1, preview_texture)
+	var preview_item : AnimatedItem = preview_list.create_item(p_index + 1, preview_texture, false)
 	preview_list.select(preview_item.index)
 	
 	clear_display()
 	set_preview_list_size()
 	set_boards_size()
-	save_thumbnail(board)
+	if not is_loading:
+		save_thumbnail(board)
 	return board
 
 
@@ -342,7 +343,7 @@ func load_document(p_document : Document, p_board_index : int = 0) -> void:
 		add_board(current_board)
 		board_data.restore(last_added_board)
 	await get_tree().process_frame
-	change_board(p_board_index)
+	change_board(p_board_index, false)
 	mask_boards(false, p_document.boards.size())
 	
 func _on_main_menu_saved_button_pressed() -> void:
@@ -354,7 +355,7 @@ func mask_boards(p_masked : bool = true, duration : float = 0.0) -> void:
 		mask_panel.size = board.size * boards_container.scale
 		mask_panel.show()
 	else:
-		await get_tree().create_timer(0.05 * duration).timeout
+		await get_tree().create_timer(0.01 * duration).timeout
 		mask_panel.hide()
 		is_loading = false
 
@@ -385,7 +386,7 @@ func _on_tree_exiting() -> void:
 			save_thumbnail(board)
 
 
-func _on_main_menu_document_manager_requested():
+func _on_main_menu_document_manager_requested() -> void:
 	board_page.hide()
 	tool_palett.hide()
 	toggle_preview_panel.hide()
@@ -393,14 +394,14 @@ func _on_main_menu_document_manager_requested():
 	
 
 
-func _on_main_menu_board_requested():
+func _on_main_menu_board_requested() -> void:
 	board_page.show()
 	tool_palett.show()
 	toggle_preview_panel.show()
 	document_manager.hide()
 
 
-func _on_document_manager_document_requested(p_document : Document, p_board_index : int):
+func _on_document_manager_document_requested(p_document : Document, p_board_index : int) -> void:
 	_on_main_menu_board_requested()
 	main_menu.show_only_board_buttons()
 	load_document(p_document, p_board_index)

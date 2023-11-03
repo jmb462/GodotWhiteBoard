@@ -41,7 +41,7 @@ func _ready() -> void:
 	pass
 
 
-func create_item(p_index : int, p_texture : Texture2D = null) -> AnimatedItem:
+func create_item(p_index : int, p_texture : Texture2D = null, p_animated : bool = true) -> AnimatedItem:
 	var item : AnimatedItem = packed_item.instantiate()
 	item_container.add_child(item)
 	item.set_preview_scale(preview_scale)
@@ -50,7 +50,7 @@ func create_item(p_index : int, p_texture : Texture2D = null) -> AnimatedItem:
 	item.position = get_item_position(p_index)
 	items.insert(p_index, item)
 	connect_all(item)	
-	reposition_after_insert(item)
+	reposition_after_insert(item, p_animated)
 	for i : int in items.size():
 		items[i].set_indexes(i)
 	autosize()
@@ -227,11 +227,11 @@ func reposition_after_delete() -> void:
 		await get_tree().create_timer(tween_number * (0.15 + 0.5)).timeout
 		autosize()
 
-func reposition_after_insert(p_item : AnimatedItem) -> void:
+func reposition_after_insert(p_item : AnimatedItem, p_is_animated : bool = true) -> void:
 	if items.size() < 2:
 		p_item.position = get_item_position(p_item.index)
 		return
-		
+	var animation_delay : float = 0.5 if p_is_animated else 0.0
 	var tween : Tween = null
 	for i : int in items.size():
 		
@@ -241,14 +241,13 @@ func reposition_after_insert(p_item : AnimatedItem) -> void:
 			if not is_instance_valid(tween):
 				tween = create_tween()
 				tween.set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_EXPO)
-			tween.tween_property(p_item, "modulate:a", 1.0, 0.5).from(0.0)
-			tween.parallel().tween_property(p_item, "scale", Vector2.ONE, 0.5).from(Vector2(0.1,0.1))
+			tween.tween_property(p_item, "modulate:a", 1.0, animation_delay).from(0.0)
+			tween.parallel().tween_property(p_item, "scale", Vector2.ONE, animation_delay).from(Vector2(0.1,0.1))
 		if item_pos != expected_pos:
-			tween.parallel().set_ease(Tween.EASE_OUT).tween_property(items[i], "position:y", expected_pos.y, 0.5)
+			tween.parallel().set_ease(Tween.EASE_OUT).tween_property(items[i], "position:y", expected_pos.y, animation_delay)
 
 	if is_instance_valid(tween):
 		await tween.finished
-	
 
 func show_scroll_bar(p_active : bool) -> void:
 	scrollbar.max_value = real_size_y
