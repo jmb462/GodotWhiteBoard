@@ -44,8 +44,8 @@ func _ready() -> void:
 func create_item(p_index : int, p_texture : Texture2D = null, p_animated : bool = true) -> AnimatedItem:
 	var item : AnimatedItem = packed_item.instantiate()
 	item_container.add_child(item)
-	item.set_preview_scale(preview_scale)
 	if is_instance_valid(p_texture):
+		item.set_preview_scale(float(item_max_size_horizontal) / float(p_texture.get_size().x))
 		item.set_item_texture(p_texture)
 	item.position = get_item_position(p_index)
 	items.insert(p_index, item)
@@ -56,6 +56,10 @@ func create_item(p_index : int, p_texture : Texture2D = null, p_animated : bool 
 	autosize()
 	return item
 
+func set_item_texture(index : int, p_texture : Texture2D) -> void:
+	items[index].set_preview_scale(float(item_max_size_horizontal) / float(p_texture.get_size().x))
+	items[index].set_item_texture(p_texture)
+	
 func autosize() -> void:
 	if items.size() == 0:
 		return
@@ -243,8 +247,8 @@ func reposition_after_insert(p_item : AnimatedItem, p_is_animated : bool = true)
 				tween.set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_EXPO)
 			tween.tween_property(p_item, "modulate:a", 1.0, animation_delay).from(0.0)
 			tween.parallel().tween_property(p_item, "scale", Vector2.ONE, animation_delay).from(Vector2(0.1,0.1))
-		if item_pos != expected_pos:
-			tween.parallel().set_ease(Tween.EASE_OUT).tween_property(items[i], "position:y", expected_pos.y, animation_delay)
+			if item_pos != expected_pos:
+				tween.parallel().set_ease(Tween.EASE_OUT).tween_property(items[i], "position:y", expected_pos.y, animation_delay)
 
 	if is_instance_valid(tween):
 		await tween.finished

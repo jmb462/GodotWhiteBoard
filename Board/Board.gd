@@ -27,8 +27,6 @@ var preview_rect : Rect2 = Rect2()
 
 func _ready() -> void:
 	connect_gui_input(_on_board_gui_input)
-	await get_tree().process_frame
-	whiteboard.size = size
 	emit_signal("board_created")
 	if uid == 0:
 		uid = ResourceUID.create_id()
@@ -36,7 +34,6 @@ func _ready() -> void:
 func _process(_delta : float) -> void:
 	if board_mode == G.BOARD_MODE.SELECT:
 		if not Input.is_action_pressed("selection_button"):
-			print("end selection by process")
 			end_select()
 
 func activate() -> void:
@@ -90,7 +87,6 @@ func _on_board_gui_input(p_event : InputEvent) -> void:
 				check_selected_widgets()
 
 func adapt_size(p_size : Vector2) -> void:
-	print("adpat resized")
 	size = p_size
 	viewport.size = p_size
 
@@ -128,7 +124,6 @@ func end_select() -> void:
 
 func ungroup() -> void:
 	for widget : Widget in temp_group.container.get_children():
-		print(widget)
 		widget.pin_marker(G.MARKER.TOP_LEFT)
 		var global_rotation : float = widget.get_global_transform().get_rotation()
 		set_child(widget)
@@ -313,7 +308,6 @@ func _on_widget_deleted(p_widget : Widget) -> void:
 	emit_signal("widgets_count_modified", whiteboard.get_child_count() - 1)
 
 func _on_widget_changed() -> void:
-	print('board changed')
 	is_modified = true
 
 func get_container_rect(p_widgets : Array[Widget]) -> Rect2:
@@ -357,7 +351,6 @@ func restore_widgets(p_widgets_data : Array[WidgetData]) -> void:
 			widget_data.restore(new_widget)
 		else:
 			print("Cannot restore a base widget")
-
 
 ## Returns an image of the board
 func get_thumbnail() -> Image:

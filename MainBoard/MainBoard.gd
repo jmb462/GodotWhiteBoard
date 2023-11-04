@@ -2,7 +2,7 @@ extends Control
 
 ## Emitted when board is created or deleted or when current board changed.
 signal boards_changed(current_board : int, total_boards : int)
-
+signal saved
 ## Array of Board
 var boards : Array[Board] = []
 
@@ -39,11 +39,14 @@ var is_loading : bool = false
 @onready var packed_board : PackedScene = preload("res://Board/Board.tscn")
 
 func _ready() -> void:
+
+	create_new_document()
+	_on_resized()
 	if not is_instance_valid(board):
 		add_board(current_board)
 	get_tree().get_root().connect("files_dropped", _on_drop)
-	create_new_document()
-	_on_resized()
+
+
 	
 func create_new_document() -> void:
 	document = Document.new()
@@ -88,7 +91,7 @@ func _on_palette_paste_pressed() -> void:
 func add_board(p_index : int) -> Board:
 	if is_instance_valid(board):
 		board.unfocus()
-		if board.is_modified:
+		if not is_loading:
 			save_thumbnail(board)
 	var new_board : Board = packed_board.instantiate()
 	board_signal_connect(new_board)
@@ -104,13 +107,8 @@ func add_board(p_index : int) -> Board:
 	
 	set_board(new_board)
 	
-	await get_tree().process_frame
-	
 	var preview_texture : ViewportTexture = new_board.viewport.get_texture()
-	
-	var scale_factor : float = float(preview_list.item_max_size_horizontal) / float(preview_texture.get_size().x)
-	
-	preview_list.preview_scale = scale_factor
+
 	var preview_item : AnimatedItem = preview_list.create_item(p_index + 1, preview_texture, false)
 	preview_list.select(preview_item.index)
 	
@@ -134,7 +132,7 @@ func _on_next_board_pressed() -> void:
 	change_board(current_board + 1)
 
 
-func change_board(p_index : int, delayed : bool = true) -> void:
+func change_board(p_index : int) -> void:
 	if p_index < 0:
 		return
 	board.set_mode(G.BOARD_MODE.NONE)
@@ -150,8 +148,6 @@ func change_board(p_index : int, delayed : bool = true) -> void:
 	set_board(boards[current_board])
 		
 	synchronize_display()
-	if delayed:
-		await get_tree().create_timer(0.1).timeout
 	
 	show_only_current_board()
 	
@@ -165,6 +161,8 @@ func set_board(p_board : Board) -> void:
 func show_only_current_board() -> void:
 	for i : int in boards.size():
 		boards[i].visible = i == current_board
+		if boards[i].visible :
+			preview_list.set_item_texture(i, boards[i].viewport.get_texture())
 
 func clear_board_confirm() -> void:
 	clear_confirmation_dialog.popup_centered()
@@ -179,7 +177,7 @@ func _on_palette_freeze_pressed() -> void:
 
 func _on_boards_resized() -> void:
 	if is_instance_valid(boards_container):
-		#warning-ignore:INFERRED_DECLARATION
+		
 		for each_board : Board in boards:
 			each_board.custom_minimum_size = board.size
 
@@ -225,18 +223,11 @@ func _on_resized() -> void:
 #
 func clear_display() -> void:
 	var displayed_widgets : Array = Display.presentation_screen.get_children()
-	if not displayed_widgets.is_empty():
-		var tween : Tween = create_tween()
-		for widget : Widget in displayed_widgets:
-			tween.set_parallel().set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
-			tween.tween_property(widget, "modulate:a", 0.0, 0.2)
-		await tween.finished
-		if is_instance_valid(displayed_widgets):
-			for widget : Widget in displayed_widgets:
-				if is_instance_valid(widget):
-					if is_instance_valid(widget.master):
-						widget.master.clone = null
-					widget.queue_free()
+	for widget : Widget in displayed_widgets:
+		if is_instance_valid(widget):
+			if is_instance_valid(widget.master):
+				widget.master.clone = null
+			widget.queue_free()
 
 #
 # Clone each widget of board on display screen
@@ -258,7 +249,6 @@ func duplicate_board(p_index : int) -> void:
 
 	boards.insert(p_index + 1, new_board)
 
-	await get_tree().process_frame
 	preview_list.create_item(p_index + 1, boards[p_index + 1].viewport.get_texture())
 	change_board(p_index + 1)
 	
@@ -339,11 +329,11 @@ func load_document(p_document : Document, p_board_index : int = 0) -> void:
 	reset()
 	mask_boards()
 	for board_data : BoardData in p_document.boards:
-		await get_tree().process_frame
 		add_board(current_board)
 		board_data.restore(last_added_board)
-	await get_tree().process_frame
-	change_board(p_board_index, false)
+		var image : Image = Image.load_from_file(document.get_preview_path(current_board))
+		preview_list.set_item_texture(current_board, ImageTexture.create_from_image(image))
+	change_board(p_board_index)
 	mask_boards(false, p_document.boards.size())
 	
 func _on_main_menu_saved_button_pressed() -> void:
@@ -360,16 +350,14 @@ func mask_boards(p_masked : bool = true, duration : float = 0.0) -> void:
 		is_loading = false
 
 func save_thumbnail(p_board : Board) -> void:
-	if not p_board.is_modified:
-		return
 	board.unfocus()
-	p_board.is_modified = false
 	await get_tree().process_frame
 	await get_tree().process_frame
 	save_document()
 	var thumbnail : Image = p_board.get_thumbnail()
 	var path : String = G.document_path + "/%s_thumbnail.jpg"%[p_board.uid]
 	thumbnail.save_jpg(path)
+	emit_signal("saved")
 	
 func save_document() -> void:
 	if not DirAccess.dir_exists_absolute(G.document_path):
@@ -381,12 +369,17 @@ func save_document() -> void:
 
 
 func _on_tree_exiting() -> void:
-	if is_instance_valid(board):
-		if boards.size() > 1 or board.is_modified:
-			save_thumbnail(board)
+	if not document.is_empty():
+		save_thumbnail(board)
+		await self.saved
+		print("on enregistre l'enregistrement")
+	else:
+		print("on supprime l'enregistrement")
 
 
 func _on_main_menu_document_manager_requested() -> void:
+	save_thumbnail(board)
+	await saved
 	board_page.hide()
 	tool_palett.hide()
 	toggle_preview_panel.hide()
@@ -402,6 +395,7 @@ func _on_main_menu_board_requested() -> void:
 
 
 func _on_document_manager_document_requested(p_document : Document, p_board_index : int) -> void:
+
 	_on_main_menu_board_requested()
 	main_menu.show_only_board_buttons()
 	load_document(p_document, p_board_index)

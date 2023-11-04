@@ -39,4 +39,14 @@ func get_document_path() -> String:
 	if resource_path.begins_with("user://"):
 		return resource_path.get_base_dir()
 	return "user://Documents/%s/" % uid
-	
+
+func get_preview_path(p_index : int) -> String:
+	if p_index >= boards.size():
+		return ""
+	return get_document_path() + '/' +str(boards[p_index].uid) + '_thumbnail.jpg'
+
+func is_empty() -> bool:
+	if boards.size() == 1:
+		if boards[0].widgets.size() == 0:
+			return true
+	return false
