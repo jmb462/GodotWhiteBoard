@@ -108,8 +108,7 @@ func add_board(p_index : int) -> Board:
 	set_board(new_board)
 	
 	var preview_texture : ViewportTexture = new_board.viewport.get_texture()
-
-	var preview_item : AnimatedItem = preview_list.create_item(p_index + 1, preview_texture, false)
+	var preview_item : AnimatedItem = preview_list.create_item(p_index + 1, preview_texture, not is_loading)
 	preview_list.select(preview_item.index)
 	
 	clear_display()

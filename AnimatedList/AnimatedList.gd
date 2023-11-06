@@ -235,23 +235,25 @@ func reposition_after_insert(p_item : AnimatedItem, p_is_animated : bool = true)
 	if items.size() < 2:
 		p_item.position = get_item_position(p_item.index)
 		return
-	var animation_delay : float = 0.5 if p_is_animated else 0.0
-	var tween : Tween = null
-	for i : int in items.size():
-		
-		var item_pos : Vector2 = items[i].position
-		var expected_pos : Vector2 = get_item_position(i)
-		if p_item == items[i]:
-			if not is_instance_valid(tween):
-				tween = create_tween()
-				tween.set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_EXPO)
-			tween.tween_property(p_item, "modulate:a", 1.0, animation_delay).from(0.0)
-			tween.parallel().tween_property(p_item, "scale", Vector2.ONE, animation_delay).from(Vector2(0.1,0.1))
+	if p_is_animated == false:
+		for i : int in items.size():
+			items[i].position.y = get_item_position(i).y
+	else:
+		var tween : Tween = null
+		for i : int in items.size():
+			var item_pos : Vector2 = items[i].position
+			var expected_pos : Vector2 = get_item_position(i)
+			if p_item == items[i]:
+				if not is_instance_valid(tween):
+					tween = create_tween()
+					tween.set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_EXPO)
+				tween.tween_property(p_item, "modulate:a", 1.0, 0.5).from(0.0)
+				tween.parallel().tween_property(p_item, "scale", Vector2.ONE, 0.5).from(Vector2(0.1,0.1))
 			if item_pos != expected_pos:
-				tween.parallel().set_ease(Tween.EASE_OUT).tween_property(items[i], "position:y", expected_pos.y, animation_delay)
+				tween.parallel().set_ease(Tween.EASE_OUT).tween_property(items[i], "position:y", expected_pos.y, 0.5)
 
-	if is_instance_valid(tween):
-		await tween.finished
+		if is_instance_valid(tween):
+			await tween.finished
 
 func show_scroll_bar(p_active : bool) -> void:
 	scrollbar.max_value = real_size_y
