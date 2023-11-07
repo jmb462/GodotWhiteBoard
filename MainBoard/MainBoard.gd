@@ -350,10 +350,11 @@ func mask_boards(p_masked : bool = true, duration : float = 0.0) -> void:
 
 func save_thumbnail(p_board : Board) -> void:
 	board.unfocus()
+	var thumbnail : Image = p_board.get_thumbnail()
 	await get_tree().process_frame
 	await get_tree().process_frame
 	save_document()
-	var thumbnail : Image = p_board.get_thumbnail()
+	
 	var path : String = G.document_path + "/%s_thumbnail.jpg"%[p_board.uid]
 	thumbnail.save_jpg(path)
 	emit_signal("saved")

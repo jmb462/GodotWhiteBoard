@@ -69,6 +69,7 @@ func set_item_texture(p_texture : Texture2D) -> void:
 	var image : Image = Image.create(int(p_texture.get_size().x * preview_scale), int(p_texture.get_size().y  * preview_scale), false, Image.FORMAT_RGB8)
 	texture = ImageTexture.create_from_image(image)
 	resize()
+	print("set _item texture")
 
 ## Returns the texture of the item.
 func get_item_texture() -> Texture:
