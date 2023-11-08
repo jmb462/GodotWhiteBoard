@@ -2,7 +2,7 @@ extends Control
 
 ## Emitted when board is created or deleted or when current board changed.
 signal boards_changed(current_board : int, total_boards : int)
-signal saved
+
 ## Array of Board
 var boards : Array[Board] = []
 
@@ -108,6 +108,7 @@ func add_board(p_index : int) -> Board:
 	set_board(new_board)
 	
 	var preview_texture : ViewportTexture = new_board.viewport.get_texture()
+	print("creating item and setting live texture")
 	var preview_item : AnimatedItem = preview_list.create_item(p_index + 1, preview_texture, not is_loading)
 	preview_list.select(preview_item.index)
 	
@@ -147,7 +148,7 @@ func change_board(p_index : int) -> void:
 	set_board(boards[current_board])
 		
 	synchronize_display()
-	
+	print("calling change board")
 	show_only_current_board()
 	
 	preview_list.select(current_board)
@@ -161,6 +162,7 @@ func show_only_current_board() -> void:
 	for i : int in boards.size():
 		boards[i].visible = i == current_board
 		if boards[i].visible :
+			print("set_item_texture live in showonly current board index : ",i)
 			preview_list.set_item_texture(i, boards[i].viewport.get_texture())
 
 func clear_board_confirm() -> void:
@@ -289,7 +291,7 @@ func _on_preview_list_item_moved(from_index : int , to_index : int) -> void:
 		boards.insert(to_index, boards[from_index])
 		boards.remove_at(from_index + 1)
 
-	change_board(to_index)
+	#change_board(to_index)
 
 func board_signal_connect(p_board : Board) -> void:
 	p_board.connect("mouse_entered", preview_list._on_mouse_exit_detected)
@@ -349,12 +351,11 @@ func mask_boards(p_masked : bool = true, duration : float = 0.0) -> void:
 		is_loading = false
 
 func save_thumbnail(p_board : Board) -> void:
+	print("saving board :", is_instance_valid(p_board))
 	board.unfocus()
 	var thumbnail : Image = p_board.get_thumbnail()
-	await get_tree().process_frame
-	await get_tree().process_frame
 	save_document()
-	
+	print("saving board 2:", is_instance_valid(p_board))
 	var path : String = G.document_path + "/%s_thumbnail.jpg"%[p_board.uid]
 	thumbnail.save_jpg(path)
 	emit_signal("saved")
@@ -371,7 +372,7 @@ func save_document() -> void:
 func _on_tree_exiting() -> void:
 	if not document.is_empty():
 		save_thumbnail(board)
-		await self.saved
+		#await self.saved
 		print("on enregistre l'enregistrement")
 	else:
 		print("on supprime l'enregistrement")
@@ -379,7 +380,6 @@ func _on_tree_exiting() -> void:
 
 func _on_main_menu_document_manager_requested() -> void:
 	save_thumbnail(board)
-	await saved
 	board_page.hide()
 	tool_palett.hide()
 	toggle_preview_panel.hide()

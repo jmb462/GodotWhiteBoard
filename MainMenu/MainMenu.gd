@@ -43,6 +43,7 @@ func _on_widgets_count_modified(p_count : int) -> void:
 
 
 func _on_documents_pressed() -> void:
+	print("_on_document_pressed")
 	emit_signal("document_manager_requested")
 	get_tree().call_group("board_page", "hide")
 	get_tree().call_group("documents_page", "show")
