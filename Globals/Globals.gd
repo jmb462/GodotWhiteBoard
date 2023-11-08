@@ -37,7 +37,10 @@ func get_document_folder_path() -> String:
 
 func get_document_path() -> String:
 	return "%s/%s" % [G.document_folder_path, DOCUMENT_FILE_NAME]
-	
+
+func get_image_path(p_image_uid : int) -> String:
+	return G.document_folder_path + "/%s.png" % p_image_uid
+
 func get_board_thumbnail_path(p_board_uid : int) -> String:
 		return "%s/%s%s" % [G.document_folder_path, p_board_uid, THUMBNAIL_FILE_SUFFIX]
 		

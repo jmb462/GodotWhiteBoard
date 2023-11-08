@@ -12,7 +12,11 @@ func _ready() -> void:
 	size = texture_rect.size + decoration_size
 	image_uid = ResourceUID.create_id()
 	
-	
+func delete() -> void:
+	if (DirAccess.remove_absolute(G.get_image_path(image_uid))) != OK:
+		print("Cannot delete image cache at ", G.get_image_path(image_uid))
+	super()
+
 func get_type() -> String:
 	return "ImageWidget"
 

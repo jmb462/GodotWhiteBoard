@@ -51,9 +51,11 @@ func create_new_document() -> void:
 
 ## Callback : File dropped on current board.
 func _on_drop(data : Variant) -> void:
+	if not boards_container.is_visible_in_tree():
+		return
 	var image : Image = Image.new()
 	image.load(data[0])
-	current_board.create_image_widget(image)
+	current_board.create_image_widget(get_viewport_rect().size/2.0,  image)
 
 
 ## Called when palett pen button is pressed.
@@ -76,7 +78,7 @@ func _on_palette_pointer_pressed() -> void:
 func _on_palette_paste_pressed() -> void:
 	if DisplayServer.clipboard_has_image():
 		current_board.set_mode(G.BOARD_MODE.PASTE_IMAGE)
-		current_board.create_image_widget(DisplayServer.clipboard_get_image())
+		current_board.create_image_widget(get_viewport_rect().size / 2.0, DisplayServer.clipboard_get_image())
 	elif DisplayServer.clipboard_has():
 		current_board.set_mode(G.BOARD_MODE.PASTE_TEXT)
 		var text_widget : TextWidget = current_board.create_text_widget()
@@ -270,17 +272,22 @@ func delete_board(p_index : int = delete_index) -> void:
 	var offset : int = -1 if  p_index < current_board_index else 0
 		
 	var removed_board : Board = boards[p_index]
+	delete_thumbnail(removed_board.uid)
 	boards.remove_at(p_index)
 	emit_signal("boards_changed", current_board_index, boards.size())
 	
-
 	if current_board_index + offset == p_index:
 		change_board(current_board_index + offset)
 	
+	delete_thumbnail(removed_board.uid)
 	removed_board.queue_free()
 	
 	preview_list.delete_item(p_index)
 	preview_list.select(current_board_index)
+
+func delete_thumbnail(p_board_uid : int) -> void:
+	if DirAccess.remove_absolute(G.get_board_thumbnail_path(p_board_uid)) != OK:
+		print("Cannot delete board thumbnail at ", G.get_board_thumbnail_path(p_board_uid))
 
 ## Callback : a preview item has been drag'n'dropped to a new index.
 func _on_preview_list_item_moved(from_index : int , to_index : int) -> void:

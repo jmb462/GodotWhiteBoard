@@ -41,45 +41,69 @@ func activate() -> void:
 	set_mode(G.BOARD_MODE.NONE)
 	emit_signal("widgets_count_modified", whiteboard.get_child_count())
 
+func need_to_ungroup_widget(p_event : InputEvent) -> bool:
+	return is_left_mouse_click(p_event) and is_instance_valid(temp_group)
+
+func need_to_unfocus_widgets(p_event : InputEvent) -> bool:
+	return is_left_mouse_click(p_event)
+
+func need_to_set_widget_preview_size(p_event : InputEvent) -> bool:
+	return is_left_mouse_click(p_event) and board_mode == G.BOARD_MODE.TEXT_POSITION
+
+func is_left_mouse_click(p_event : InputEvent) -> bool:
+	if not p_event is InputEventMouseButton:
+		return false
+	if not p_event.is_pressed() or not  p_event.button_index == MOUSE_BUTTON_LEFT:
+		return false
+	return true
+
+func is_left_mouse_release(p_event : InputEvent) -> bool:
+	if not p_event is InputEventMouseButton:
+		return false
+	if p_event.is_pressed() or not  p_event.button_index == MOUSE_BUTTON_LEFT:
+		return false
+	return true
+
+func need_to_place_image(p_event : InputEvent) -> bool:
+	return is_left_mouse_click(p_event) and board_mode == G.BOARD_MODE.IMAGE_POSITION
+
+func need_to_create_text_widget(p_event : InputEvent) -> bool:
+	return is_left_mouse_release(p_event) and board_mode == G.BOARD_MODE.TEXT_SIZE
+
+func need_to_start_selection(p_event : InputEvent) -> bool:
+	return is_left_mouse_click(p_event) and board_mode == G.BOARD_MODE.NONE
+
+func need_to_update_preview_rect(p_event : InputEvent) -> bool:
+	return p_event is InputEventMouseMotion and board_mode in [G.BOARD_MODE.TEXT_SIZE, G.BOARD_MODE.SELECT]
+
 func _on_board_gui_input(p_event : InputEvent) -> void:
-	if p_event is InputEventMouseButton:
-		if p_event.button_index == MOUSE_BUTTON_LEFT:
-			if p_event.is_pressed():
-				if is_instance_valid(temp_group):
-					ungroup()
-				unfocus()
-			if board_mode == G.BOARD_MODE.TEXT_POSITION:
-				if p_event.is_pressed():
-					drag_size_preview(p_event.position)
-			elif board_mode == G.BOARD_MODE.IMAGE_POSITION:
-				if p_event.is_pressed():
-					drag_size_preview(p_event.position)
-			elif board_mode == G.BOARD_MODE.TEXT_SIZE:
-				if not p_event.is_pressed():
-					# Left button has been released
-					# Time to create the widget
-					create_text_widget()
-					rect_preview.hide()
-					set_cursor(CURSOR_ARROW)
-					board_mode = G.BOARD_MODE.NONE
-			elif board_mode == G.BOARD_MODE.IMAGE_SIZE:
-				if not p_event.is_pressed():
-					# Left button has been released
-					# Time to create the widget
-					create_image_widget()
-					rect_preview.hide()
-					set_cursor(CURSOR_ARROW)
-					board_mode = G.BOARD_MODE.NONE
-			elif board_mode == G.BOARD_MODE.NONE:
-				if p_event.is_pressed():
-					board_mode = G.BOARD_MODE.SELECT
-					rect_preview.position = p_event.position + Vector2(0, global_position.y)
-					preview_rect.position = p_event.position + Vector2(0, global_position.y)
-					preview_rect.size = Vector2.ZERO
-
-
-	if p_event is InputEventMouseMotion:
-		if board_mode in [G.BOARD_MODE.TEXT_SIZE, G.BOARD_MODE.SELECT]:
+	if need_to_ungroup_widget(p_event):
+		ungroup()
+		
+	if need_to_unfocus_widgets(p_event):
+		unfocus()
+		
+	if need_to_set_widget_preview_size(p_event):
+		drag_size_preview(p_event.position)
+		
+	if need_to_place_image(p_event):
+		create_image_widget(p_event.position)
+		set_cursor(CURSOR_ARROW)
+		board_mode = G.BOARD_MODE.NONE
+		
+	if need_to_create_text_widget(p_event):
+		create_text_widget()
+		rect_preview.hide()
+		set_cursor(CURSOR_ARROW)
+		board_mode = G.BOARD_MODE.NONE
+	
+	if need_to_start_selection(p_event):
+		board_mode = G.BOARD_MODE.SELECT
+		rect_preview.position = p_event.position + Vector2(0, global_position.y)
+		preview_rect.position = p_event.position + Vector2(0, global_position.y)
+		preview_rect.size = Vector2.ZERO
+	
+	if need_to_update_preview_rect(p_event):
 			preview_rect.size += p_event.relative
 			rect_preview.position = preview_rect.abs().position
 			rect_preview.size = preview_rect.abs().size
@@ -158,8 +182,6 @@ func drag_size_preview(p_position : Vector2) -> void:
 	match board_mode:
 		G.BOARD_MODE.TEXT_POSITION:
 			board_mode = G.BOARD_MODE.TEXT_SIZE
-		G.BOARD_MODE.IMAGE_POSITION:
-			board_mode = G.BOARD_MODE.IMAGE_SIZE
 	rect_preview.position = preview_rect.abs().position
 	rect_preview.size = preview_rect.abs().size
 	rect_preview.show()
@@ -189,19 +211,17 @@ func create_text_widget() -> TextWidget:
 	return new_widget
 
 ## Create a new ImageWidget and add it to the board.
-func create_image_widget(p_image : Image = null) -> ImageWidget:
+func create_image_widget(p_position : Vector2 = Vector2(), p_image : Image = null) -> ImageWidget:
 	#Create master image widget on control screen
 	var new_widget : ImageWidget = packed_image_widget.instantiate()
 	add(new_widget)
-	new_widget.position = preview_rect.position
-	new_widget.size = preview_rect.size
-	new_widget.pivot_offset = preview_rect.size / 2.0
-	preview_rect = Rect2()
+	new_widget.position = p_position
 	set_focus(new_widget)
 	connect_widget_signals(new_widget)
 	if is_instance_valid(p_image):
 		new_widget.set_texture(p_image)
 		new_widget.position = (size - new_widget.size) / 2.0
+		new_widget.pivot_offset = new_widget.size / 2.0
 	clone_widget(new_widget)
 	board_mode = G.BOARD_MODE.NONE
 	return new_widget
