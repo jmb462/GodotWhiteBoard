@@ -26,11 +26,11 @@ func dir_contents(path : String, parent_item : TreeItem) -> void:
 		while file_name != "":
 			if dir.current_is_dir():
 				var new_path : String = path + '/' + file_name
-				if DirAccess.get_files_at(new_path).find("document.tres") == -1:
+				if DirAccess.get_files_at(new_path).find(G.DOCUMENT_FILE_NAME) == -1:
 					var dir_item : TreeItem = create_new_item(parent_item, file_name, folder_icon, new_path)
 					dir_contents(new_path, dir_item)
 				else:
-					var doc_path : String = new_path + "/document.tres"
+					var doc_path : String = "%s/%s" % [new_path, G.DOCUMENT_FILE_NAME]
 					document = load(doc_path)
 					var doc_item : TreeItem = create_new_item(parent_item, document.get_formated_file_name(), document_icon, new_path)
 					document_items.append(doc_item)

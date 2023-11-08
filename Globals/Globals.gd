@@ -10,14 +10,37 @@ enum COLOR { BLACK, RED, GREEN, BLUE }
 # Position markers, ordered clockwise
 enum MARKER { TOP, TOP_RIGHT, RIGHT, BOTTOM_RIGHT, BOTTOM, BOTTOM_LEFT, LEFT, TOP_LEFT, MIDDLE}
 
+const DEFAULT_FOLDER_PATH : String = "user://Documents/"
+const DOCUMENT_FILE_NAME : String = "document.tres"
+const THUMBNAIL_FILE_SUFFIX : String = "_thumbnail.jpg"
 
-var color : Array[Color] = [Color.BLACK, Color("#F44336"), Color("#4CAF50"), Color("#2196F3")]
+const COLOR_BLACK : Color = Color.BLACK
+const COLOR_RED : Color = Color("#F44336")
+const COLOR_GREEN : Color = Color("#4CAF50")
+const COLOR_BLUE : Color = Color("#2196F3")
 
-var document_path : String = "user://Documents/"
+const HEIGHT_MARGIN : int = 20
+const WIDTH_MARGIN : int = 40
 
-func set_document_path(p_document : Document) -> void:
-	document_path = p_document.get_document_path()
+const BOARD_GROUP : String = "board_page"
+const DOCUMENTS_GROUP : String = "documents_page"
 
+var color : Array[Color] = [COLOR_BLACK, COLOR_RED, COLOR_GREEN, COLOR_BLUE]
+
+var document_folder_path : String = DEFAULT_FOLDER_PATH
+
+func set_document_folder_path(p_document : Document) -> void:
+	document_folder_path = p_document.get_document_path()
+
+func get_document_folder_path() -> String:
+	return document_folder_path
+
+func get_document_path() -> String:
+	return "%s/%s" % [G.document_folder_path, DOCUMENT_FILE_NAME]
+	
+func get_board_thumbnail_path(p_board_uid : int) -> String:
+		return "%s/%s%s" % [G.document_folder_path, p_board_uid, THUMBNAIL_FILE_SUFFIX]
+		
 func debug_action(p_action : ACTION) -> void:
 	print(ACTION.keys()[p_action])
 	

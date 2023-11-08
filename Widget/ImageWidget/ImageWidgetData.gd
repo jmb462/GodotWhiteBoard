@@ -25,7 +25,7 @@ func restore(p_widget : Widget) -> void:
 	p_image_widget.image_uid = image_uid
 
 func get_image_path() -> String:
-	return G.document_path + "/%s.png" % image_uid
+	return G.document_folder_path + "/%s.png" % image_uid
 
 func print_data() -> void:
 	super()

@@ -1,12 +1,12 @@
 [gd_scene load_steps=10 format=3 uid="uid://hsjvadwsbdih"]
 
-[ext_resource type="Script" path="res://MainBoard/MainBoard.gd" id="1_ngbew"]
-[ext_resource type="PackedScene" uid="uid://cxbnl7jaaybi" path="res://MainMenu/MainMenu.tscn" id="2_w6b54"]
-[ext_resource type="PackedScene" uid="uid://e4xfou5ve0gm" path="res://ToolPalette/ToolPalett.tscn" id="3_s80ig"]
-[ext_resource type="PackedScene" uid="uid://5tkvllinrdx5" path="res://DocumentManager/DocumentManager.tscn" id="5_wltpl"]
-[ext_resource type="StyleBox" uid="uid://h17ciyanrqsa" path="res://Resources/board_panel_style.tres" id="6_0wgyw"]
-[ext_resource type="PackedScene" uid="uid://dqrs686c4wgyd" path="res://AnimatedList/AnimatedList.tscn" id="6_cseuc"]
-[ext_resource type="Texture2D" uid="uid://1crjc8urthyh" path="res://Assets/Buttons/preview_toggle.png" id="8_dj1do"]
+[ext_resource type="Script" path="res://MainWindow/MainWindow.gd" id="1_h0417"]
+[ext_resource type="PackedScene" uid="uid://cxbnl7jaaybi" path="res://MainMenu/MainMenu.tscn" id="2_rnji6"]
+[ext_resource type="StyleBox" uid="uid://h17ciyanrqsa" path="res://Resources/board_panel_style.tres" id="3_v50x1"]
+[ext_resource type="PackedScene" uid="uid://dqrs686c4wgyd" path="res://AnimatedList/AnimatedList.tscn" id="4_b4jsu"]
+[ext_resource type="PackedScene" uid="uid://5tkvllinrdx5" path="res://DocumentManager/DocumentManager.tscn" id="5_e7hnr"]
+[ext_resource type="Texture2D" uid="uid://1crjc8urthyh" path="res://Assets/Buttons/preview_toggle.png" id="6_33b8y"]
+[ext_resource type="PackedScene" uid="uid://e4xfou5ve0gm" path="res://ToolPalette/ToolPalett.tscn" id="7_4u5tn"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ogoi0"]
 bg_color = Color(0.8, 0.8, 0.8, 1)
@@ -17,7 +17,7 @@ bg_color = Color(0.8, 0.8, 0.8, 1)
 corner_radius_top_left = 5
 corner_radius_bottom_left = 5
 
-[node name="MainBoard" type="Control"]
+[node name="MainWindow" type="Control"]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -27,7 +27,7 @@ grow_vertical = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 mouse_filter = 1
-script = ExtResource("1_ngbew")
+script = ExtResource("1_h0417")
 
 [node name="VBox" type="VBoxContainer" parent="."]
 layout_mode = 1
@@ -38,10 +38,10 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 
-[node name="MainMenu" parent="VBox" instance=ExtResource("2_w6b54")]
+[node name="MainMenu" parent="VBox" instance=ExtResource("2_rnji6")]
 layout_mode = 2
 
-[node name="BoardPage" type="Control" parent="VBox"]
+[node name="BoardPage" type="Control" parent="VBox" groups=["board_page"]]
 layout_mode = 2
 size_flags_vertical = 3
 mouse_filter = 1
@@ -64,9 +64,9 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
-theme_override_styles/panel = ExtResource("6_0wgyw")
+theme_override_styles/panel = ExtResource("3_v50x1")
 
-[node name="PreviewList" parent="VBox/BoardPage" instance=ExtResource("6_cseuc")]
+[node name="PreviewList" parent="VBox/BoardPage" instance=ExtResource("4_b4jsu")]
 layout_mode = 0
 offset_right = 200.0
 offset_bottom = 300.0
@@ -75,11 +75,11 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_ogoi0")
 [node name="Node2D" type="Node2D" parent="VBox/BoardPage/PreviewList"]
 position = Vector2(0, -32)
 
-[node name="DocumentManager" parent="VBox" instance=ExtResource("5_wltpl")]
+[node name="DocumentManager" parent="VBox" groups=["documents_page"] instance=ExtResource("5_e7hnr")]
 visible = false
 layout_mode = 2
 
-[node name="TogglePreviewPanel" type="Panel" parent="."]
+[node name="TogglePreviewPanel" type="Panel" parent="." groups=["board_page"]]
 layout_mode = 0
 offset_top = 20.0
 offset_right = 14.0
@@ -92,9 +92,9 @@ layout_mode = 0
 offset_right = 20.0
 offset_bottom = 20.0
 toggle_mode = true
-texture_normal = ExtResource("8_dj1do")
+texture_normal = ExtResource("6_33b8y")
 
-[node name="ToolPalett" parent="." instance=ExtResource("3_s80ig")]
+[node name="ToolPalett" parent="." groups=["board_page"] instance=ExtResource("7_4u5tn")]
 layout_mode = 2
 anchors_preset = 0
 anchor_left = 0.0
@@ -119,7 +119,7 @@ offset_bottom = 52.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
-theme_override_styles/panel = ExtResource("6_0wgyw")
+theme_override_styles/panel = ExtResource("3_v50x1")
 
 [node name="DeleteConfirmationDialog" type="ConfirmationDialog" parent="."]
 
