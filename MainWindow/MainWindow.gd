@@ -89,7 +89,6 @@ func _on_palette_paste_pressed() -> void:
 ## Create a new board.
 func add_board(p_index : int) -> Board:
 	if is_instance_valid(current_board):
-		current_board.unfocus()
 		if not is_loading:
 			save_thumbnail(current_board)
 	var new_board : Board = packed_board.instantiate()
@@ -361,7 +360,7 @@ func mask_boards(p_masked : bool = true, duration : float = 0.0) -> void:
 
 ## Save board thumbnail snapshot to disk.
 func save_thumbnail(p_board : Board) -> void:
-	current_board.unfocus()
+	p_board.unfocus()
 	var thumbnail : Image = p_board.get_thumbnail()
 	save_document()
 	thumbnail.save_jpg(G.get_board_thumbnail_path(p_board.uid))

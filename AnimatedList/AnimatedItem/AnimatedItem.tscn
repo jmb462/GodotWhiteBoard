@@ -50,17 +50,6 @@ offset_right = 44.0
 offset_bottom = 20.0
 texture_normal = ExtResource("4_tvpw8")
 
-[node name="Debug" type="Label" parent="."]
-visible = false
-offset_left = -6.0
-offset_top = 14.0
-offset_right = 88.0
-offset_bottom = 56.0
-theme_override_colors/font_color = Color(0, 0, 0, 0.156863)
-theme_override_font_sizes/font_size = 30
-text = "0"
-horizontal_alignment = 2
-
 [connection signal="gui_input" from="MouseDetection" to="." method="_on_mouse_detection_gui_input"]
 [connection signal="mouse_entered" from="MouseDetection" to="." method="_on_mouse_detection_mouse_entered"]
 [connection signal="mouse_exited" from="MouseDetection" to="." method="_on_mouse_detection_mouse_exited"]

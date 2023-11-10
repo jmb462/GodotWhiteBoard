@@ -128,8 +128,11 @@ func set_cursor(p_cursor : CursorShape) -> void:
 func get_whiteboard_rect() -> Rect2:
 	return whiteboard.get_global_rect()
 
+## Change layer of the widget
 func change_layer(p_widget : Widget, p_layer : int) -> void:
-	whiteboard.move_child(p_widget, p_layer)
+	var current_layer : int = whiteboard.get_children().find(p_widget)
+	var dest_layer : int = max(current_layer + p_layer, 0)
+	whiteboard.move_child(p_widget, dest_layer)
 	is_modified = true
 	_on_widget_changed()
 	

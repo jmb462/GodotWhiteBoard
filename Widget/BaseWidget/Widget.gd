@@ -167,7 +167,7 @@ func delete() -> void:
 func set_focus(p_active: bool) -> void:
 	focus = p_active
 	buttons.visible = p_active
-	add_theme_stylebox_override("panel", focus_theme if p_active else unfocus_theme)
+	self_modulate.a = 1.0 if p_active else 0.0
 	mouse_filter = Control.MOUSE_FILTER_STOP if focus else Control.MOUSE_FILTER_IGNORE
 	
 

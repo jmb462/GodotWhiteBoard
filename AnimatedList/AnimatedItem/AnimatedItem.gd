@@ -16,9 +16,6 @@ signal scroll_requested(button : MouseButton)
 
 enum Z { NORMAL, UNDER, GRABBED}
 
-func _process(_delta : float) -> void:
-	$Debug.text = str(index)
-
 #region Node references
 
 @onready var preview : Sprite2D = $Preview
