@@ -282,7 +282,7 @@ func _on_mouse_exit_detected() -> void:
 	for item : AnimatedItem in items:
 		item.force_mouse_exit()
 
-func reset() -> void:
+func clear() -> void:
 	for each_item : AnimatedItem in items:
 		each_item.queue_free()
 	items.clear()

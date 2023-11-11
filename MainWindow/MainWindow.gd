@@ -39,15 +39,26 @@ var is_loading : bool = false
 
 ## Initialization.
 func _ready() -> void:
-	create_new_document()
 	_on_resized()
-	add_board(current_board_index)
 	get_tree().get_root().connect("files_dropped", _on_drop)
+	create_new_document()
+	
 
-## Initialize a new empty Document resource for boards.
+## Initialize a new empty Document.
 func create_new_document() -> void:
+	reset_all()	
 	document = Document.new()
 	G.set_document_folder_path(document)
+	add_board(current_board_index)
+
+## Reset board
+func reset_all() -> void:
+	boards.clear()
+	preview_list.clear()
+	current_board = null
+	current_board_index = -1
+	delete_index = -1
+	is_loading = false	
 
 ## Callback : File dropped on current board.
 func _on_drop(data : Variant) -> void:
@@ -326,7 +337,7 @@ func reset() -> void:
 	for each_board : Board in boards:
 		each_board.queue_free()
 	boards.clear()
-	preview_list.reset()
+	preview_list.clear()
 	current_board_index = -1
 
 
@@ -409,3 +420,8 @@ func switch_to_document_manager(p_document_uid : int, p_current_board_uid : int)
 	get_tree().call_group(G.BOARD_GROUP, "hide")
 	get_tree().call_group(G.DOCUMENTS_GROUP, "show")
 	document_manager.activate(p_document_uid, p_current_board_uid)
+
+
+func _on_main_menu_new_document_requested() -> void:
+	create_new_document()
+	switch_to_boards()

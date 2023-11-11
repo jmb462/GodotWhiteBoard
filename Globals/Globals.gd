@@ -10,6 +10,7 @@ enum COLOR { BLACK, RED, GREEN, BLUE }
 # Position markers, ordered clockwise
 enum MARKER { TOP, TOP_RIGHT, RIGHT, BOTTOM_RIGHT, BOTTOM, BOTTOM_LEFT, LEFT, TOP_LEFT, MIDDLE}
 
+const ROOT_DOCUMENT_FOLDER : String = "user://Documents/"
 const DEFAULT_FOLDER_PATH : String = "user://Documents/"
 const DOCUMENT_FILE_NAME : String = "document.tres"
 const THUMBNAIL_FILE_SUFFIX : String = "_thumbnail.jpg"

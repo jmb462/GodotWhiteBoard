@@ -6,6 +6,10 @@ signal next_button_pressed
 signal clear_button_pressed
 signal document_manager_requested
 signal board_requested
+signal delete_document_requested
+signal new_document_requested
+signal duplicate_document_requested
+signal new_folder_requested
 
 @onready var h_box : HBoxContainer = $HBox
 @onready var new_button : Button = $HBox/New
@@ -15,6 +19,7 @@ signal board_requested
 @onready var page_number : Label = $HBox/PageNumber
 @onready var board_button : Button = $HBox/Board
 @onready var documents_button : Button = $HBox/Documents
+@onready var delete_document_button : Button = $HBox/Documents
 
 func _on_new_pressed() -> void:
 	emit_signal("new_button_pressed")
@@ -55,3 +60,20 @@ func _on_board_pressed() -> void:
 func show_only_board_buttons() -> void:
 	get_tree().call_group("board_page", "show")
 	get_tree().call_group("documents_page", "hide")
+
+
+func _on_delete_document_pressed() -> void:
+	emit_signal("delete_document_requested")
+
+
+func _on_new_document_pressed() -> void:
+	emit_signal("new_document_requested")
+
+
+func _on_duplicate_document_pressed() -> void:
+	emit_signal("duplicate_document_requested")
+
+
+func _on_new_folder_pressed() -> void:
+	emit_signal("new_folder_requested")
+

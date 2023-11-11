@@ -25,6 +25,7 @@ grow_vertical = 2
 [node name="DocumentTree" parent="HBox" instance=ExtResource("2_6g8m3")]
 custom_minimum_size = Vector2(390, 0)
 layout_mode = 2
+drop_mode_flags = 1
 
 [node name="ThumbnailsContainer" type="Control" parent="HBox"]
 layout_mode = 2
@@ -43,4 +44,5 @@ theme_override_constants/v_separation = 15
 max_columns = 3
 
 [connection signal="document_selected" from="HBox/DocumentTree" to="." method="show_thumbnails"]
+[connection signal="folder_selected" from="HBox/DocumentTree" to="." method="_on_document_tree_folder_selected"]
 [connection signal="item_activated" from="HBox/ThumbnailsContainer/BoardList" to="." method="_on_board_list_item_activated"]
