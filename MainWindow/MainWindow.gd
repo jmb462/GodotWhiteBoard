@@ -426,3 +426,4 @@ func _on_main_menu_new_document_requested() -> void:
 	create_new_document()
 	DirAccess.copy_absolute(G.EMPTY_THUMBNAIL, G.get_board_thumbnail_path(document.boards[0].uid))
 	document_manager.activate(document.uid, document.boards[0].uid, true)
+

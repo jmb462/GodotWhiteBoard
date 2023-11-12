@@ -20,6 +20,8 @@ const COLOR_RED : Color = Color("#F44336")
 const COLOR_GREEN : Color = Color("#4CAF50")
 const COLOR_BLUE : Color = Color("#2196F3")
 
+const COPIED_SUFFIX : String = " - Copy"
+
 const HEIGHT_MARGIN : int = 20
 const WIDTH_MARGIN : int = 40
 

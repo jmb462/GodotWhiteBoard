@@ -14,6 +14,8 @@ func _init() -> void:
 		uid = ResourceUID.create_id()
 	if time_created.is_empty():
 		time_created = Time.get_datetime_dict_from_system()
+		
+
 ## Returns document unique identifier
 func get_uid() -> int:
 	return uid

@@ -9,6 +9,7 @@ signal document_requested(document : Document, board_uid : int)
 var boards_dict : Dictionary = {}
 var current_document : Document = null
 
+## Switch to DocumentManager and select the current edited document in Tree.
 func activate(p_document_uid : int, p_board_uid : int, p_rename : bool = false) -> void:
 	show()
 	document_tree.rebuild_tree()
@@ -42,7 +43,6 @@ func _on_board_list_item_activated(p_index : int) -> void:
 
 
 func _on_main_menu_delete_document_requested() -> void:
-	print("delete document requested")
 	if document_tree.is_document():
 		if is_instance_valid(current_document):
 			delete_document(current_document)
@@ -57,8 +57,53 @@ func _on_main_menu_delete_document_requested() -> void:
 	document_tree.set_item_selected(0)
 
 func _on_main_menu_duplicate_document_requested() -> void:
-	print("duplicate document requested")
+	var item : TreeItem = document_tree.get_selected()
+	if not is_instance_valid(item) or not document_tree.is_document(item):
+		return
+	var new_uid : int = ResourceUID.create_id()
+	var source_document : Document = document_tree.get_document(item)
+	var old_path : String = source_document.get_document_path()
+	var new_path : String =  source_document.get_document_path().get_base_dir() + '/' + str(new_uid)
+	var new_document_path : String = new_path + '/' + G.DOCUMENT_FILE_NAME
+	DirAccess.make_dir_recursive_absolute(new_path)
+	copy_folder_content(old_path, new_path)
+	var new_document : Document = load(new_document_path)
+	new_document.uid = new_uid
+	new_document.file_name = get_copy_file_name(source_document.get_formated_file_name())
+	ResourceSaver.save(new_document, new_document_path)
+	document_tree.rebuild_tree()
+	document_tree.select_document(new_uid)
+	await get_tree().process_frame
+	document_tree.edit_selected(true)
 
+func copy_folder_content(p_source_folder : String, p_dest_folder : String) -> void:
+	var dir : DirAccess = DirAccess.open(p_source_folder)
+	if dir:
+		dir.list_dir_begin()
+		var file_name : String = dir.get_next()
+		while not file_name.is_empty():
+			dir.copy(p_source_folder+'/'+file_name, p_dest_folder+'/'+file_name)
+			file_name = dir.get_next()
+
+## Returns the copy name with copy suffix and number if needed
+func get_copy_file_name(p_name : String) -> String:
+	if p_name.contains(G.COPIED_SUFFIX):
+		var regex : RegEx = RegEx.new()
+		regex.compile('- Copy( \\((\\d+)\\))?$')
+		var result : RegExMatch = regex.search(p_name)
+		var old_suffix : String = result.get_string()
+		
+		regex.compile('\\d+')
+		result = regex.search(old_suffix)
+		var number : int = 1
+		if result != null:
+			number = int(result.get_string()) + 1
+		
+		p_name = p_name.trim_suffix(old_suffix) + G.COPIED_SUFFIX + ' (%s)' % number
+		return p_name
+	return p_name + G.COPIED_SUFFIX
+
+## Populates given folder and files array with given directory content
 func get_file_and_folders(p_dir_path : String, folder_array : Array[String], file_array : Array[String]) -> void:
 	folder_array.append(p_dir_path)
 	var dir : DirAccess = DirAccess.open(p_dir_path)
@@ -73,13 +118,14 @@ func get_file_and_folders(p_dir_path : String, folder_array : Array[String], fil
 				file_array.append(p_dir_path + '/' + file_name)
 			file_name = dir.get_next()
 		
-		
+## Delete folder and contents
 func delete_folder(p_folder_array : Array[String], p_file_array : Array[String]) -> void:
 	for file : String in p_file_array:
 		DirAccess.remove_absolute(file)
 	while p_folder_array.size() > 0:
 		DirAccess.remove_absolute(p_folder_array.pop_back())
-	
+
+## Delete document
 func delete_document(p_document : Document) -> void:
 	if not is_instance_valid(document_tree.get_selected()):
 		return
@@ -100,6 +146,12 @@ func delete_document(p_document : Document) -> void:
 
 func _on_main_menu_new_folder_requested() -> void:
 	var path : String = G.ROOT_DOCUMENT_FOLDER
+	
+	var selected_item = document_tree.get_selected()
+	if is_instance_valid(selected_item):
+		path = document_tree.get_item_base_directory(selected_item)
+		print("base dir", path)
+	
 	var dir : DirAccess = DirAccess.open(path)
 	var folder_number : int = 1
 	var folder_name : String = "New folder"
@@ -108,7 +160,5 @@ func _on_main_menu_new_folder_requested() -> void:
 		folder_number += 1
 		folder_name = "New folder (%s)" % folder_number
 
-	
-	var error : Error = dir.make_dir_recursive(folder_name)
-	print(error)
+	var _error : Error = dir.make_dir_recursive(folder_name)
 	document_tree.rebuild_tree()
