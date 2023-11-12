@@ -154,15 +154,28 @@ func _can_drop_data(p_position, source):
 
 func _drop_data(p_position : Vector2, source : Variant) -> void:
 	var target : TreeItem =  get_item_at_position(p_position)
-	if is_instance_valid(target):
-		if is_document(source) and is_document(target):
-			print("need to put in the same directory as this doc")
-			return
+	if not is_instance_valid(target):
+		return
 	if is_document(source):
-		var dest_path : String = target.get_meta("path")
-		move_document_to_folder(source.get_meta("doc_path").get_base_dir(), dest_path)
+		move_document_to_folder(source.get_meta("doc_path").get_base_dir(), get_item_base_directory(target))
 	else:
-		move_folder_to_folder(source.get_meta("path"), target.get_meta("path"))
+		move_folder_to_folder(get_item_base_directory(source),  get_item_base_directory(target))
+
+## Returns the root folder of a TreeItem.
+## Returns the entire path for folder items and returns the upper folder for document folder
+func get_item_base_directory(p_item : TreeItem) -> String:
+	if not is_document(p_item):
+		return p_item.get_meta("path")
+	var document_base_folder = p_item.get_meta("doc_path").get_base_dir()
+	var i : int = 0
+	var result : int = -2
+	var last_slash : int = -1
+	while result != -1:
+		result =  document_base_folder.find('/', i)
+		if result != -1:
+			last_slash = result
+		i += 1
+	return document_base_folder.left(last_slash)
 
 func move_document_to_folder(p_source_path : String, p_dest_path : String) -> void:
 	print("move %s to %s "%[p_source_path, p_dest_path + '/' + p_source_path.get_file()])
