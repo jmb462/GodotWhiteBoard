@@ -47,6 +47,9 @@ func rebuild_tree() -> void:
 	document_items.clear()
 	var root_item : TreeItem = create_item()
 	root_item.set_text(0, "Documents")
+	root_item.set_meta("path", G.ROOT_DOCUMENT_FOLDER)
+	root_item.set_icon(0, folder_icon)
+	root_item.set_icon_max_width(0,16)
 	dir_contents(folder_path, root_item)
 
 func create_new_item(p_parent : TreeItem, p_text : String, p_icon : Texture2D, p_path : String) -> TreeItem:
@@ -114,6 +117,7 @@ func _on_item_edited() -> void:
 
 
 func select_document(p_document_uid : int) -> void:
+	print("selecting document ", p_document_uid)
 	for item : TreeItem in document_items:
 		if item.get_meta("uid") == p_document_uid:
 			set_selected(item, 0)
@@ -127,8 +131,8 @@ func set_item_selected(p_index : int) -> void:
 	else:
 		set_selected(document_items[p_index], 0)
 
-func _get_drag_data(p_position):
-	var item = get_item_at_position(p_position)
+func _get_drag_data(p_position : Vector2) -> Variant:
+	var item : TreeItem = get_item_at_position(p_position)
 	if not is_instance_valid(item):
 		return ""
 	var hbox : HBoxContainer = HBoxContainer.new()
@@ -142,7 +146,7 @@ func _get_drag_data(p_position):
 	set_drag_preview(hbox)
 	return get_item_at_position(p_position)
 	
-func _can_drop_data(p_position, source):
+func _can_drop_data(p_position : Vector2, source : Variant) -> bool:
 	var target : TreeItem =  get_item_at_position(p_position)
 	if not is_instance_valid(source) or not is_instance_valid(target):
 		return false	
@@ -166,7 +170,7 @@ func _drop_data(p_position : Vector2, source : Variant) -> void:
 func get_item_base_directory(p_item : TreeItem) -> String:
 	if not is_document(p_item):
 		return p_item.get_meta("path")
-	var document_base_folder = p_item.get_meta("doc_path").get_base_dir()
+	var document_base_folder : String = p_item.get_meta("doc_path").get_base_dir()
 	var i : int = 0
 	var result : int = -2
 	var last_slash : int = -1

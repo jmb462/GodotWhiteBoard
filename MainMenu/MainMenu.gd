@@ -76,4 +76,3 @@ func _on_duplicate_document_pressed() -> void:
 
 func _on_new_folder_pressed() -> void:
 	emit_signal("new_folder_requested")
-

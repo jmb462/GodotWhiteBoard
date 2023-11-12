@@ -9,13 +9,16 @@ signal document_requested(document : Document, board_uid : int)
 var boards_dict : Dictionary = {}
 var current_document : Document = null
 
-func activate(p_document_uid : int, p_board_uid : int) -> void:
+func activate(p_document_uid : int, p_board_uid : int, p_rename : bool = false) -> void:
 	show()
 	document_tree.rebuild_tree()
 	document_tree.select_document(p_document_uid)
 	var current_page : String = str(p_board_uid)
 	if boards_dict.has(current_page):
 		board_list.select(boards_dict.get(str(p_board_uid)))
+	if p_rename:
+		await get_tree().process_frame
+		document_tree.edit_selected(true)
 
 func _on_document_tree_folder_selected() -> void:
 	board_list.clear()
@@ -109,6 +112,3 @@ func _on_main_menu_new_folder_requested() -> void:
 	var error : Error = dir.make_dir_recursive(folder_name)
 	print(error)
 	document_tree.rebuild_tree()
-
-
-

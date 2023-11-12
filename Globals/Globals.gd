@@ -14,7 +14,7 @@ const ROOT_DOCUMENT_FOLDER : String = "user://Documents/"
 const DEFAULT_FOLDER_PATH : String = "user://Documents/"
 const DOCUMENT_FILE_NAME : String = "document.tres"
 const THUMBNAIL_FILE_SUFFIX : String = "_thumbnail.jpg"
-
+const EMPTY_THUMBNAIL : String = "res://Assets/empty_board_thumbnail.jpg"
 const COLOR_BLACK : Color = Color.BLACK
 const COLOR_RED : Color = Color("#F44336")
 const COLOR_GREEN : Color = Color("#4CAF50")

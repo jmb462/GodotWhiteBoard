@@ -424,4 +424,5 @@ func switch_to_document_manager(p_document_uid : int, p_current_board_uid : int)
 
 func _on_main_menu_new_document_requested() -> void:
 	create_new_document()
-	switch_to_boards()
+	DirAccess.copy_absolute(G.EMPTY_THUMBNAIL, G.get_board_thumbnail_path(document.boards[0].uid))
+	document_manager.activate(document.uid, document.boards[0].uid, true)
