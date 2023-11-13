@@ -4,8 +4,6 @@ class_name DocumentTree
 signal document_selected(document : Document)
 signal folder_selected()
 
-var folder_path : String = "user://documents"
-
 var document : Document = null
 
 var document_items : Array[TreeItem] = []
@@ -18,7 +16,6 @@ var old_item_text : String = ""
 
 func _ready() -> void:
 	rebuild_tree()
-
 
 ## Scan dir to create the Tree.
 func dir_contents(path : String, parent_item : TreeItem) -> void:
@@ -37,9 +34,8 @@ func dir_contents(path : String, parent_item : TreeItem) -> void:
 					document = load(doc_path)
 					var doc_item : TreeItem = create_new_item(parent_item, document.get_formated_file_name(), document_icon, new_path)
 					document_items.append(doc_item)
-					doc_item.set_meta("file_name", document.get_formated_file_name())
 					doc_item.set_meta("doc_path", doc_path)
-					doc_item.set_meta("uid", document.uid)
+					doc_item.set_meta("document_info", document.document_info)
 			file_name = dir.get_next()
 	else:
 		print("An error occurred when trying to access the path.")
@@ -56,7 +52,7 @@ func rebuild_tree() -> void:
 	root_item.set_icon_max_width(0,16)
 	root_item.set_editable(0, false)
 	root_item.set_selectable(0, false)
-	dir_contents(folder_path, root_item)
+	dir_contents(G.ROOT_DOCUMENT_FOLDER, root_item)
 
 
 ## Create a new item with text and icon.
@@ -72,7 +68,7 @@ func create_new_item(p_parent : TreeItem, p_text : String, p_icon : Texture2D, p
 func get_document(p_item : TreeItem) -> Document:
 	if not is_document(p_item):
 		return null
-	return load(p_item.get_meta("doc_path", null))
+	return load(get_item_doc_path(p_item))
 
 
 ## Returns the path of the folder or document linked to the item.
@@ -81,6 +77,8 @@ func get_item_path(p_item : TreeItem = get_selected()) -> String:
 
 ## Return if TreeItem is a Document (not a folder).
 func is_document(p_item : TreeItem = get_selected()) -> bool:
+	if not is_instance_valid(p_item):
+		return false
 	return p_item.has_meta("doc_path")
 
 ## TreeItem has been selected.
@@ -101,7 +99,7 @@ func _on_gui_input(p_event : InputEvent) -> void:
 ## Rename folder.
 func rename_folder(item : TreeItem) -> void:
 	var new_name : String = item.get_text(0)
-	var old_path : String = item.get_meta("path")
+	var old_path : String = get_item_path(item)
 	if not new_name.is_valid_filename():
 		item.set_text(0, old_item_text)
 		item.set_editable(0, false)
@@ -116,13 +114,13 @@ func rename_document(p_item : TreeItem) -> void:
 	if not new_name.is_valid_filename():
 		p_item.set_text(0, old_item_text)
 		p_item.set_editable(0, false)
-	var item_document_path : String = p_item.get_meta("doc_path", "")
+	var item_document_path : String = get_item_doc_path(p_item)
 	var item_document : Document = load(item_document_path)
 	if is_instance_valid(item_document):
-		item_document.file_name = new_name
+		item_document.set_file_name(new_name)
 		ResourceSaver.save(item_document, item_document_path)
 		rebuild_tree()
-		select_document(item_document.uid)
+		select_document(item_document.get_uid())
 
 ## Item is renamed.
 func _on_item_edited() -> void:
@@ -135,7 +133,7 @@ func _on_item_edited() -> void:
 func select_document(p_document_uid : int) -> void:
 	print("selecting document ", p_document_uid)
 	for item : TreeItem in document_items:
-		if item.get_meta("uid") == p_document_uid:
+		if get_item_uid(item) == p_document_uid:
 			set_selected(item, 0)
 			
 ## Select item by index.
@@ -146,6 +144,12 @@ func set_item_selected(p_index : int) -> void:
 		deselect_all() 
 	else:
 		set_selected(document_items[p_index], 0)
+
+func get_item_uid(p_item) -> int:
+	return p_item.get_meta("document_info").uid
+
+func get_item_doc_path(p_item) -> String:
+	return p_item.get_meta("doc_path", "")
 
 ## Begin drag'n'drop.
 func _get_drag_data(p_position : Vector2) -> Variant:
@@ -180,7 +184,7 @@ func _drop_data(p_position : Vector2, source : Variant) -> void:
 	if not is_instance_valid(target):
 		return
 	if is_document(source):
-		move_document_to_folder(source.get_meta("doc_path").get_base_dir(), get_item_base_directory(target))
+		move_document_to_folder(get_item_doc_path(source).get_base_dir(), get_item_base_directory(target))
 	else:
 		move_folder_to_folder(get_item_base_directory(source),  get_item_base_directory(target))
 
@@ -188,8 +192,8 @@ func _drop_data(p_position : Vector2, source : Variant) -> void:
 ## Returns the entire path for folder items and returns the upper folder for document folder
 func get_item_base_directory(p_item : TreeItem) -> String:
 	if not is_document(p_item):
-		return p_item.get_meta("path")
-	var document_base_folder : String = p_item.get_meta("doc_path").get_base_dir()
+		return get_item_path(p_item)
+	var document_base_folder : String = get_item_doc_path(p_item).get_base_dir()
 	var i : int = 0
 	var result : int = -2
 	var last_slash : int = -1

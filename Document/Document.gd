@@ -1,24 +1,21 @@
 extends Resource
 class_name Document
 
-@export var time_created : Dictionary = Dictionary()
-## Default file name will be a timestamp
-@export var file_name : String = ""
-## Unique document identifier
-@export var uid : int = 0
-
+@export var document_info : DocumentInfo = null
 @export var boards : Array[BoardData] = []
 
 func _init() -> void:
-	if uid == 0:
-		uid = ResourceUID.create_id()
-	if time_created.is_empty():
-		time_created = Time.get_datetime_dict_from_system()
-		
+	document_info = DocumentInfo.new()
 
 ## Returns document unique identifier
 func get_uid() -> int:
-	return uid
+	return document_info.uid
+
+func set_uid(p_uid : int) -> void:
+	document_info.uid = p_uid
+
+func set_file_name(p_name) -> void:
+	document_info.file_name = p_name
 
 ## Store persistant properties of all the boards in the Document resource.
 func store(p_boards : Array[Board]) -> void:
@@ -32,15 +29,12 @@ func restore(p_board : Board) -> void:
 
 ## Returns filename if exists or timestamp (YYYY/MM/DD HH:MM)
 func get_formated_file_name() -> String:
-	if file_name.is_empty():
-		var timestamp : Array = [time_created.year, time_created.month , time_created.day, time_created.hour, time_created.minute]
-		return "%04d/%02d/%02d %02d:%02d"%timestamp
-	return file_name
+	return document_info.get_formated_file_name()
 
 func get_document_path() -> String:
 	if resource_path.begins_with("user://"):
 		return resource_path.get_base_dir()
-	return "user://Documents/%s/" % uid
+	return "%s/%s" % [G.ROOT_DOCUMENT_FOLDER, get_uid()]
 
 func get_preview_path(p_index : int) -> String:
 	if p_index >= boards.size():

@@ -49,7 +49,7 @@ func _on_main_menu_delete_document_requested() -> void:
 	else:
 		var folder_array : Array[String] = []
 		var file_array : Array[String] = []
-		get_file_and_folders(document_tree.get_selected().get_meta("path"), folder_array, file_array)
+		get_file_and_folders(document_tree.get_item_path(), folder_array, file_array)
 		delete_folder(folder_array, file_array)
 		
 	document_tree.rebuild_tree()
@@ -60,6 +60,8 @@ func _on_main_menu_duplicate_document_requested() -> void:
 	var item : TreeItem = document_tree.get_selected()
 	if not is_instance_valid(item) or not document_tree.is_document(item):
 		return
+	if item.get_parent() == null:
+		return
 	var new_uid : int = ResourceUID.create_id()
 	var source_document : Document = document_tree.get_document(item)
 	var old_path : String = source_document.get_document_path()
@@ -68,8 +70,8 @@ func _on_main_menu_duplicate_document_requested() -> void:
 	DirAccess.make_dir_recursive_absolute(new_path)
 	copy_folder_content(old_path, new_path)
 	var new_document : Document = load(new_document_path)
-	new_document.uid = new_uid
-	new_document.file_name = get_copy_file_name(source_document.get_formated_file_name())
+	new_document.set_uid(new_uid)
+	new_document.set_file_name(get_copy_file_name(source_document.get_formated_file_name()))
 	ResourceSaver.save(new_document, new_document_path)
 	document_tree.rebuild_tree()
 	document_tree.select_document(new_uid)

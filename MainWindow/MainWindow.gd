@@ -399,7 +399,7 @@ func _on_tree_exiting() -> void:
 ## Callback : Board button has been pressed in main menu.
 func _on_main_menu_document_manager_requested() -> void:
 	save_thumbnail(current_board)
-	switch_to_document_manager(document.uid, current_board.uid)
+	switch_to_document_manager(document.get_uid(), current_board.uid)
 	
 ## Callback : Board button has been pressed in main menu.
 func _on_main_menu_board_requested() -> void:
@@ -425,5 +425,5 @@ func switch_to_document_manager(p_document_uid : int, p_current_board_uid : int)
 func _on_main_menu_new_document_requested() -> void:
 	create_new_document()
 	DirAccess.copy_absolute(G.EMPTY_THUMBNAIL, G.get_board_thumbnail_path(document.boards[0].uid))
-	document_manager.activate(document.uid, document.boards[0].uid, true)
+	document_manager.activate(document.get_uid(), document.boards[0].uid, true)
 
