@@ -14,7 +14,7 @@ func get_uid() -> int:
 func set_uid(p_uid : int) -> void:
 	document_info.uid = p_uid
 
-func set_file_name(p_name) -> void:
+func set_file_name(p_name : String) -> void:
 	document_info.file_name = p_name
 
 ## Store persistant properties of all the boards in the Document resource.

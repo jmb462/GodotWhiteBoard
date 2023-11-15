@@ -13,7 +13,7 @@ var current_document : Document = null
 func activate(p_document_uid : int, p_board_uid : int, p_rename : bool = false) -> void:
 	show()
 	document_tree.rebuild_tree()
-	document_tree.select_document(p_document_uid)
+	document_tree.select_item_by_document_uid(p_document_uid)
 	var current_page : String = str(p_board_uid)
 	if boards_dict.has(current_page):
 		board_list.select(boards_dict.get(str(p_board_uid)))
@@ -149,9 +149,9 @@ func delete_document(p_document : Document) -> void:
 func _on_main_menu_new_folder_requested() -> void:
 	var path : String = G.ROOT_DOCUMENT_FOLDER
 	
-	var selected_item = document_tree.get_selected()
+	var selected_item : TreeItem = document_tree.get_selected()
 	if is_instance_valid(selected_item):
-		path = document_tree.get_item_base_directory(selected_item)
+		path = document_tree.get_item_root_path(selected_item)
 		print("base dir", path)
 	
 	var dir : DirAccess = DirAccess.open(path)
