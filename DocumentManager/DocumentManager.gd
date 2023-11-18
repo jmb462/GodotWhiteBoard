@@ -45,7 +45,7 @@ func _on_board_list_item_activated(p_index : int) -> void:
 func _on_main_menu_delete_document_requested() -> void:
 	if document_tree.is_document():
 		if is_instance_valid(current_document):
-			delete_document(current_document)
+			delete_selected_item_document(current_document)
 	else:
 		var folder_array : Array[String] = []
 		var file_array : Array[String] = []
@@ -128,10 +128,21 @@ func delete_folder(p_folder_array : Array[String], p_file_array : Array[String])
 		DirAccess.remove_absolute(p_folder_array.pop_back())
 
 ## Delete document
-func delete_document(p_document : Document) -> void:
+func delete_selected_item_document(p_document : Document) -> void:
 	if not is_instance_valid(document_tree.get_selected()):
 		return
+	if not is_instance_valid(p_document):
+		return
 	var selected_index : int = document_tree.get_selected().get_index()
+	erase_document_files(p_document)
+	document_tree.rebuild_tree()
+	board_list.clear()
+	document_tree.set_item_selected(selected_index)
+
+## Erase document files
+func erase_document_files(p_document : Document) -> void:
+	if not is_instance_valid(p_document):
+		return
 	var path : String = p_document.get_document_path()
 	var dir : DirAccess = DirAccess.open(path)
 	if dir:
@@ -141,10 +152,6 @@ func delete_document(p_document : Document) -> void:
 			dir.remove(path + '/' + file_name)
 			file_name = dir.get_next()
 	dir.remove(path)
-	document_tree.rebuild_tree()
-	board_list.clear()
-	document_tree.set_item_selected(selected_index)
-
 
 func _on_main_menu_new_folder_requested() -> void:
 	var path : String = G.ROOT_DOCUMENT_FOLDER

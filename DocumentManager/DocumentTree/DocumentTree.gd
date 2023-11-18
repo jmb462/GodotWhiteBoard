@@ -89,13 +89,15 @@ func rebuild_tree() -> void:
 	create_tree_items_from_custom_tree_items(root_custom_item, root_item)
 
 func create_tree_items_from_custom_tree_items(p_custom_tree_item : CustomTreeItem, p_root_item : TreeItem) -> void:
-	for custom_tree_item : CustomTreeItem in p_custom_tree_item.child_items:
+	var tree_item_children : Array[CustomTreeItem] = p_custom_tree_item.child_items
+	tree_item_children.sort_custom(sort_tree_items_by_name)
+	for custom_tree_item : CustomTreeItem in tree_item_children:
 		var item : TreeItem = create_item(p_root_item)
 		# Set mutual references between TreeItem and CustomTreeItem
 		custom_tree_item.tree_item = item
 		item.set_meta("custom_tree_item",  custom_tree_item)
 		
-		item.set_text(0, custom_tree_item.file_name + '(%s)'%custom_tree_items.find(custom_tree_item))
+		item.set_text(0, custom_tree_item.file_name)
 		item.set_icon(0, folder_icon if custom_tree_item.is_folder() else document_icon)
 		item.set_icon_max_width(0,16)
 		if custom_tree_item.is_folder():
@@ -261,3 +263,8 @@ func move_folder_to_folder(p_source_path : String, p_dest_path  : String) -> voi
 	var new_path : String = p_dest_path + '/' + dir_name
 	DirAccess.rename_absolute(p_source_path, new_path)
 	rebuild_tree()
+
+
+
+func sort_tree_items_by_name(a : CustomTreeItem, b : CustomTreeItem) -> bool:
+	return a.file_name < b.file_name

@@ -16,6 +16,10 @@ func _init() -> void:
 		uid = ResourceUID.create_id()
 	if date_created.is_empty():
 		date_created = Time.get_datetime_dict_from_system()
+		last_modified = date_created
+
+func update_last_modified() -> void:
+	last_modified = Time.get_datetime_dict_from_system()
 
 ## Returns filename if exists or timestamp (YYYY/MM/DD HH:MM)
 func get_formated_file_name() -> String:

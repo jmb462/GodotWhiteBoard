@@ -41,6 +41,7 @@ func get_type() -> String:
 
 func _ready() -> void :
 	_on_resized()
+	emit_signal("widget_changed")
 
 func _on_gui_input(event : InputEvent) -> void:
 	if event is InputEventMouseMotion:

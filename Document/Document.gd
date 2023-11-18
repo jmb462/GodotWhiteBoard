@@ -41,8 +41,16 @@ func get_preview_path(p_index : int) -> String:
 		return ""
 	return get_document_path() + '/' +str(boards[p_index].uid) + '_thumbnail.jpg'
 
+func update_last_modified() -> void:
+	document_info.update_last_modified()
+
+func has_never_been_modified() -> bool:
+	return document_info.date_created == document_info.last_modified
+
 func is_empty() -> bool:
+	print(boards[0].widgets)
 	if boards.size() == 1:
 		if boards[0].widgets.size() == 0:
+			print("EMPTY DOC")
 			return true
 	return false

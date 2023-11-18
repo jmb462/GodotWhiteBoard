@@ -2,6 +2,7 @@ extends SubViewportContainer
 class_name Board
 
 signal board_created
+signal board_changed
 
 ## Emitted when a widget is added or removed from board.
 signal widgets_count_modified(widgets_count : int)
@@ -211,6 +212,7 @@ func create_text_widget() -> TextWidget:
 	set_focus(new_widget)
 	connect_widget_signals(new_widget)
 	clone_widget(new_widget)
+	emit_signal("board_changed")
 	return new_widget
 
 ## Create a new ImageWidget and add it to the board.
@@ -226,6 +228,7 @@ func create_image_widget(p_position : Vector2 = Vector2(), p_image : Image = nul
 		new_widget.position = (size - new_widget.size) / 2.0
 		new_widget.pivot_offset = new_widget.size / 2.0
 	clone_widget(new_widget)
+	emit_signal("board_changed")
 	board_mode = G.BOARD_MODE.NONE
 	return new_widget
 
@@ -332,6 +335,7 @@ func _on_widget_deleted(p_widget : Widget) -> void:
 
 func _on_widget_changed() -> void:
 	is_modified = true
+	emit_signal("board_changed")
 
 func get_container_rect(p_widgets : Array[Widget]) -> Rect2:
 

@@ -312,7 +312,7 @@ func _on_preview_list_item_moved(from_index : int , to_index : int) -> void:
 func board_signal_connect(p_board : Board) -> void:
 	p_board.connect("mouse_entered", preview_list._on_mouse_exit_detected)
 	p_board.connect("widgets_count_modified", main_menu._on_widgets_count_modified)
-
+	p_board.connect("board_changed", _on_board_changed)
 ## Ensure that mouse exited signal has been send to preview_list if entering board.
 func _on_mouse_entered() -> void:
 	preview_list._on_mouse_exit_detected()
@@ -388,14 +388,16 @@ func save_document() -> void:
 
 ## Save document before exiting application.
 func _on_tree_exiting() -> void:
-	print("exiting")
-	if not document.is_empty():
+	if not document.is_empty() or not document.has_never_been_modified():
 		save_thumbnail(current_board)
-		#await self.saved
-		print("on enregistre l'enregistrement")
 	else:
-		print("on supprime l'enregistrement")
+		document_manager.erase_document_files(document)
 
+
+## Callback : Board changed
+func _on_board_changed() -> void:
+	document.update_last_modified()
+	
 ## Callback : Board button has been pressed in main menu.
 func _on_main_menu_document_manager_requested() -> void:
 	save_thumbnail(current_board)
