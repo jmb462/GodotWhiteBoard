@@ -1,7 +1,9 @@
-[gd_scene load_steps=3 format=3 uid="uid://5tkvllinrdx5"]
+[gd_scene load_steps=5 format=3 uid="uid://5tkvllinrdx5"]
 
 [ext_resource type="Script" path="res://DocumentManager/DocumentManager.gd" id="1_xd02x"]
 [ext_resource type="PackedScene" uid="uid://ntxe1m0aiw02" path="res://DocumentManager/DocumentTree/DocumentTree.tscn" id="2_6g8m3"]
+[ext_resource type="Script" path="res://DocumentManager/SortTree.gd" id="2_8i55i"]
+[ext_resource type="Texture2D" uid="uid://kwusfar8ud40" path="res://Assets/Buttons/sort_up.png" id="2_ya4j3"]
 
 [node name="DocumentManager" type="Control"]
 layout_mode = 3
@@ -22,7 +24,22 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="DocumentTree" parent="HBox" instance=ExtResource("2_6g8m3")]
+[node name="VBox" type="VBoxContainer" parent="HBox"]
+layout_mode = 2
+
+[node name="SortTree" type="HBoxContainer" parent="HBox/VBox"]
+layout_mode = 2
+script = ExtResource("2_8i55i")
+
+[node name="FilterOption" type="OptionButton" parent="HBox/VBox/SortTree"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="InvertOrderButton" type="Button" parent="HBox/VBox/SortTree"]
+layout_mode = 2
+icon = ExtResource("2_ya4j3")
+
+[node name="DocumentTree" parent="HBox/VBox" instance=ExtResource("2_6g8m3")]
 custom_minimum_size = Vector2(390, 0)
 layout_mode = 2
 drop_mode_flags = 1
@@ -43,6 +60,9 @@ theme_override_constants/h_separation = 13
 theme_override_constants/v_separation = 15
 max_columns = 3
 
-[connection signal="document_selected" from="HBox/DocumentTree" to="." method="show_thumbnails"]
-[connection signal="folder_selected" from="HBox/DocumentTree" to="." method="_on_document_tree_folder_selected"]
+[connection signal="sort_changed" from="HBox/VBox/SortTree" to="HBox/VBox/DocumentTree" method="_on_sort_tree_sort_changed"]
+[connection signal="item_selected" from="HBox/VBox/SortTree/FilterOption" to="HBox/VBox/SortTree" method="_on_filter_option_item_selected"]
+[connection signal="pressed" from="HBox/VBox/SortTree/InvertOrderButton" to="HBox/VBox/SortTree" method="_on_invert_order_button_pressed"]
+[connection signal="document_selected" from="HBox/VBox/DocumentTree" to="." method="show_thumbnails"]
+[connection signal="folder_selected" from="HBox/VBox/DocumentTree" to="." method="_on_document_tree_folder_selected"]
 [connection signal="item_activated" from="HBox/ThumbnailsContainer/BoardList" to="." method="_on_board_list_item_activated"]

@@ -12,6 +12,10 @@ var custom_tree_items : Array[CustomTreeItem] = []
 ## Item text before being modified by double click
 var old_item_text : String = ""
 
+var sort_callables : Array[Callable] = [sort_tree_items_by_name, sort_tree_items_by_created, sort_tree_items_by_modified]
+
+var sort_callable : Callable = sort_tree_items_by_name
+var inverted_sort : bool = false
 
 @onready var folder_icon : Texture2D = preload("res://Assets/Buttons/file-manager-icon.png")
 @onready var document_icon : Texture2D = preload("res://Assets/Buttons/preview_toggle.png")
@@ -90,7 +94,7 @@ func rebuild_tree() -> void:
 
 func create_tree_items_from_custom_tree_items(p_custom_tree_item : CustomTreeItem, p_root_item : TreeItem) -> void:
 	var tree_item_children : Array[CustomTreeItem] = p_custom_tree_item.child_items
-	tree_item_children.sort_custom(sort_tree_items_by_name)
+	tree_item_children.sort_custom(sort_callable)
 	for custom_tree_item : CustomTreeItem in tree_item_children:
 		var item : TreeItem = create_item(p_root_item)
 		# Set mutual references between TreeItem and CustomTreeItem
@@ -267,4 +271,23 @@ func move_folder_to_folder(p_source_path : String, p_dest_path  : String) -> voi
 
 
 func sort_tree_items_by_name(a : CustomTreeItem, b : CustomTreeItem) -> bool:
-	return a.file_name < b.file_name
+	if not inverted_sort:
+		return a.file_name < b.file_name
+	return a.file_name > b.file_name
+
+func sort_tree_items_by_created(a : CustomTreeItem, b : CustomTreeItem) -> bool:
+	if not inverted_sort:
+		return Time.get_unix_time_from_datetime_dict(a.date_created) < Time.get_unix_time_from_datetime_dict(b.date_created)
+	return Time.get_unix_time_from_datetime_dict(a.date_created) > Time.get_unix_time_from_datetime_dict(b.date_created)
+
+
+func sort_tree_items_by_modified(a : CustomTreeItem, b : CustomTreeItem) -> bool:
+	if not inverted_sort:
+		return Time.get_unix_time_from_datetime_dict(a.last_modified) < Time.get_unix_time_from_datetime_dict(b.last_modified)
+	return Time.get_unix_time_from_datetime_dict(a.last_modified) > Time.get_unix_time_from_datetime_dict(b.last_modified)
+
+
+func _on_sort_tree_sort_changed(p_sort : SortTree.TREE_FILTER, p_inverted : bool) -> void:
+	inverted_sort = p_inverted
+	sort_callable = sort_callables[p_sort]
+	rebuild_tree()

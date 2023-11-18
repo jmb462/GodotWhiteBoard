@@ -3,7 +3,7 @@ class_name DocumentManager
 
 signal document_requested(document : Document, board_uid : int)
 
-@onready var document_tree : DocumentTree = $HBox/DocumentTree
+@onready var document_tree : DocumentTree = $HBox/VBox/DocumentTree
 @onready var board_list : ItemList = $HBox/ThumbnailsContainer/BoardList
 
 var boards_dict : Dictionary = {}
