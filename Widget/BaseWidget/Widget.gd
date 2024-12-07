@@ -7,7 +7,6 @@ signal duplicate_requested(widget : Widget)
 signal layer_change_requested(widget : Widget, direction : int)
 signal widget_changed
 
-
 @onready var buttons : Node2D = $Buttons
 @onready var focus_theme : StyleBoxFlat = load("res://Styles/Widget_master_selected.tres")
 @onready var unfocus_theme : StyleBoxFlat = load("res://Styles/Widget_unfocus.tres")
@@ -23,6 +22,7 @@ var locked : bool = false
 var editable : bool = true
 
 var current_action : G.ACTION = G.ACTION.NONE
+var previous_action : G.ACTION = G.ACTION.NONE
 var resize_type : G.RESIZE = G.RESIZE.NONE
 var keep_ratio : bool = false
 
@@ -36,12 +36,16 @@ var master : Widget = null
 # Reference to the parent widget if grouped with other widget
 var grouped_in : Widget = null
 
+var start_rotation_degrees : float = 0.0
+var start_rect : Rect2 = Rect2()
+
 func get_type() -> String:
 	return "Widget"
 
 func _ready() -> void :
 	_on_resized()
 	emit_signal("widget_changed")
+
 
 func _on_gui_input(event : InputEvent) -> void:
 	if event is InputEventMouseMotion:
@@ -60,10 +64,28 @@ func _on_gui_input(event : InputEvent) -> void:
 				if not focus:
 					emit_signal("focus_requested", self)
 				if current_action == G.ACTION.NONE:
-					current_action = G.ACTION.MOVE
+					set_current_action(G.ACTION.MOVE)
 			else:
-				current_action = G.ACTION.NONE
+				set_current_action(G.ACTION.NONE)
 
+func set_current_action(p_action : G.ACTION) -> void:
+	if current_action != p_action:
+		print("switch from %s to %s" % [G.get_action_name(current_action), G.get_action_name(p_action)])
+		previous_action = current_action
+		current_action = p_action
+		
+		if p_action == G.ACTION.ROTATE:
+			start_rotation_degrees = rotation_degrees
+			
+		if p_action == G.ACTION.MOVE or p_action == G.ACTION.RESIZE:
+			start_rect = get_rect()
+			print(start_rect)
+		
+		if previous_action == G.ACTION.ROTATE:
+			Undo.add_action("widget_rotated", [self, start_rotation_degrees, rotation_degrees, pivot_offset])
+			
+		if previous_action == G.ACTION.MOVE or previous_action == G.ACTION.RESIZE:
+			Undo.add_action("widget_rect_changed", [self, start_rect, get_rect()])
 
 func move(p_relative : Vector2) -> void:
 	position += p_relative
@@ -134,15 +156,20 @@ func synchronize() -> void:
 	clone.pivot_offset = pivot_offset
 	clone.rotation = rotation
 	clone.visible = visible_on_presentation_screen
+	clone.z_index = z_index
 
 func _on_buttons_resize_pressed(p_resize_type : G.RESIZE, p_keep_ratio : bool = false) -> void:
-	current_action = G.ACTION.RESIZE
+	set_current_action(G.ACTION.RESIZE)
 	resize_type = p_resize_type
 	keep_ratio = p_keep_ratio
 
 
 func _on_buttons_toggle_visible_pressed() -> void:
-	current_action = G.ACTION.TOGGLE_VISIBLE
+	toggle_visibility()
+	Undo.add_action("visibility_changed", [self])
+	
+func toggle_visibility():
+	set_current_action(G.ACTION.TOGGLE_VISIBLE)
 	if is_master():
 		if visible_on_presentation_screen:
 			clone.hide()
@@ -154,9 +181,8 @@ func _on_buttons_toggle_visible_pressed() -> void:
 			visible_on_presentation_screen = true
 	emit_signal("widget_changed")
 
-
 func _on_buttons_close_pressed() -> void:
-	current_action = G.ACTION.CLOSE
+	set_current_action(G.ACTION.CLOSE)
 	delete()
 
 func delete() -> void:
@@ -178,9 +204,12 @@ func _on_buttons_duplicate_pressed() -> void:
 
 
 func _on_buttons_locked_pressed() ->  void:
-	locked = !locked
-	mouse_default_cursor_shape = Control.CURSOR_ARROW if locked else Control.CURSOR_DRAG
+	toggle_lock()
+	Undo.add_action("locked_changed", [self])
 
+func toggle_lock() -> void:
+	locked = !locked
+	mouse_default_cursor_shape = Control.CURSOR_ARROW if locked else Control.CURSOR_DRAG	
 
 func _on_buttons_layer_down_pressed() -> void:
 	emit_signal("layer_change_requested", self, -1)
@@ -191,13 +220,13 @@ func _on_buttons_layer_up_pressed() -> void:
 
 
 func _on_buttons_rotate_pressed() -> void:
-	current_action = G.ACTION.ROTATE
+	set_current_action(G.ACTION.ROTATE)
 	buttons.update_markers_positions(size)
 	pin_marker(G.MARKER.MIDDLE)
 	set_pivot(size / 2.0)	
 	move_to_pin()
 	buttons.update_markers_positions(size)
-	G.debug_action(current_action)
+
 
 #
 # Set pivot point and update middle marker
@@ -238,7 +267,7 @@ func move_to_pin() -> void:
 #
 func _on_buttons_resizing_stopped() -> void:
 	if current_action == G.ACTION.RESIZE and resize_type == G.RESIZE.TOP:
-		current_action = G.ACTION.NONE
+		set_current_action(G.ACTION.NONE)
 
 func get_marker_position(p_marker : G.MARKER) -> Vector2:
 	return buttons.get_marker_position(p_marker)

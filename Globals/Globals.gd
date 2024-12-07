@@ -48,5 +48,7 @@ func get_board_thumbnail_path(p_board_uid : int) -> String:
 		return "%s/%s%s" % [G.document_folder_path, p_board_uid, THUMBNAIL_FILE_SUFFIX]
 		
 func debug_action(p_action : ACTION) -> void:
-	print(ACTION.keys()[p_action])
+	print(get_action_name(p_action))
 	
+func get_action_name(p_action : ACTION) -> String:
+	return ACTION.keys()[p_action]

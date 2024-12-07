@@ -10,6 +10,8 @@ signal delete_document_requested
 signal new_document_requested
 signal duplicate_document_requested
 signal new_folder_requested
+signal undo_requested
+signal redo_requested
 
 @onready var h_box : HBoxContainer = $HBox
 @onready var new_button : Button = $HBox/New
@@ -20,6 +22,13 @@ signal new_folder_requested
 @onready var board_button : Button = $HBox/Board
 @onready var documents_button : Button = $HBox/Documents
 @onready var delete_document_button : Button = $HBox/Documents
+@onready var undo_button = $HBox/Undo
+@onready var redo_button = $HBox/Redo
+
+func _ready() -> void:
+	Undo.connect("undo_redo_modified", _on_undo_redo_modified)
+	connect("undo_requested", Undo.undo)
+	connect("redo_requested", Undo.redo)
 
 func _on_new_pressed() -> void:
 	emit_signal("new_button_pressed")
@@ -46,7 +55,10 @@ func _on_main_board_boards_changed(p_current_board : int, p_total_boards : int) 
 func _on_widgets_count_modified(p_count : int) -> void:
 	clear_button.disabled = p_count == 0
 
-
+func _on_undo_redo_modified() -> void:
+	undo_button.disabled = not Undo.can_undo()
+	redo_button.disabled = not Undo.can_redo()
+	
 func _on_documents_pressed() -> void:
 	print("_on_document_pressed")
 	emit_signal("document_manager_requested")
@@ -76,3 +88,11 @@ func _on_duplicate_document_pressed() -> void:
 
 func _on_new_folder_pressed() -> void:
 	emit_signal("new_folder_requested")
+
+
+func _on_undo_pressed():
+	emit_signal("undo_requested")
+
+
+func _on_redo_pressed():
+	emit_signal("redo_requested")

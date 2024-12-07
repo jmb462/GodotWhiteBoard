@@ -1,9 +1,10 @@
-[gd_scene load_steps=5 format=3 uid="uid://5tkvllinrdx5"]
+[gd_scene load_steps=6 format=3 uid="uid://5tkvllinrdx5"]
 
 [ext_resource type="Script" path="res://DocumentManager/DocumentManager.gd" id="1_xd02x"]
 [ext_resource type="PackedScene" uid="uid://ntxe1m0aiw02" path="res://DocumentManager/DocumentTree/DocumentTree.tscn" id="2_6g8m3"]
 [ext_resource type="Script" path="res://DocumentManager/SortTree.gd" id="2_8i55i"]
 [ext_resource type="Texture2D" uid="uid://kwusfar8ud40" path="res://Assets/Buttons/sort_up.png" id="2_ya4j3"]
+[ext_resource type="PackedScene" uid="uid://dqrs686c4wgyd" path="res://AnimatedList/AnimatedList.tscn" id="5_r7dqa"]
 
 [node name="DocumentManager" type="Control"]
 layout_mode = 3
@@ -49,6 +50,7 @@ layout_mode = 2
 size_flags_horizontal = 3
 
 [node name="BoardList" type="ItemList" parent="HBox/ThumbnailsContainer"]
+visible = false
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -56,9 +58,12 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 size_flags_horizontal = 3
-theme_override_constants/h_separation = 13
 theme_override_constants/v_separation = 15
+theme_override_constants/h_separation = 13
 max_columns = 3
+
+[node name="PreviewGrid" parent="HBox/ThumbnailsContainer" instance=ExtResource("5_r7dqa")]
+layout_mode = 0
 
 [connection signal="sort_changed" from="HBox/VBox/SortTree" to="HBox/VBox/DocumentTree" method="_on_sort_tree_sort_changed"]
 [connection signal="item_selected" from="HBox/VBox/SortTree/FilterOption" to="HBox/VBox/SortTree" method="_on_filter_option_item_selected"]

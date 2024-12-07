@@ -134,6 +134,8 @@ func change_layer(p_widget : Widget, p_layer : int) -> void:
 	var current_layer : int = whiteboard.get_children().find(p_widget)
 	var dest_layer : int = max(current_layer + p_layer, 0)
 	whiteboard.move_child(p_widget, dest_layer)
+	if p_widget.is_master() and is_instance_valid(p_widget.clone):
+		Display.presentation_screen.move_child(p_widget.clone, dest_layer)
 	is_modified = true
 	_on_widget_changed()
 	

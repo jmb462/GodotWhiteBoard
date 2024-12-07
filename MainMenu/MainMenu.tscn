@@ -1,4 +1,4 @@
-[gd_scene load_steps=21 format=3 uid="uid://cxbnl7jaaybi"]
+[gd_scene load_steps=23 format=3 uid="uid://cxbnl7jaaybi"]
 
 [ext_resource type="Script" path="res://MainMenu/MainMenu.gd" id="1_bkrg0"]
 [ext_resource type="Texture2D" uid="uid://cdch3vwecjo3q" path="res://Assets/Buttons/new_board.png" id="1_wtaar"]
@@ -11,6 +11,8 @@
 [ext_resource type="Texture2D" uid="uid://cxnoj01cilkcj" path="res://Assets/Buttons/clear_board.png" id="4_whu6h"]
 [ext_resource type="Texture2D" uid="uid://cun7t3ug6kkfq" path="res://Assets/Buttons/duplicate_document.png" id="5_5hkwl"]
 [ext_resource type="Texture2D" uid="uid://cnnbucuradllu" path="res://Assets/Buttons/delete_document.png" id="5_s1k3o"]
+[ext_resource type="Texture2D" uid="uid://bfh36x780c1i5" path="res://Assets/Buttons/undo.png" id="9_3lpdv"]
+[ext_resource type="Texture2D" uid="uid://dwdpbe6u1fkyp" path="res://Assets/Buttons/redo.png" id="10_svtoh"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_bgtxn"]
 bg_color = Color(0.8, 0.8, 0.8, 1)
@@ -85,24 +87,28 @@ shortcut = SubResource("Shortcut_tn2hn")
 icon = ExtResource("3_d4fpb")
 
 [node name="NewFolder" type="Button" parent="HBox" groups=["documents_page"]]
+visible = false
 layout_mode = 2
 tooltip_text = "Add new board"
 shortcut = SubResource("Shortcut_tn2hn")
 icon = ExtResource("4_lwhu8")
 
 [node name="NewDocument" type="Button" parent="HBox" groups=["documents_page"]]
+visible = false
 layout_mode = 2
 tooltip_text = "Add new board"
 shortcut = SubResource("Shortcut_tn2hn")
 icon = ExtResource("4_uq0et")
 
 [node name="DuplicateDocument" type="Button" parent="HBox" groups=["documents_page"]]
+visible = false
 layout_mode = 2
 tooltip_text = "Add new board"
 shortcut = SubResource("Shortcut_tn2hn")
 icon = ExtResource("5_5hkwl")
 
 [node name="DeleteDocument" type="Button" parent="HBox" groups=["documents_page"]]
+visible = false
 layout_mode = 2
 tooltip_text = "Add new board"
 shortcut = SubResource("Shortcut_tn2hn")
@@ -113,6 +119,22 @@ layout_mode = 2
 tooltip_text = "Add new board"
 shortcut = SubResource("Shortcut_tn2hn")
 icon = ExtResource("1_wtaar")
+
+[node name="Undo" type="Button" parent="HBox" groups=["board_page"]]
+custom_minimum_size = Vector2(40, 0)
+layout_mode = 2
+tooltip_text = "Show previous board"
+disabled = true
+shortcut = SubResource("Shortcut_6tkx3")
+icon = ExtResource("9_3lpdv")
+
+[node name="Redo" type="Button" parent="HBox" groups=["board_page"]]
+custom_minimum_size = Vector2(40, 0)
+layout_mode = 2
+tooltip_text = "Undo"
+disabled = true
+shortcut = SubResource("Shortcut_6tkx3")
+icon = ExtResource("10_svtoh")
 
 [node name="Previous" type="Button" parent="HBox" groups=["board_page"]]
 layout_mode = 2
@@ -148,6 +170,8 @@ icon = ExtResource("4_whu6h")
 [connection signal="pressed" from="HBox/DuplicateDocument" to="." method="_on_duplicate_document_pressed"]
 [connection signal="pressed" from="HBox/DeleteDocument" to="." method="_on_delete_document_pressed"]
 [connection signal="pressed" from="HBox/New" to="." method="_on_new_pressed"]
+[connection signal="pressed" from="HBox/Undo" to="." method="_on_undo_pressed"]
+[connection signal="pressed" from="HBox/Redo" to="." method="_on_redo_pressed"]
 [connection signal="pressed" from="HBox/Previous" to="." method="_on_previous_pressed"]
 [connection signal="pressed" from="HBox/Next" to="." method="_on_next_pressed"]
 [connection signal="pressed" from="HBox/Clear" to="." method="_on_clear_pressed"]

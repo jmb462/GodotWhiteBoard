@@ -5,6 +5,7 @@ signal document_requested(document : Document, board_uid : int)
 
 @onready var document_tree : DocumentTree = $HBox/VBox/DocumentTree
 @onready var board_list : ItemList = $HBox/ThumbnailsContainer/BoardList
+@onready var preview_grid : AnimatedList = $HBox/ThumbnailsContainer/PreviewGrid
 
 var boards_dict : Dictionary = {}
 var current_document : Document = null
@@ -23,19 +24,24 @@ func activate(p_document_uid : int, p_board_uid : int, p_rename : bool = false) 
 
 func _on_document_tree_folder_selected() -> void:
 	board_list.clear()
+	preview_grid.clear()
 
 func show_thumbnails(p_document : Document) -> void:
 	current_document = p_document
 	if p_document == null:
 		return
 	board_list.clear()
+	preview_grid.clear()
+	var thumb_index : int = 0
 	for board_data : BoardData in p_document.boards:
 		var thumbnail_path : String = p_document.get_document_path() + '/' + str(board_data.uid) + '_thumbnail.jpg'
 		if FileAccess.file_exists(thumbnail_path):
 			var image : Image = Image.load_from_file(thumbnail_path)
 			var index : int = board_list.add_icon_item(ImageTexture.create_from_image(image))
+			preview_grid.create_item(thumb_index, ImageTexture.create_from_image(image), false)
 			boards_dict[str(board_data.uid)] = index
 			boards_dict[str(index)] = board_data.uid
+			thumb_index += 1
 
 
 func _on_board_list_item_activated(p_index : int) -> void:
@@ -54,6 +60,8 @@ func _on_main_menu_delete_document_requested() -> void:
 		
 	document_tree.rebuild_tree()
 	board_list.clear()
+	preview_grid.clear()
+	
 	document_tree.set_item_selected(0)
 
 func _on_main_menu_duplicate_document_requested() -> void:
@@ -137,6 +145,7 @@ func delete_selected_item_document(p_document : Document) -> void:
 	erase_document_files(p_document)
 	document_tree.rebuild_tree()
 	board_list.clear()
+	preview_grid.clear()
 	document_tree.set_item_selected(selected_index)
 
 ## Erase document files
