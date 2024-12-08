@@ -130,14 +130,21 @@ func get_whiteboard_rect() -> Rect2:
 	return whiteboard.get_global_rect()
 
 ## Change layer of the widget
-func change_layer(p_widget : Widget, p_layer : int) -> void:
+func change_layer(p_widget : Widget, p_layer : int, p_register_action : bool = true) -> void:
 	var current_layer : int = whiteboard.get_children().find(p_widget)
 	var dest_layer : int = max(current_layer + p_layer, 0)
+	if current_layer == dest_layer:
+		return
 	whiteboard.move_child(p_widget, dest_layer)
 	if p_widget.is_master() and is_instance_valid(p_widget.clone):
 		Display.presentation_screen.move_child(p_widget.clone, dest_layer)
 	is_modified = true
 	_on_widget_changed()
+	if p_register_action:
+		var new_layer_action = ActionLayerChange.new()
+		new_layer_action.setup(p_widget, current_layer, dest_layer)
+		
+		Undo.add_action(new_layer_action)
 	
 
 func set_child(p_widget : Widget) -> void:

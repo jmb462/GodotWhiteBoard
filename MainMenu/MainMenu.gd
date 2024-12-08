@@ -22,8 +22,8 @@ signal redo_requested
 @onready var board_button : Button = $HBox/Board
 @onready var documents_button : Button = $HBox/Documents
 @onready var delete_document_button : Button = $HBox/Documents
-@onready var undo_button = $HBox/Undo
-@onready var redo_button = $HBox/Redo
+@onready var undo_button : Button = $HBox/Undo
+@onready var redo_button : Button = $HBox/Redo
 
 func _ready() -> void:
 	Undo.connect("undo_redo_modified", _on_undo_redo_modified)
@@ -90,9 +90,9 @@ func _on_new_folder_pressed() -> void:
 	emit_signal("new_folder_requested")
 
 
-func _on_undo_pressed():
+func _on_undo_pressed() -> void:
 	emit_signal("undo_requested")
 
 
-func _on_redo_pressed():
+func _on_redo_pressed() -> void:
 	emit_signal("redo_requested")
