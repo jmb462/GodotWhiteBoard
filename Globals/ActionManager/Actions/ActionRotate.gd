@@ -12,12 +12,10 @@ func setup(p_widget : Widget, p_rotation_degrees_from : float, p_rotation_degree
 	rotation_degrees_to = p_rotation_degrees_to
 	widget_pivot_offset = p_pivot_offset
 
-func undo() -> void:
+func execute() -> void:
 	if is_instance_valid(widget):
-		widget.rotation_degrees = rotation_degrees_from
-		widget.synchronize()
+		widget.set_new_rotation(rotation_degrees_to, widget_pivot_offset)
 	
-func redo() -> void:
+func unexecute() -> void:
 	if is_instance_valid(widget):
-		widget.rotation_degrees = rotation_degrees_to
-		widget.synchronize()
+		widget.set_new_rotation(rotation_degrees_from, widget_pivot_offset)

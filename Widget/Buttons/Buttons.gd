@@ -112,6 +112,10 @@ func _on_size_plus_button_down() -> void:
 
 func _on_toggle_visible_button_down() -> void:
 	emit_signal("toggle_visible_pressed")
+	toggle_visible.button_pressed = not toggle_visible.button_pressed
+
+func update_visible_button(p_visible : bool = true) -> void:
+	toggle_visible.button_pressed = not p_visible
 
 func _on_close_button_down() -> void:
 	emit_signal("close_pressed")
@@ -148,6 +152,9 @@ func _on_editable_pressed() -> void:
 
 func _on_lock_pressed() -> void:
 	emit_signal("locked_pressed")
+
+func update_lock_buttons(p_locked : bool = false) -> void:
+	lock_button.button_pressed = p_locked
 	for button : TextureButton in [resize_both, resize_bottom, resize_left, resize_right, resize_top, rotate_button]:
 		button.visible = not lock_button.is_pressed()
 

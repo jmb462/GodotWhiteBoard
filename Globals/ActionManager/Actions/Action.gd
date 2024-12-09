@@ -1,12 +1,10 @@
 extends Resource
 class_name Action
 
-var action_name : String = ""
-
 var widget : Widget = null
 
-func undo() -> void:
+func execute() -> void:
 	pass
-	
-func redo() -> void:
+
+func unexecute() -> void:
 	pass

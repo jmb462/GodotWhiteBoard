@@ -84,22 +84,31 @@ func set_current_action(p_action : G.ACTION) -> void:
 		
 		if previous_action == G.ACTION.ROTATE:
 			if start_rotation_degrees != rotation_degrees:
-				var new_rotation_action = ActionRotate.new()
+				var new_rotation_action : ActionRotate = ActionRotate.new()
 				new_rotation_action.setup(self, start_rotation_degrees, rotation_degrees, pivot_offset)
-				Undo.add_action(new_rotation_action)
+				Manager.do_action(new_rotation_action)
 			
 		if previous_action == G.ACTION.MOVE or previous_action == G.ACTION.RESIZE:
-			var current_rect = get_rect()
+			var current_rect : Rect2 = get_rect()
 			if start_rect != current_rect:
-				var new_rect_action = ActionRectChange.new()
+				var new_rect_action : ActionRectChange = ActionRectChange.new()
 				new_rect_action.setup(self, start_rect, current_rect)
-				Undo.add_action(new_rect_action)
+				Manager.do_action(new_rect_action)
 
 func move(p_relative : Vector2) -> void:
 	position += p_relative
 	emit_signal("widget_changed")	
 	synchronize()
 
+func set_new_rotation(p_rotation_degrees : float, p_pivot_offset : Vector2) -> void:
+	pivot_offset = p_pivot_offset
+	rotation_degrees = p_rotation_degrees
+	synchronize()
+
+func set_new_rect(p_rect : Rect2) -> void:
+	position = p_rect.position
+	size = p_rect.size
+	synchronize()
 
 func resize(p_relative : Vector2, p_resize_type : G.RESIZE) -> void:
 	if size.y == 0:
@@ -172,24 +181,23 @@ func _on_buttons_resize_pressed(p_resize_type : G.RESIZE, p_keep_ratio : bool = 
 	keep_ratio = p_keep_ratio
 
 
-func _on_buttons_toggle_visible_pressed(p_register_action : bool = true) -> void:
-	toggle_visibility()
-	if p_register_action:
-		var new_visibility_action = ActionVisibility.new()
-		new_visibility_action.setup(self)
-		Undo.add_action(new_visibility_action)
+func _on_buttons_toggle_visible_pressed() -> void:
+	var new_visibility_action : ActionToggleVisibility = ActionToggleVisibility.new()
+	new_visibility_action.setup(self)
+	Manager.do_action(new_visibility_action)
 	
 func toggle_visibility() -> void:
 	set_current_action(G.ACTION.TOGGLE_VISIBLE)
+	
 	if is_master():
 		if visible_on_presentation_screen:
 			clone.hide()
 			modulate.a = 0.3
-			visible_on_presentation_screen = false
 		else:
 			clone.show()
 			modulate.a = 1.0
-			visible_on_presentation_screen = true
+		visible_on_presentation_screen = not visible_on_presentation_screen
+		buttons.update_visible_button(visible_on_presentation_screen)
 	emit_signal("widget_changed")
 
 func _on_buttons_close_pressed() -> void:
@@ -214,17 +222,18 @@ func _on_buttons_duplicate_pressed() -> void:
 	emit_signal("duplicate_requested", self)
 
 
-func _on_buttons_locked_pressed(p_register_action : bool = true) ->  void:
-	toggle_lock()
-	if p_register_action:
-		var new_lock_action = ActionLock.new()
-		new_lock_action.setup(self)
-		Undo.add_action(new_lock_action)
+func _on_buttons_locked_pressed() ->  void:
+	var new_lock_action : ActionLock = ActionLock.new()
+	new_lock_action.setup(self)
+	Manager.do_action(new_lock_action)
+
 
 func toggle_lock() -> void:
 	locked = !locked
 	mouse_default_cursor_shape = Control.CURSOR_ARROW if locked else Control.CURSOR_DRAG
-
+	print("trying to update locks buttons")
+	buttons.update_lock_buttons(locked)
+	emit_signal("widget_changed")
 	
 func _on_buttons_layer_down_pressed() -> void:
 	emit_signal("layer_change_requested", self, -1)

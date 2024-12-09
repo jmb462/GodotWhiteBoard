@@ -26,9 +26,9 @@ signal redo_requested
 @onready var redo_button : Button = $HBox/Redo
 
 func _ready() -> void:
-	Undo.connect("undo_redo_modified", _on_undo_redo_modified)
-	connect("undo_requested", Undo.undo)
-	connect("redo_requested", Undo.redo)
+	Manager.connect("undo_redo_modified", _on_undo_redo_modified)
+	connect("undo_requested", Manager.undo)
+	connect("redo_requested", Manager.redo)
 
 func _on_new_pressed() -> void:
 	emit_signal("new_button_pressed")
@@ -56,8 +56,8 @@ func _on_widgets_count_modified(p_count : int) -> void:
 	clear_button.disabled = p_count == 0
 
 func _on_undo_redo_modified() -> void:
-	undo_button.disabled = not Undo.can_undo()
-	redo_button.disabled = not Undo.can_redo()
+	undo_button.disabled = not Manager.can_undo()
+	redo_button.disabled = not Manager.can_redo()
 	
 func _on_documents_pressed() -> void:
 	print("_on_document_pressed")

@@ -20,7 +20,7 @@ config/icon="res://icon.svg"
 G="*res://Globals/Globals.gd"
 Display="*res://Display/Display.tscn"
 Debug="*res://Debug/Debug.tscn"
-Undo="*res://Globals/UndoRedo/UndoRedo.gd"
+Manager="*res://Globals/ActionManager/ActionManager.gd"
 
 [debug]
 

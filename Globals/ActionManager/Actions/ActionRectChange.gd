@@ -10,14 +10,10 @@ func setup(p_widget : Widget, p_widget_rect_from : Rect2, p_widget_rect_to : Rec
 	widget_rect_to = p_widget_rect_to
 
 
-func undo() -> void:
+func execute() -> void:
 	if is_instance_valid(widget):
-		widget.position = widget_rect_from.position
-		widget.size = widget_rect_from.size
-		widget.synchronize()
+		widget.set_new_rect(widget_rect_to)
 	
-func redo() -> void:
+func unexecute() -> void:
 	if is_instance_valid(widget):
-		widget.position = widget_rect_to.position
-		widget.size = widget_rect_to.size
-		widget.synchronize()
+		widget.set_new_rect(widget_rect_from)
